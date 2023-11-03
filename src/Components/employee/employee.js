@@ -29,6 +29,7 @@ import { useNavigate } from "react-router-dom";
 import Save_button from "../buttons/save_button";
 import Select from "react-select";
 import TextField from "@mui/material/TextField";
+import success_toast from "../alerts/success_toast";
 
 export default function CustomerType(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -51,54 +52,86 @@ export default function CustomerType(props) {
   const [row_id, setrow_id] = useState("");
 
   const [name, setname] = useState("");
-
+  const [arabicname, setarabicname] = useState("");
   const [contact, setcontact] = useState("");
-  const [cnic, setcnic] = useState("");
+  const [prdaywage, setprdaywage] = useState("");
   const [address, setaddress] = useState("");
-  const [ntn, setntn] = useState("");
-  const [strn, setstrn] = useState("");
-  const [percentage, setpercentage] = useState("");
-  const [mergebilling, setmergebilling] = useState(true);
+  const [balance, setbalance] = useState("");
+  const [workinghours, setworkinghours] = useState("");
+  const [hiredate, sethiredate] = useState("");
+  const [firedate, setfiredate] = useState("");
+  const [nationality, setnationality] = useState("");
+  const [basicsalary, setbasicsalary] = useState("");
+  const [transportallowance, settransportallowance] = useState("");
+  const [foodallowance, setfoodallowance] = useState("");
+  const [prallowance, setprallowance] = useState("");
+  const [accomallowance, setaccomallowance] = useState("");
+  const [extraallowance, setextraallowance] = useState("");
+  const [passport, setpassport] = useState("");
+  const [passportdate, setpassportdate] = useState("");
+  const [municipalno, setmunicipalno] = useState("");
+  const [municipaldate, setmunicipaldate] = useState("");
+  const [drivinglicense, setdrivinglicense] = useState("");
+  const [drivinglicensedate, setdrivinglicensedate] = useState("");
+  const [workpermit, setworkpermit] = useState("");
+  const [workpermitdate, setworkpermitdate] = useState("");
+  const [allcategory, setallcategory] = useState([]);
+  const [category, setcategory] = useState("");
   const [isloading, setisloading] = useState(false);
 
-  const [status, setstatus] = useState(false);
-  const [allchannels, setallchannels] = useState([]);
-  const [channel, setchannel] = useState("");
+  useEffect(() => {
+    setisloading(true);
 
-  const [allarea, setallarea] = useState([]);
-  const [area, setarea] = useState("");
+    const fetchWorkouts = async () => {
+      dispatch({ type: "Set_table_history", data: [] });
 
-  // useEffect(() => {
-  //   setisloading(true);
+      var url = `${route}/api/employee/`;
 
-  //   const fetchWorkouts = async () => {
-  //     dispatch({ type: "Set_table_history", data: [] });
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
 
-  //     if (current_user.profile.user_type === "user") {
-  //       var url = `${route}/api/customer-type/?user_id=${current_user.profile.parent_user}`;
-  //     } else {
-  //       url = `${route}/api/customer-type/?user_id=${current_user.id}`;
-  //     }
+      if (response.ok) {
+        setisloading(false);
+        dispatch({ type: "Set_table_history", data: json });
+      }
+      if (!response.ok) {
+        went_wrong_toast();
+        setisloading(false);
+      }
+    };
 
-  //     const response = await fetch(`${url}`, {
-  //       headers: { Authorization: `Bearer ${user.access}` },
-  //     });
-  //     const json = await response.json();
+    if (user) {
+      fetchWorkouts();
+    }
+  }, [selected_branch]);
 
-  //     if (response.ok) {
-  //       setisloading(false);
-  //       dispatch({ type: "Set_table_history", data: json });
-  //     }
-  //     if (!response.ok) {
-  //       went_wrong_toast();
-  //       setisloading(false);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchcategory = async () => {
+      var url = `${route}/api/employee-categories/`;
 
-  //   if (user) {
-  //     fetchWorkouts();
-  //   }
-  // }, [selected_branch]);
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        const optimize = json.map((item) => {
+          return { value: item.id, label: item.name };
+        });
+
+        setallcategory(optimize);
+      }
+      if (!response.ok) {
+        went_wrong_toast();
+      }
+    };
+
+    if (user) {
+      fetchcategory();
+    }
+  }, []);
 
   const handleconfirm = (row) => {
     dispatch({ type: "Delete_table_history", data: { id: row } });
@@ -112,7 +145,7 @@ export default function CustomerType(props) {
           className="border border-danger rounded me-2"
           onClick={() => {
             setrow_id(row.id);
-            seturl_to_delete(`${route}/api/customer-type/${row.id}/`);
+            seturl_to_delete(`${route}/api/employee/${row.id}/`);
             setdelete_user(true);
           }}
         >
@@ -309,23 +342,71 @@ export default function CustomerType(props) {
       zIndex: 100,
     }),
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!isloading) {
+      setisloading(true);
+      const formData = new FormData();
+
+      formData.append("name", name);
+      formData.append("contact", contact);
+      formData.append("country", nationality);
+      formData.append("address", address);
+      formData.append("working_hours", workinghours);
+      formData.append("wage_per_day", prdaywage);
+      formData.append("balance", balance);
+      formData.append("basic_salary", basicsalary);
+      formData.append("transport_allowance", transportallowance);
+      formData.append("food_allowance", foodallowance);
+      formData.append("accomodation_allowance", accomallowance);
+      formData.append("pr_allowance", prallowance);
+      formData.append("extra_allowance", extraallowance);
+      formData.append("hiring_date", hiredate);
+      formData.append("expelled_date", firedate);
+      formData.append("passport_number", passport);
+      formData.append("passport_expiry_date", passportdate);
+      formData.append("identity_number", municipalno);
+      formData.append("identity_expiry_date", municipaldate);
+      formData.append("driving_license_number", drivinglicense);
+      formData.append("driving_license_date", drivinglicensedate);
+      formData.append("work_permit_number", workpermit);
+      formData.append("work_permit_date", workpermitdate);
+      formData.append("account_head", selected_branch.id);
+      formData.append("user", current_user.id);
+      formData.append("category", category.value);
+
+      const response = await fetch(`${route}/api/parties/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user.access}`,
+        },
+        body: formData,
+      });
+      const json = await response.json();
+
+      if (!response.ok) {
+        setisloading(false);
+        went_wrong_toast();
+      }
+
+      if (response.ok) {
+        dispatch({ type: "Create_table_history", data: json });
+        setisloading(false);
+        success_toast();
+      }
+    }
+  };
+
   return (
     <div className="p-3">
       <div className="card">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="card-header d-flex justify-content-between bg-white">
             <h3 className="mt-2 me-2">Add Employee</h3>
             <div className="mt-2 me-2 d-flex flex-row-reverse">
               <Save_button isloading={isloading} />
-              <Button
-                type="button"
-                className="me-3"
-                variant="outline-success"
-                onClick={() => setshowmodel(!showmodel)}
-              >
-                <FontAwesomeIcon className="me-2" icon={faUserPlus} />
-                Add Category
-              </Button>
             </div>
           </div>
 
@@ -348,9 +429,9 @@ export default function CustomerType(props) {
                   <TextField
                     className="form-control  mb-3"
                     label={"اسم"}
-                    value={cnic}
+                    value={arabicname}
                     onChange={(e) => {
-                      setcnic(e.target.value);
+                      setarabicname(e.target.value);
                     }}
                     size="small"
                   />
@@ -372,9 +453,9 @@ export default function CustomerType(props) {
                     type="number"
                     className="form-control   mb-3"
                     label={"Per Day Wage"}
-                    value={strn}
+                    value={prdaywage}
                     onChange={(e) => {
-                      setstrn(e.target.value);
+                      setprdaywage(e.target.value);
                     }}
                     size="small"
                   />
@@ -385,16 +466,16 @@ export default function CustomerType(props) {
                 <div className=" col-md-3 mb-3">
                   <Select
                     className={
-                      channel
+                      category
                         ? "form-control selector type "
                         : "form-control selector"
                     }
                     styles={selectStyles}
-                    options={allchannels}
+                    options={allcategory}
                     placeholder={"Employee Category"}
-                    value={channel}
+                    value={category}
                     onChange={(e) => {
-                      setchannel(e);
+                      setcategory(e);
                     }}
                     required
                     autoFocus
@@ -404,9 +485,9 @@ export default function CustomerType(props) {
                   <TextField
                     className="form-control  mb-3"
                     label={"Balance"}
-                    value={percentage}
+                    value={balance}
                     onChange={(e) => {
-                      setpercentage(e.target.value);
+                      setbalance(e.target.value);
                     }}
                     size="small"
                   />
@@ -417,9 +498,9 @@ export default function CustomerType(props) {
                     multiline
                     className="form-control   mb-3"
                     label={"Working Hours"}
-                    value={ntn}
+                    value={workinghours}
                     onChange={(e) => {
-                      setntn(e.target.value);
+                      setworkinghours(e.target.value);
                     }}
                     size="small"
                   />
@@ -446,9 +527,9 @@ export default function CustomerType(props) {
                     className="form-control  mb-3"
                     label={t("Hiring Date")}
                     InputLabelProps={{ shrink: true }}
-                    value={address}
+                    value={hiredate}
                     onChange={(e) => {
-                      setaddress(e.target.value);
+                      sethiredate(e.target.value);
                     }}
                     size="small"
                   />
@@ -460,9 +541,9 @@ export default function CustomerType(props) {
                     className="form-control  mb-3"
                     label={t("Firing Date")}
                     InputLabelProps={{ shrink: true }}
-                    value={address}
+                    value={firedate}
                     onChange={(e) => {
-                      setaddress(e.target.value);
+                      setfiredate(e.target.value);
                     }}
                     size="small"
                   />
@@ -472,9 +553,9 @@ export default function CustomerType(props) {
                   <TextField
                     className="form-control  mb-3"
                     label={t("Nationality")}
-                    value={address}
+                    value={nationality}
                     onChange={(e) => {
-                      setaddress(e.target.value);
+                      setnationality(e.target.value);
                     }}
                     size="small"
                   />
@@ -485,9 +566,9 @@ export default function CustomerType(props) {
                     type="Number"
                     className="form-control  mb-3"
                     label={t("Basic Salary")}
-                    value={address}
+                    value={basicsalary}
                     onChange={(e) => {
-                      setaddress(e.target.value);
+                      setbasicsalary(e.target.value);
                     }}
                     size="small"
                   />
@@ -500,9 +581,9 @@ export default function CustomerType(props) {
                     type="number"
                     className="form-control  mb-3"
                     label={t("Transport Allowance")}
-                    value={address}
+                    value={transportallowance}
                     onChange={(e) => {
-                      setaddress(e.target.value);
+                      settransportallowance(e.target.value);
                     }}
                     size="small"
                   />
@@ -513,9 +594,9 @@ export default function CustomerType(props) {
                     type="number"
                     className="form-control  mb-3"
                     label={t("Food Allowance")}
-                    value={address}
+                    value={foodallowance}
                     onChange={(e) => {
-                      setaddress(e.target.value);
+                      setfoodallowance(e.target.value);
                     }}
                     size="small"
                   />
@@ -526,9 +607,9 @@ export default function CustomerType(props) {
                     type="number"
                     className="form-control  mb-3"
                     label={t("Accomodation Allowance")}
-                    value={address}
+                    value={accomallowance}
                     onChange={(e) => {
-                      setaddress(e.target.value);
+                      setaccomallowance(e.target.value);
                     }}
                     size="small"
                   />
@@ -539,9 +620,9 @@ export default function CustomerType(props) {
                     type="Number"
                     className="form-control  mb-3"
                     label={t("PR Allowance")}
-                    value={address}
+                    value={prallowance}
                     onChange={(e) => {
-                      setaddress(e.target.value);
+                      setprallowance(e.target.value);
                     }}
                     size="small"
                   />
@@ -554,9 +635,9 @@ export default function CustomerType(props) {
                     type="number"
                     className="form-control  mb-3"
                     label={t("Extra Allowance")}
-                    value={address}
+                    value={extraallowance}
                     onChange={(e) => {
-                      setaddress(e.target.value);
+                      setextraallowance(e.target.value);
                     }}
                     size="small"
                   />
@@ -567,9 +648,9 @@ export default function CustomerType(props) {
                     <TextField
                       className="form-control   mb-3"
                       label={t("Passport No")}
-                      value={address}
+                      value={passport}
                       onChange={(e) => {
-                        setaddress(e.target.value);
+                        setpassport(e.target.value);
                       }}
                       size="small"
                     />
@@ -580,9 +661,9 @@ export default function CustomerType(props) {
                       className="form-control  mb-3"
                       label={t("Expiry")}
                       InputLabelProps={{ shrink: true }}
-                      value={address}
+                      value={passportdate}
                       onChange={(e) => {
-                        setaddress(e.target.value);
+                        setpassportdate(e.target.value);
                       }}
                       size="small"
                     />
@@ -594,9 +675,9 @@ export default function CustomerType(props) {
                     <TextField
                       className="form-control  mb-3"
                       label={t("Muncipilaty Card")}
-                      value={address}
+                      value={municipalno}
                       onChange={(e) => {
-                        setaddress(e.target.value);
+                        setmunicipalno(e.target.value);
                       }}
                       size="small"
                     />
@@ -607,9 +688,9 @@ export default function CustomerType(props) {
                       className="form-control  mb-3"
                       label={t("Expiry")}
                       InputLabelProps={{ shrink: true }}
-                      value={address}
+                      value={municipaldate}
                       onChange={(e) => {
-                        setaddress(e.target.value);
+                        setmunicipaldate(e.target.value);
                       }}
                       size="small"
                     />
@@ -621,9 +702,9 @@ export default function CustomerType(props) {
                     <TextField
                       className="form-control  mb-3"
                       label={t("Driving License")}
-                      value={address}
+                      value={drivinglicense}
                       onChange={(e) => {
-                        setaddress(e.target.value);
+                        setdrivinglicense(e.target.value);
                       }}
                       size="small"
                     />
@@ -634,9 +715,9 @@ export default function CustomerType(props) {
                       className="form-control  mb-3"
                       label={t("Expiry")}
                       InputLabelProps={{ shrink: true }}
-                      value={address}
+                      value={drivinglicensedate}
                       onChange={(e) => {
-                        setaddress(e.target.value);
+                        setdrivinglicensedate(e.target.value);
                       }}
                       size="small"
                     />
@@ -650,9 +731,9 @@ export default function CustomerType(props) {
                     <TextField
                       className="form-control   mb-3"
                       label={t("Work Permit")}
-                      value={address}
+                      value={workpermit}
                       onChange={(e) => {
-                        setaddress(e.target.value);
+                        setworkpermit(e.target.value);
                       }}
                       size="small"
                     />
@@ -663,9 +744,9 @@ export default function CustomerType(props) {
                       className="form-control  mb-3"
                       label={t("Expiry")}
                       InputLabelProps={{ shrink: true }}
-                      value={address}
+                      value={workpermitdate}
                       onChange={(e) => {
-                        setaddress(e.target.value);
+                        setworkpermitdate(e.target.value);
                       }}
                       size="small"
                     />
@@ -738,18 +819,6 @@ export default function CustomerType(props) {
           </ToolkitProvider>
         </div>
       </div>
-
-      {showmodel && (
-        <CustomerTypeform
-          show={showmodel}
-          onHide={() => setshowmodel(false)}
-          user={user}
-          route={route}
-          callback={dispatch}
-          selected_branch={selected_branch}
-          current_user={current_user}
-        />
-      )}
 
       {delete_user && (
         <Alert_before_delete

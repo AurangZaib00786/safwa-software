@@ -4,10 +4,11 @@ import Tabs from "react-bootstrap/Tabs";
 import Customer from "../../Container/customerContainer";
 import Supplier from "../../Container/supplierContainer";
 import Employee from "../../Container/employeeContainer";
+import Employeecategory from "../../Container/employeecategoryContainer";
 import { ToastContainer } from "react-toastify";
 
 function Parties_page({ current_user }) {
-  const tabs = ["customers", "supplier", "employee"];
+  const tabs = ["customers", "supplier", "employee", "Employeecategory"];
   var current_tab = localStorage.getItem("activeTab");
   if (!tabs.includes(current_tab)) {
     current_tab = "customers";
@@ -41,6 +42,10 @@ function Parties_page({ current_user }) {
 
         <Tab eventKey="employee" title="Employees">
           {activeTab === "employee" && <Employee />}
+        </Tab>
+
+        <Tab eventKey="Employeecategory" title="Employee Category">
+          {activeTab === "Employeecategory" && <Employeecategory />}
         </Tab>
       </Tabs>
       <ToastContainer autoClose={2000} hideProgressBar={true} theme="dark" />

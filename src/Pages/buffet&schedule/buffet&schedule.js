@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import Menu from "../../Container/menuContainer";
+import Timing from "../../Container/timingContainer";
 import BuffetMenu from "../../Container/buffetmenuContainer";
 import { ToastContainer } from "react-toastify";
 
 function Buffet_page({ current_user }) {
-  const tabs = ["Buffet Menu", "Schedule"];
+  const tabs = ["Buffet Menu", "Schedule", "Timing"];
   var current_tab = localStorage.getItem("activeTab");
   if (!tabs.includes(current_tab)) {
     current_tab = "Buffet Menu";
@@ -34,6 +34,9 @@ function Buffet_page({ current_user }) {
           {activeTab === "Buffet Menu" && <BuffetMenu />}
         </Tab>
         <Tab eventKey="Schedule" title="Schedule"></Tab>
+        <Tab eventKey="Timing" title="Timing">
+          {activeTab === "Timing" && <Timing />}
+        </Tab>
       </Tabs>
       <ToastContainer autoClose={2000} hideProgressBar={true} theme="dark" />
     </div>

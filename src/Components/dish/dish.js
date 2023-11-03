@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import "./dish.css";
 import Select from "../alerts/select";
@@ -44,7 +44,7 @@ export default function Product(props) {
   const [showmodel, setshowmodel] = useState(false);
   const [data, setdata] = useState("");
   const [showmodelupdate, setshowmodelupdate] = useState(false);
-
+  const inputFile = useRef(null);
   const [p_category, setp_category] = useState("");
   const [submenu, setsubmenu] = useState("");
   const [name, setname] = useState("");
@@ -58,6 +58,7 @@ export default function Product(props) {
   const [row_id, setrow_id] = useState("");
   const [isloading, setisloading] = useState(false);
 
+  const [Fileurl, setFileurl] = useState("");
   const [check_update, setcheck_update] = useState(true);
 
   useEffect(() => {
@@ -375,6 +376,42 @@ export default function Product(props) {
     }
   };
 
+  const onButtonClick = () => {
+    // `current` points to the mounted file input element
+    inputFile.current.click();
+  };
+
+  const handleimageselection = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      handlefileupload(file);
+    }
+  };
+
+  const handlefileupload = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch(`${route}/api/upload-dishes/`, {
+      method: "POST",
+      headers: {
+        "content-type": "multipart/form-data",
+        Authorization: `Bearer ${user.access}`,
+      },
+      body: formData,
+    });
+    const json = await response.json();
+
+    if (!response.ok) {
+      went_wrong_toast();
+    }
+
+    if (response.ok) {
+      success_toast();
+    }
+  };
+
   return (
     <div className="p-3 pt-2">
       <div className="card">
@@ -393,6 +430,24 @@ export default function Product(props) {
               )}
               <SaveIcon /> {t("save")}
             </Button>
+            <div>
+              <input
+                onChange={handleimageselection}
+                id="select-file"
+                type="file"
+                accept=".csv,.xml"
+                ref={inputFile}
+                style={{ display: "none" }}
+              />
+
+              <Button
+                className="me-2"
+                variant="outline-primary"
+                onClick={onButtonClick}
+              >
+                {t("Import File")}
+              </Button>
+            </div>
           </div>
         </div>
 

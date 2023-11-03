@@ -61,8 +61,8 @@ export default function Customer(props) {
 
   const [isloading, setisloading] = useState(false);
 
-  const [channel, setchannel] = useState("");
-  const [area, setarea] = useState("");
+  const [allmenu, setallmenu] = useState([]);
+  const [alltiming, setalltiming] = useState([]);
 
   useEffect(() => {
     dispatch({ type: "Set_table_history", data: [] });
@@ -90,6 +90,53 @@ export default function Customer(props) {
       fetchWorkouts();
     }
   }, [selected_branch]);
+
+  useEffect(() => {
+    const fetchmenu = async () => {
+      var url = `${route}/api/menu/`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        const optimize = json.map((item) => {
+          return { value: item.id, label: item.name };
+        });
+
+        setallmenu(optimize);
+      }
+      if (!response.ok) {
+        went_wrong_toast();
+      }
+    };
+
+    const fetchtiming = async () => {
+      var url = `${route}/api/buffet-timing/`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        const optimize = json.map((item) => {
+          return { value: item.id, label: item.name };
+        });
+
+        setalltiming(optimize);
+      }
+      if (!response.ok) {
+        went_wrong_toast();
+      }
+    };
+
+    if (user) {
+      fetchmenu();
+      fetchtiming();
+    }
+  }, []);
 
   const handleconfirm = (row) => {
     dispatch({ type: "Delete_table_history", data: { id: row } });
@@ -434,19 +481,7 @@ export default function Customer(props) {
       zIndex: 100,
     }),
   };
-  const alltimings = [
-    {
-      value: 1,
-      label: "Pakistan timing",
-    },
-  ];
 
-  const allmenu = [
-    {
-      value: 1,
-      label: "Pakistan menu",
-    },
-  ];
   return (
     <div className="p-3 pt-2">
       <div className="card">
@@ -515,12 +550,12 @@ export default function Customer(props) {
                 <div className=" col-md-3 mb-3">
                   <Select
                     className={
-                      channel
+                      timing
                         ? "form-control selector timing "
                         : "form-control selector"
                     }
                     styles={selectStyles}
-                    options={alltimings}
+                    options={alltiming}
                     placeholder={"Select Timing"}
                     value={timing}
                     onChange={(e) => {
@@ -533,7 +568,7 @@ export default function Customer(props) {
                 <div className=" col-md-3 mb-3">
                   <Select
                     className={
-                      area
+                      menu
                         ? "form-control selector menu "
                         : "form-control selector"
                     }

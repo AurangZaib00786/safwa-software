@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
-import "./stock.css";
+import "./employeecategory.css";
 import { IconButton, Avatar } from "@material-ui/core";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
@@ -12,6 +12,8 @@ import ToolkitProvider, {
 } from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
+import Unitform from "./employeecategoryform";
+import Unitformupdate from "./updateemployeecategoryform";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { ToastContainer } from "react-toastify";
@@ -24,19 +26,18 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
 import { useTranslation } from "react-i18next";
-import Select from "../alerts/select";
 
-export default function Stock(props) {
+export default function Employeecategory(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
-  const { t } = useTranslation();
   const user = props.state.setuser.user;
+  const { t } = useTranslation();
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
-
   const { SearchBar } = Search;
+  const settings = props.state.Setcurrentinfo.settings;
   const { ExportCSVButton } = CSVExport;
   const [showmodel, setshowmodel] = useState(false);
   const [data, setdata] = useState("");
@@ -45,17 +46,14 @@ export default function Stock(props) {
   const [url_to_delete, seturl_to_delete] = useState("");
   const [row_id, setrow_id] = useState("");
   const [isloading, setisloading] = useState(false);
-  const [menu, setmenu] = useState({ value: "all", label: "All" });
-  const [menulist, setmenulist] = useState([]);
 
   useEffect(() => {
     setisloading(true);
-    dispatch({ type: "Set_table_history", data: [] });
+
     const fetchWorkouts = async () => {
-      var url = `${route}/api/stock/`;
-      if (menu.value !== "all") {
-        url = `${url}?store_id=${menu.value}`;
-      }
+      dispatch({ type: "Set_table_history", data: [] });
+
+      var url = `${route}/api/employee-categories/`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -72,34 +70,10 @@ export default function Stock(props) {
       }
     };
 
-    const fetchmenus = async () => {
-      dispatch({ type: "Set_table_history", data: [] });
-      var url = `${route}/api/stores/`;
-
-      const response = await fetch(`${url}`, {
-        headers: { Authorization: `Bearer ${user.access}` },
-      });
-      const json = await response.json();
-
-      if (response.ok) {
-        setisloading(false);
-        const optmize = json.map((item) => {
-          return { value: item.id, label: item.name };
-        });
-
-        setmenulist(optmize);
-      }
-      if (!response.ok) {
-        went_wrong_toast();
-        setisloading(false);
-      }
-    };
-
     if (user) {
       fetchWorkouts();
-      fetchmenus();
     }
-  }, [menu]);
+  }, [user, selected_branch]);
 
   const handleconfirm = (row) => {
     dispatch({ type: "Delete_table_history", data: { id: row } });
@@ -113,7 +87,7 @@ export default function Stock(props) {
           className="border border-danger rounded me-2"
           onClick={() => {
             setrow_id(row.id);
-            seturl_to_delete(`${route}/api/stock/${row.id}/`);
+            seturl_to_delete(`${route}/api/employee-categories/${row.id}/`);
             setdelete_user(true);
           }}
         >
@@ -153,31 +127,7 @@ export default function Stock(props) {
     { dataField: "id", text: "Id", hidden: true, headerFormatter: headerstyle },
     {
       dataField: "name",
-      text: t("Item Name"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "purchase_rate",
-      text: t("Purchase rate"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "name",
-      text: t("VAT"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "name",
-      text: t("Sale Rate"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "name",
-      text: t("Qty"),
+      text: t("name"),
       sort: true,
       headerFormatter: headerstyle,
     },
@@ -227,8 +177,8 @@ export default function Stock(props) {
 
     const documentDefinition = {
       content: [
-        { text: "Categories", style: "header" },
-        { text: `Account Head: ${selected_branch.name}`, style: "body" },
+        { text: "Area", style: "header" },
+
         {
           canvas: [
             { type: "line", x1: 0, y1: 10, x2: 510, y2: 10, lineWidth: 1 },
@@ -274,7 +224,7 @@ export default function Stock(props) {
 
   const download = () => {
     const documentDefinition = makepdf();
-    pdfMake.createPdf(documentDefinition).download("categories.pdf");
+    pdfMake.createPdf(documentDefinition).download("Area.pdf");
   };
 
   const print = () => {
@@ -292,8 +242,17 @@ export default function Stock(props) {
             className="mb-3"
             style={{ fontSize: "1.3rem", fontWeight: "normal" }}
           >
-            {t("Stock")}
+            Employee Category
           </h1>
+          <Button
+            type="button"
+            className="mb-2"
+            variant="outline-success"
+            onClick={() => setshowmodel(!showmodel)}
+          >
+            <FontAwesomeIcon className="me-2" icon={faUserPlus} />
+            Add
+          </Button>
         </div>
 
         <div className="card-body pt-0">
@@ -306,15 +265,6 @@ export default function Stock(props) {
           >
             {(props) => (
               <div>
-                <div className="col-md-2 mt-3">
-                  <Select
-                    options={[{ value: "all", label: "All" }, ...menulist]}
-                    placeholder="Store"
-                    value={menu}
-                    funct={(e) => setmenu(e)}
-                    required={true}
-                  />
-                </div>
                 <div className="d-sm-flex justify-content-between align-items-center mt-3">
                   <div>
                     <ExportCSVButton
@@ -349,21 +299,45 @@ export default function Stock(props) {
                 )}
 
                 <hr />
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={paginationFactory(options)}
-                  rowStyle={rowstyle}
-                  striped
-                  bootstrap4
-                  condensed
-                  wrapperClasses="table-responsive"
-                />
+                <div style={{ zoom: ".9" }}>
+                  <BootstrapTable
+                    {...props.baseProps}
+                    pagination={paginationFactory(options)}
+                    rowStyle={rowstyle}
+                    striped
+                    bootstrap4
+                    condensed
+                    wrapperClasses="table-responsive"
+                  />
+                </div>
               </div>
             )}
           </ToolkitProvider>
         </div>
       </div>
 
+      {showmodel && (
+        <Unitform
+          show={showmodel}
+          onHide={() => setshowmodel(false)}
+          user={user}
+          route={route}
+          callback={dispatch}
+          selected_branch={selected_branch}
+          current_user={current_user}
+        />
+      )}
+      {showmodelupdate && (
+        <Unitformupdate
+          show={showmodelupdate}
+          onHide={() => setshowmodelupdate(false)}
+          data={data}
+          user={user}
+          route={route}
+          fun={custom_toast}
+          callback={dispatch}
+        />
+      )}
       {delete_user && (
         <Alert_before_delete
           show={delete_user}
@@ -373,6 +347,7 @@ export default function Stock(props) {
           row_id={row_id}
         />
       )}
+      <ToastContainer autoClose={1000} hideProgressBar={true} theme="dark" />
     </div>
   );
 }

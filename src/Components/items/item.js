@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import "./item.css";
 import Select from "../alerts/select";
@@ -53,7 +53,7 @@ export default function Item(props) {
   const [allsubmenu, setallsubmenu] = useState([]);
   const [units, setunits] = useState("");
   const [allunits, setallunits] = useState([]);
-
+  const inputFile = useRef(null);
   const [delete_user, setdelete_user] = useState(false);
   const [url_to_delete, seturl_to_delete] = useState("");
   const [row_id, setrow_id] = useState("");
@@ -414,6 +414,42 @@ export default function Item(props) {
     }
   };
 
+  const onButtonClick = () => {
+    // `current` points to the mounted file input element
+    inputFile.current.click();
+  };
+
+  const handleimageselection = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      handlefileupload(file);
+    }
+  };
+
+  const handlefileupload = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch(`${route}/api/upload-products/`, {
+      method: "POST",
+      headers: {
+        "content-type": "multipart/form-data",
+        Authorization: `Bearer ${user.access}`,
+      },
+      body: formData,
+    });
+    const json = await response.json();
+
+    if (!response.ok) {
+      went_wrong_toast();
+    }
+
+    if (response.ok) {
+      success_toast();
+    }
+  };
+
   return (
     <div className="p-3 pt-2">
       <div className="card">
@@ -422,6 +458,25 @@ export default function Item(props) {
             <h3 className="mt-2 me-2">Add Item</h3>
             <div className="mt-2 me-2 d-flex flex-row-reverse">
               <Save_button isloading={isloading} />
+
+              <div>
+                <input
+                  onChange={handleimageselection}
+                  id="select-file"
+                  type="file"
+                  accept=".csv,.xml"
+                  ref={inputFile}
+                  style={{ display: "none" }}
+                />
+
+                <Button
+                  className="me-2"
+                  variant="outline-primary"
+                  onClick={onButtonClick}
+                >
+                  {t("Import File")}
+                </Button>
+              </div>
             </div>
           </div>
 
