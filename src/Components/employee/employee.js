@@ -78,6 +78,8 @@ export default function CustomerType(props) {
   const [allcategory, setallcategory] = useState([]);
   const [category, setcategory] = useState("");
   const [isloading, setisloading] = useState(false);
+  const [id, setid] = useState("");
+  const [check_update, setcheck_update] = useState(true);
 
   useEffect(() => {
     setisloading(true);
@@ -155,8 +157,33 @@ export default function CustomerType(props) {
         <IconButton
           style={{ border: "1px solid #003049", borderRadius: "5px" }}
           onClick={() => {
-            setdata(row);
-            setshowmodelupdate(true);
+            setid(row.id);
+            setcheck_update(false);
+
+            setname(row.name);
+            setworkinghours(row.working_hours);
+            setcontact(row.contact);
+            setprdaywage(row.wage_per_day);
+            setcategory({ value: row.category, label: row.category_name });
+            setbalance(row.balance);
+            setnationality(row.country);
+            setaddress(row.address);
+            sethiredate(row.hiring_date);
+            setfiredate(row.name);
+            settransportallowance(row.expelled_date);
+            setfoodallowance(row.food_allowance);
+            setprallowance(row.pr_allowance);
+            setextraallowance(row.extra_allowance);
+            setbasicsalary(row.basic_salary);
+            setaccomallowance(row.accomodation_allowance);
+            setpassport(row.passport_number);
+            setpassportdate(row.passport_expiry_date);
+            setmunicipaldate(row.identity_expiry_date);
+            setmunicipalno(row.identity_number);
+            setdrivinglicense(row.driving_license_number);
+            setdrivinglicensedate(row.driving_license_date);
+            setworkpermit(row.work_permit_number);
+            setworkpermitdate(row.work_permit_date);
           }}
         >
           <EditOutlinedIcon
@@ -191,45 +218,45 @@ export default function CustomerType(props) {
     },
 
     {
-      dataField: "name",
+      dataField: "category_name",
       text: t("Category"),
       sort: true,
       headerFormatter: headerstyle,
     },
 
     {
-      dataField: "name",
+      dataField: "wage_per_day",
       text: t("Pr Day Wage"),
       sort: true,
       headerFormatter: headerstyle,
     },
 
     {
-      dataField: "name",
+      dataField: "balance",
       text: t("Balance"),
       sort: true,
       headerFormatter: headerstyle,
     },
     {
-      dataField: "name",
+      dataField: "contact",
       text: t("Cell"),
       sort: true,
       headerFormatter: headerstyle,
     },
     {
-      dataField: "name",
+      dataField: "basic_salary",
       text: t("Salary"),
       sort: true,
       headerFormatter: headerstyle,
     },
     {
-      dataField: "name",
+      dataField: "hiring_date",
       text: t("Hire Date"),
       sort: true,
       headerFormatter: headerstyle,
     },
     {
-      dataField: "name",
+      dataField: "country",
       text: t("Nationality"),
       sort: true,
       headerFormatter: headerstyle,
@@ -346,6 +373,89 @@ export default function CustomerType(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (check_update) {
+      if (!isloading) {
+        setisloading(true);
+        const formData = new FormData();
+
+        formData.append("name", name);
+        formData.append("contact", contact);
+        formData.append("country", nationality);
+        formData.append("address", address);
+        formData.append("working_hours", workinghours);
+        formData.append("wage_per_day", prdaywage);
+        formData.append("balance", balance);
+        formData.append("basic_salary", basicsalary);
+        formData.append("transport_allowance", transportallowance);
+        formData.append("food_allowance", foodallowance);
+        formData.append("accomodation_allowance", accomallowance);
+        formData.append("pr_allowance", prallowance);
+        formData.append("extra_allowance", extraallowance);
+        formData.append("hiring_date", hiredate);
+        formData.append("expelled_date", firedate);
+        formData.append("passport_number", passport);
+        formData.append("passport_expiry_date", passportdate);
+        formData.append("identity_number", municipalno);
+        formData.append("identity_expiry_date", municipaldate);
+        formData.append("driving_license_number", drivinglicense);
+        formData.append("driving_license_date", drivinglicensedate);
+        formData.append("work_permit_number", workpermit);
+        formData.append("work_permit_date", workpermitdate);
+        formData.append("account_head", selected_branch.id);
+        formData.append("user", current_user.id);
+        formData.append("category", category.value);
+
+        const response = await fetch(`${route}/api/employee/`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${user.access}`,
+          },
+          body: formData,
+        });
+        const json = await response.json();
+
+        if (!response.ok) {
+          setisloading(false);
+          went_wrong_toast();
+        }
+
+        if (response.ok) {
+          dispatch({ type: "Create_table_history", data: json });
+          setisloading(false);
+          success_toast();
+          setworkinghours("");
+          setname("");
+          setarabicname("");
+          setcontact("");
+          setprdaywage("");
+          setcategory("");
+          setbalance("");
+          setnationality("");
+          setaddress("");
+          sethiredate("");
+          setfiredate("");
+          settransportallowance("");
+          setfoodallowance("");
+          setprallowance("");
+          setextraallowance("");
+          setbasicsalary("");
+          setaccomallowance("");
+          setpassport("");
+          setpassportdate("");
+          setmunicipaldate("");
+          setmunicipalno("");
+          setdrivinglicense("");
+          setdrivinglicensedate("");
+          setworkpermit("");
+          setworkpermitdate("");
+        }
+      }
+    } else {
+      handleSubmit_update();
+    }
+  };
+
+  const handleSubmit_update = async (e) => {
     if (!isloading) {
       setisloading(true);
       const formData = new FormData();
@@ -373,12 +483,11 @@ export default function CustomerType(props) {
       formData.append("driving_license_date", drivinglicensedate);
       formData.append("work_permit_number", workpermit);
       formData.append("work_permit_date", workpermitdate);
-      formData.append("account_head", selected_branch.id);
-      formData.append("user", current_user.id);
+
       formData.append("category", category.value);
 
-      const response = await fetch(`${route}/api/parties/`, {
-        method: "POST",
+      const response = await fetch(`${route}/api/employee/${id}/`, {
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${user.access}`,
         },
@@ -392,9 +501,37 @@ export default function CustomerType(props) {
       }
 
       if (response.ok) {
-        dispatch({ type: "Create_table_history", data: json });
+        dispatch({ type: "Update_table_history", data: json });
         setisloading(false);
         success_toast();
+        setworkinghours("");
+        setname("");
+        setarabicname("");
+        setcontact("");
+        setprdaywage("");
+        setcategory("");
+        setbalance("");
+        setnationality("");
+        setaddress("");
+        sethiredate("");
+        setfiredate("");
+        settransportallowance("");
+        setfoodallowance("");
+        setprallowance("");
+        setextraallowance("");
+        setbasicsalary("");
+        setaccomallowance("");
+        setpassport("");
+        setpassportdate("");
+        setmunicipaldate("");
+        setmunicipalno("");
+        setdrivinglicense("");
+        setdrivinglicensedate("");
+        setworkpermit("");
+        setworkpermitdate("");
+
+        setid("");
+        setcheck_update(true);
       }
     }
   };
@@ -423,6 +560,7 @@ export default function CustomerType(props) {
                     }}
                     size="small"
                     required
+                    autoFocus
                   />
                 </div>
                 <div className="col-md-3">
@@ -478,7 +616,6 @@ export default function CustomerType(props) {
                       setcategory(e);
                     }}
                     required
-                    autoFocus
                   ></Select>
                 </div>
                 <div className="col-md-3">
