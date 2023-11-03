@@ -1,0 +1,136 @@
+.input_class  {
+    border: 0 !important; 
+    width: 10vw !important;
+    outline: none !important;
+}
+
+
+
+.custom_row_class >td {
+    padding: 4px 0 4px 16px !important;
+}
+
+.user_main{
+    display: flex;
+    flex-direction: column;
+    margin-left:2%;
+    margin-right:2%;
+    margin-bottom: 2%;
+
+}
+
+.form-control:focus{
+    border-color:slategray;
+    border-width: 2px;
+}
+
+.input{
+    border: 0;
+    font-size:x-large;
+}
+
+.input :focus{
+outline: none;
+}
+
+.table_class:hover{
+    cursor: pointer;
+    
+}
+
+
+.payment::after{
+content: 'Payment Type';
+position: absolute;
+top: -9px;
+left: 9px;
+background-color: white;
+padding: 0 5px;
+color: gray;
+font-size: 12px;
+}
+
+
+
+.product::after{
+    content: 'Products';
+    position: absolute;
+    top: -9px;
+    left: 9px;
+    background-color: white;
+    padding: 0 5px;
+    color: gray;
+    font-size: 12px;
+    }
+
+.customer::after{
+    content: 'Customers';
+    position: absolute;
+    top: -9px;
+    left: 9px;
+    background-color: white;
+    padding: 0 5px;
+    color: gray;
+    font-size: 12px;
+    
+    }
+
+.saleman::after{
+    content: 'Salesman';
+    position: absolute;
+    top: -9px;
+    left: 9px;
+    background-color: white;
+    padding: 0 5px;
+    color: gray;
+    font-size: 12px;
+    }
+.deliveryman::after{
+    content: 'Delivery Man';
+    position: absolute;
+    top: -9px;
+    left: 9px;
+    background-color: white;
+    padding: 0 5px;
+    color: gray;
+    font-size: 12px;
+    }
+
+
+.company::after{
+    content: 'Company';
+    position: absolute;
+    top: -9px;
+    left: 9px;
+    background-color: white;
+    padding: 0 5px;
+    color: gray;
+    font-size: 12px;
+    }
+.zero-quantity{
+    background-color: rgb(221, 113, 113);
+}
+
+.selector{
+    border:none;
+    padding: 0;
+}
+
+.saletable > tbody {
+    display:block;
+    max-height:50vh;
+    overflow-y:auto;
+}
+.saletable >thead , .saletable >tbody>tr  {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+
+.saletable tr td:first-child , .saletable tr th:first-child{
+    width: 50px;
+}
+
+.saletable tr td:nth-child(3) , .saletable tr th:nth-child(3){
+    width: 18vw !important;
+}

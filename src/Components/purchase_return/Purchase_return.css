@@ -1,0 +1,72 @@
+
+
+
+
+.custom_row_class >td {
+    padding: 4px 0 4px 16px !important;
+}
+
+.user_main{
+    display: flex;
+    flex-direction: column;
+    margin-left:2%;
+    margin-right:2%;
+    margin-bottom: 2%;
+
+}
+
+.form-control:focus{
+    border-color:slategray;
+    border-width: 2px;
+}
+
+.table_class:hover{
+    cursor: pointer;
+    
+}
+
+.payment::after{
+    content: 'Payment Type';
+    position: absolute;
+    top: -9px;
+    left: 9px;
+    background-color: white;
+    padding: 0 5px;
+    color: gray;
+    font-size: 12px;
+    }
+
+    .payment_ar::after{
+        content: 'نوع الدفع';
+        position: absolute;
+        top: -9px;
+        left: 9px;
+        background-color: white;
+        padding: 0 5px;
+        color: gray;
+        font-size: 12px;
+        }
+    
+    
+    
+.supplier::after{
+    content: 'Vendors';
+    position: absolute;
+    top: -9px;
+    left: 9px;
+    background-color: white;
+    padding: 0 5px;
+    color: gray;
+    font-size: 12px;
+    }
+
+.supplier_ar::after{
+        content: 'الموردين';
+        position: absolute;
+        top: -9px;
+        left: 9px;
+        background-color: white;
+        padding: 0 5px;
+        color: gray;
+        font-size: 12px;
+        }

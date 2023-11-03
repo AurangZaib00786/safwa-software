@@ -1,0 +1,53 @@
+
+.printclass1{
+        
+        height: auto;
+        margin-top: 10px;
+        page-break-after: avoid;
+        page-break-before: avoid;
+}
+
+
+
+.container{
+    font-size: small;
+}
+.container_1{
+    font-size:smaller;
+}
+
+
+.font{
+    font-family: GE SS Two light;
+}
+.arabic-heading{
+    font-family: GE SS Two light;
+    font-weight: bold;
+
+}
+.font-light{
+    font-family: GE SS Two light;
+    font-size: medium;
+}
+.font-en{
+    font-weight: normal;
+    font-size: medium;
+}
+
+.font-ar{
+    font-family: GE SS Two light;
+
+}
+
+.table_class_80mm > thead{
+    border-bottom: 1px solid black !important;
+}
+.table_class_80mm > tbody{
+    border: 1px solid black !important;
+}
+
+.table_class_80mm{
+    border: 1px solid black !important;
+   
+}
+

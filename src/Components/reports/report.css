@@ -1,0 +1,26 @@
+.buttons{
+    height: 125px;
+}
+
+.print_class{
+    size: A4 landscape;    
+    height: 99%;
+    margin-top: 10px;
+    page-break-after: avoid;
+    page-break-before: avoid;
+}
+
+.last_row{
+    font-size: large;
+    font-weight: bolder;
+}
+.saleman::after{
+    content: 'Sale Persons';
+    position: absolute;
+    top: -9px;
+    left: 9px;
+    background-color: white;
+    padding: 0 5px;
+    color: gray;
+    font-size: 12px;
+    }

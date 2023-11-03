@@ -1,0 +1,28 @@
+a{
+    text-decoration: none;
+}
+
+
+
+.icon{
+    
+    border-radius: 5px;
+    font-size: 50px;
+    opacity: .8;
+    color: rgb(128, 121, 121);
+}
+
+.widget:hover{
+    box-shadow: 0px 5px 20px -7px rgba(0, 0, 0, 0.75);
+}
+
+.tooltip-inner{
+    background-color: white !important;
+}
+
+
+.rdrInputRanges{
+   
+    display: None !important;
+}
+

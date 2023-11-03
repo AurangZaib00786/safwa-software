@@ -1,0 +1,26 @@
+
+
+
+.form-control:focus {
+    border-color: inherit;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+  
+.form{
+    
+    
+    box-shadow: 5px 5px 17px -5px rgba(0, 0, 0, 0.75);
+    border-radius: 5px;
+
+}
+
+@media screen and (max-width: 480px){
+  .login{
+    height: 100vh;
+    width: 95%;
+    padding: 0px;
+  }
+
+}
+
