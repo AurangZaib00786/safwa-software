@@ -10,7 +10,7 @@ if (token) {
 
 const initialstates = {
   user: user_token,
-  route: "https://checking.eavenir.com",
+  route: "http://127.0.0.1:8000",
 };
 
 export default function setuser(state = initialstates, action) {

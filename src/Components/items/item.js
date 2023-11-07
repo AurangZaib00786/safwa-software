@@ -88,6 +88,32 @@ export default function Item(props) {
   }, []);
 
   useEffect(() => {
+    const fetchsubmenu = async () => {
+      var url = `${route}/api/sub-categories/`;
+      if (menu) {
+        url = `${url}?category_id=${menu.value}`;
+      }
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        const optimize = json.map((item) => {
+          return { value: item.id, label: item.name };
+        });
+
+        setallsubmenu(optimize);
+      }
+    };
+
+    if (user) {
+      fetchsubmenu();
+    }
+  }, [menu]);
+
+  useEffect(() => {
     const fetchmenu = async () => {
       var url = `${route}/api/categories/`;
 
@@ -104,22 +130,6 @@ export default function Item(props) {
       }
     };
 
-    const fetchsubmenu = async () => {
-      var url = `${route}/api/sub-categories/`;
-
-      const response = await fetch(`${url}`, {
-        headers: { Authorization: `Bearer ${user.access}` },
-      });
-      const json = await response.json();
-
-      if (response.ok) {
-        const optimize = json.map((item) => {
-          return { value: item.id, label: item.name };
-        });
-
-        setallsubmenu(optimize);
-      }
-    };
     const fetchuits = async () => {
       setisloading(true);
       var url = `${route}/api/units/`;
@@ -144,7 +154,6 @@ export default function Item(props) {
     };
 
     if (user) {
-      fetchsubmenu();
       fetchmenu();
       fetchuits();
     }
@@ -242,7 +251,7 @@ export default function Item(props) {
       headerFormatter: headerstyle,
     },
     {
-      dataField: "unit",
+      dataField: "unit_name",
       text: t("Units"),
       sort: true,
       headerFormatter: headerstyle,
@@ -434,7 +443,6 @@ export default function Item(props) {
     const response = await fetch(`${route}/api/upload-products/`, {
       method: "POST",
       headers: {
-        "content-type": "multipart/form-data",
         Authorization: `Bearer ${user.access}`,
       },
       body: formData,

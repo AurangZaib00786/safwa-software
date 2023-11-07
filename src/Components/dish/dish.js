@@ -69,7 +69,7 @@ export default function Product(props) {
       if (menu) {
         url = `${url}?menu_id=${menu.value}`;
         if (submenu) {
-          url = `${url}&submenu_id=${submenu.value}`;
+          url = `${url}&sub_menu_id=${submenu.value}`;
         }
       } else if (submenu) {
         url = `${url}?submenu_id=${submenu.value}`;
@@ -112,8 +112,17 @@ export default function Product(props) {
       }
     };
 
+    if (user) {
+      fetchmenu();
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchsubmenu = async () => {
       var url = `${route}/api/sub-menu/`;
+      if (menu) {
+        url = `${url}?menu_id=${menu.value}`;
+      }
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -131,9 +140,8 @@ export default function Product(props) {
 
     if (user) {
       fetchsubmenu();
-      fetchmenu();
     }
-  }, []);
+  }, [menu]);
 
   const headerstyle = (column, colIndex, { sortElement }) => {
     return (
@@ -396,7 +404,6 @@ export default function Product(props) {
     const response = await fetch(`${route}/api/upload-dishes/`, {
       method: "POST",
       headers: {
-        "content-type": "multipart/form-data",
         Authorization: `Bearer ${user.access}`,
       },
       body: formData,

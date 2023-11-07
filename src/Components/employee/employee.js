@@ -27,7 +27,7 @@ import PrintIcon from "@material-ui/icons/Print";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import Save_button from "../buttons/save_button";
-import Select from "react-select";
+import Select from "../alerts/select";
 import TextField from "@mui/material/TextField";
 import success_toast from "../alerts/success_toast";
 
@@ -161,6 +161,7 @@ export default function CustomerType(props) {
             setcheck_update(false);
 
             setname(row.name);
+
             setworkinghours(row.working_hours);
             setcontact(row.contact);
             setprdaywage(row.wage_per_day);
@@ -169,8 +170,8 @@ export default function CustomerType(props) {
             setnationality(row.country);
             setaddress(row.address);
             sethiredate(row.hiring_date);
-            setfiredate(row.name);
-            settransportallowance(row.expelled_date);
+            setfiredate(row.expelled_date);
+            settransportallowance(row.transport_allowance);
             setfoodallowance(row.food_allowance);
             setprallowance(row.pr_allowance);
             setextraallowance(row.extra_allowance);
@@ -603,19 +604,11 @@ export default function CustomerType(props) {
               <div className="row">
                 <div className=" col-md-3 mb-3">
                   <Select
-                    className={
-                      category
-                        ? "form-control selector type "
-                        : "form-control selector"
-                    }
-                    styles={selectStyles}
                     options={allcategory}
                     placeholder={"Employee Category"}
                     value={category}
-                    onChange={(e) => {
-                      setcategory(e);
-                    }}
-                    required
+                    funct={(e) => setcategory(e)}
+                    required={true}
                   ></Select>
                 </div>
                 <div className="col-md-3">

@@ -1,33 +1,25 @@
-import React, { useState, useEffect, useRef } from "react";
-import Button from "react-bootstrap/Button";
+import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import TextField from "@mui/material/TextField";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPen } from "@fortawesome/free-solid-svg-icons";
-import { Avatar } from "@material-ui/core";
+
 import went_wrong_toast from "../alerts/went_wrong_toast";
 import Update_button from "../buttons/update_button";
-import { ToastContainer } from "react-toastify";
 import { useTranslation } from "react-i18next";
-import Select from "../alerts/select";
+import Select_field from "../alerts/select";
 
-function Updatesubcategories({
-  show,
-  onHide,
-  data,
-  user,
-  route,
-  fun,
-  callback,
-  menulist,
-}) {
+function Unitformupdate({ show, onHide, data, user, route, fun, callback }) {
   const [isloading, setisloading] = useState(false);
   const { t } = useTranslation();
   const [name, setname] = useState(data.name);
-  const [menu, setmenu] = useState({
-    value: data.category,
-    label: data.category_name,
-  });
+  const [type, settype] = useState({ value: data.type, label: data.type });
+  const alltype = [
+    { value: "Cooking Opeation", label: "Cooking Opeation" },
+    { value: "Recovery Opeation", label: "Recovery Opeation" },
+    { value: "Delivery Opeation", label: "Delivery Opeation" },
+  ];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setisloading(true);
@@ -35,9 +27,9 @@ function Updatesubcategories({
     const formData = new FormData();
 
     formData.append("name", name);
-    formData.append("category", menu.value);
+    formData.append("type", type.value);
 
-    const response = await fetch(`${route}/api/sub-categories/${data.id}/`, {
+    const response = await fetch(`${route}/api/process/${data.id}/`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${user.access}`,
@@ -73,30 +65,34 @@ function Updatesubcategories({
           className="d-flex align-items-md-center"
         >
           <FontAwesomeIcon className="me-2" icon={faUserPen} />
-          Edit Sub Category
+          Edit Process
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <form onSubmit={handleSubmit}>
-          <div className="col-md-12 mt-3">
-            <Select
-              options={menulist}
-              placeholder="Category"
-              value={menu}
-              funct={(e) => setmenu(e)}
+          <div className="col-md-12">
+            <Select_field
+              options={alltype}
+              placeholder="Type"
+              value={type}
+              funct={(e) => {
+                settype(e);
+              }}
               required={true}
             />
           </div>
+
           <div className="col-md-12">
             <TextField
               className="form-control   mb-3"
               id="outlined-basic"
-              label={t("name")}
+              label="Name"
               value={name}
               onChange={(e) => {
                 setname(e.target.value);
               }}
               size="small"
+              autoFocus
               required
             />
           </div>
@@ -111,4 +107,4 @@ function Updatesubcategories({
   );
 }
 
-export default Updatesubcategories;
+export default Unitformupdate;

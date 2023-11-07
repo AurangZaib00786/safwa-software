@@ -1,31 +1,35 @@
 import React, { useState, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import "./subcatgory.css";
+import "./process.css";
 import { ToastContainer } from "react-toastify";
 import TextField from "@mui/material/TextField";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
-import { Avatar } from "@material-ui/core";
 import went_wrong_toast from "../alerts/went_wrong_toast";
 import success_toast from "../alerts/success_toast";
 import Save_button from "../buttons/save_button";
 import { useTranslation } from "react-i18next";
-import Select from "../alerts/select";
+import Select_field from "../alerts/select";
 
-function Subcategoriesform({
+function Unitform({
   show,
   onHide,
   user,
   route,
   callback,
   selected_branch,
-  menulist,
+  current_user,
 }) {
-  const [name, setname] = useState("");
-  const [menu, setmenu] = useState("");
   const { t } = useTranslation();
+  const [name, setname] = useState("");
+  const [type, settype] = useState("");
   const [isloading, setisloading] = useState(false);
+  const alltype = [
+    { value: "Cooking Opeation", label: "Cooking Opeation" },
+    { value: "Recovery Opeation", label: "Recovery Opeation" },
+    { value: "Delivery Opeation", label: "Delivery Opeation" },
+  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,9 +38,9 @@ function Subcategoriesform({
       const formData = new FormData();
 
       formData.append("name", name);
-      formData.append("category", menu.value);
+      formData.append("type", type.value);
 
-      const response = await fetch(`${route}/api/sub-categories/`, {
+      const response = await fetch(`${route}/api/process/`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${user.access}`,
@@ -55,7 +59,7 @@ function Subcategoriesform({
         setisloading(false);
         success_toast();
         setname("");
-        setmenu("");
+        settype("");
       }
     }
   };
@@ -73,23 +77,19 @@ function Subcategoriesform({
           id="contained-modal-title-vcenter"
           className="d-flex align-items-md-center"
         >
-          <FontAwesomeIcon className="me-2" icon={faUserPlus} /> Add Sub
-          Category
+          <FontAwesomeIcon className="me-2" icon={faUserPlus} /> Add Process
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {!selected_branch && (
-          <div className="text-center text-danger mb-2">
-            Please Select Branch!
-          </div>
-        )}
         <form onSubmit={handleSubmit}>
-          <div className="col-md-12 mt-3">
-            <Select
-              options={menulist}
-              placeholder="Category"
-              value={menu}
-              funct={(e) => setmenu(e)}
+          <div className="col-md-12">
+            <Select_field
+              options={alltype}
+              placeholder="Type"
+              value={type}
+              funct={(e) => {
+                settype(e);
+              }}
               required={true}
             />
           </div>
@@ -97,12 +97,13 @@ function Subcategoriesform({
             <TextField
               className="form-control   mb-3"
               id="outlined-basic"
-              label={t("name")}
+              label="Name"
               value={name}
               onChange={(e) => {
                 setname(e.target.value);
               }}
               size="small"
+              autoFocus
               required
             />
           </div>
@@ -117,4 +118,4 @@ function Subcategoriesform({
   );
 }
 
-export default Subcategoriesform;
+export default Unitform;

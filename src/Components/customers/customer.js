@@ -172,7 +172,7 @@ export default function Customer(props) {
             });
             setmenu({ value: row.area, label: row.area_name });
 
-            setbankdetails(row.bankdetails);
+            setbankdetails(row.bank);
             setid(row.id);
             setcheck_update(false);
           }}
@@ -229,19 +229,19 @@ export default function Customer(props) {
       headerFormatter: headerstyle,
     },
     {
-      dataField: "bankdetails",
+      dataField: "bank",
       text: "Bank Details",
       sort: true,
       headerFormatter: headerstyle,
     },
     {
-      dataField: "customer_type_name",
+      dataField: "timing_name",
       text: "Timing",
       sort: true,
       headerFormatter: headerstyle,
     },
     {
-      dataField: "menu",
+      dataField: "menu_name",
       text: t("Menu"),
       sort: true,
       headerFormatter: headerstyle,
@@ -506,6 +506,7 @@ export default function Customer(props) {
                     }}
                     size="small"
                     required
+                    autoFocus
                   />
                 </div>
                 <div className="col-md-3">
@@ -588,9 +589,9 @@ export default function Customer(props) {
                     multiline
                     className="form-control   mb-3"
                     label={"Bank Details"}
-                    value={vatno}
+                    value={bankdetails}
                     onChange={(e) => {
-                      setvatno(e.target.value);
+                      setbankdetails(e.target.value);
                     }}
                     size="small"
                   />

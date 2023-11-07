@@ -2,34 +2,15 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import "./buffetmenu.css";
 import Select from "../alerts/select";
-import { IconButton, Avatar } from "@material-ui/core";
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
-import BootstrapTable from "react-bootstrap-table-next";
-import paginationFactory from "react-bootstrap-table2-paginator";
-
-import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
-import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import { ToastContainer } from "react-toastify";
-import custom_toast from "../alerts/custom_toast";
 import went_wrong_toast from "../alerts/went_wrong_toast";
 import Spinner from "react-bootstrap/Spinner";
-import Alert_before_delete from "../../Container/alertContainer";
-import ToolkitProvider, {
-  Search,
-  CSVExport,
-} from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
-import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
-import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
-import PrintIcon from "@material-ui/icons/Print";
-import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
-import Save_button from "../buttons/save_button";
+import { useTranslation } from "react-i18next";
+import SaveIcon from "@material-ui/icons/Save";
 import success_toast from "../alerts/success_toast";
+import Red_toast from "../alerts/red_toast";
 
 export default function BuffetMenu(props) {
-  pdfMake.vfs = pdfFonts.pdfMake.vfs;
   const { t } = useTranslation();
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
@@ -37,29 +18,19 @@ export default function BuffetMenu(props) {
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_products = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
-  const { SearchBar } = Search;
-  const settings = props.state.Setcurrentinfo.settings;
-  const { ExportCSVButton } = CSVExport;
-  const [showmodel, setshowmodel] = useState(false);
-  const [data, setdata] = useState("");
-  const [showmodelupdate, setshowmodelupdate] = useState(false);
 
-  const [p_category, setp_category] = useState("");
-  const [submenu, setsubmenu] = useState("");
-  const [name, setname] = useState("");
-  const [arabicname, setarabicname] = useState("");
+  const [title, settitle] = useState("");
+  const [all_productscopy, setall_productscopy] = useState([]);
   const [menu, setmenu] = useState("");
   const [allmenu, setallmenu] = useState([]);
-  const [allsubmenu, setallsubmenu] = useState([]);
-
-  const [delete_user, setdelete_user] = useState(false);
-  const [url_to_delete, seturl_to_delete] = useState("");
-  const [row_id, setrow_id] = useState("");
   const [isloading, setisloading] = useState(false);
-
   const [check_update, setcheck_update] = useState(true);
+
+  const [id, setid] = useState(null);
+  const [checkall, setcheckall] = useState(false);
+
+  const [search, setsearch] = useState("");
   const [callagain, setcallagain] = useState(false);
-  const [id, setid] = useState("");
 
   useEffect(() => {
     dispatch({ type: "Set_table_history", data: [] });
@@ -77,7 +48,13 @@ export default function BuffetMenu(props) {
 
       if (response.ok) {
         setisloading(false);
-        dispatch({ type: "Set_table_history", data: json });
+        const optimize = json.map((item) => {
+          item["value"] = false;
+          return item;
+        });
+        dispatch({ type: "Set_table_history", data: optimize });
+        setall_productscopy(optimize);
+        setcallagain(!callagain);
       }
       if (!response.ok) {
         went_wrong_toast();
@@ -89,6 +66,59 @@ export default function BuffetMenu(props) {
       fetchWorkouts();
     }
   }, [menu]);
+
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      setisloading(true);
+      var url = `${route}/api/buffet-menus/?menu=${menu.value}&title=${title.value}`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        setisloading(false);
+        if (json.length > 0) {
+          const dishlist = json[0].buffet_dishes.map((item) => {
+            return item.dish;
+          });
+          const productsupdate = all_products?.map((item) => {
+            if (dishlist.includes(item.id)) {
+              item["value"] = true;
+              item["menuid"] =
+                json[0].buffet_dishes[dishlist.indexOf(item.id)].id;
+            } else {
+              item["value"] = false;
+            }
+            return item;
+          });
+          dispatch({ type: "Set_table_history", data: productsupdate });
+          setall_productscopy(productsupdate);
+
+          setcheck_update(true);
+          setid(json[0].id);
+        } else {
+          const productsupdate = all_products?.map((item) => {
+            item["value"] = false;
+            return item;
+          });
+          dispatch({ type: "Set_table_history", data: productsupdate });
+          setcheck_update(false);
+
+          setid(null);
+        }
+      }
+      if (!response.ok) {
+        went_wrong_toast();
+        setisloading(false);
+      }
+    };
+
+    if (title && menu) {
+      fetchWorkouts();
+    }
+  }, [title, callagain]);
 
   useEffect(() => {
     const fetchmenu = async () => {
@@ -112,183 +142,28 @@ export default function BuffetMenu(props) {
     }
   }, []);
 
-  const headerstyle = (column, colIndex, { sortElement }) => {
-    return (
-      <div
-        className="d-flex justify-content-between align-items-center"
-        style={{ minHeight: "2.5rem" }}
-      >
-        {column.text}
-        {sortElement}
-      </div>
-    );
-  };
-
-  const columns = [
-    {
-      dataField: "id",
-      text: "Id",
-      hidden: true,
-      headerFormatter: headerstyle,
-      csvExport: false,
-    },
-
-    {
-      dataField: "name",
-      text: t("name"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "arabicname",
-      text: t("	اسم الطبق"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-  ];
-
-  const customTotal = (from, to, size) => (
-    <span className="react-bootstrap-table-pagination-total ms-2">
-      Showing {from} to {to} of {size} Results
-    </span>
-  );
-
-  const options = {
-    paginationSize: 4,
-    pageStartIndex: 1,
-    firstPageText: "First",
-    showTotal: true,
-    paginationTotalRenderer: customTotal,
-    disablePageTitle: true,
-    sizePerPageList: [
-      {
-        text: "10",
-        value: 10,
-      },
-      {
-        text: "20",
-        value: 20,
-      },
-      {
-        text: "All",
-        value: all_products.length,
-      },
-    ], // A numeric array is also available. the purpose of above example is custom the text
-  };
-
-  const makepdf = () => {
-    const body = all_products.map((item, index) => {
-      return [
-        index + 1,
-        item.category_name,
-        item.submenu_name,
-        item.name,
-        item.arabicname,
-
-        item.menu,
-      ];
-    });
-    body.splice(0, 0, [
-      "#",
-      "Category",
-      "submenu",
-      "Name",
-      "arabicname",
-      "menu",
-    ]);
-
-    const documentDefinition = {
-      content: [
-        { text: "Products", style: "header" },
-        { text: `Account Head: ${selected_branch.name}`, style: "body" },
-        {
-          canvas: [
-            { type: "line", x1: 0, y1: 10, x2: 510, y2: 10, lineWidth: 1 },
-          ],
-        },
-
-        {
-          table: {
-            // headers are automatically repeated if the table spans over multiple pages
-            // you can declare how many rows should be treated as headers
-            headerRows: 1,
-            widths: [30, "*", "*", "*", "*", "*"],
-            body: body,
-          },
-          style: "tableStyle",
-        },
-      ],
-
-      defaultStyle: {
-        font: "ArabicFont",
-      },
-      styles: {
-        tableStyle: {
-          width: "100%", // Set the width of the table to 100%
-          marginTop: 20,
-          font: "ArabicFont",
-        },
-
-        header: {
-          fontSize: 22,
-          bold: true,
-          alignment: "center",
-        },
-        body: {
-          fontSize: 12,
-          bold: true,
-          alignment: "center",
-          marginBottom: 10,
-        },
-      },
-    };
-    return documentDefinition;
-  };
-
-  const download = () => {
-    const documentDefinition = makepdf();
-    pdfMake.createPdf(documentDefinition).download("Products.pdf");
-  };
-
-  const print = () => {
-    const documentDefinition = makepdf();
-    pdfMake.createPdf(documentDefinition).print();
-  };
-
-  const rowstyle = { height: "10px" };
-
-  const selectStyles = {
-    submenu: (base) => ({
-      ...base,
-      zIndex: 100,
-    }),
-  };
-
   const handlesubmit = async (e) => {
     e.preventDefault();
-    if (check_update) {
+    if (menu && title) {
       setisloading(true);
-      const formData = new FormData();
+      const data = [];
+      all_products.map((item) => {
+        if (item.value) {
+          data.push({ dish: item.id });
+        }
+      });
 
-      formData.append("me", name);
-      formData.append("arabicname", arabicname);
-
-      formData.append("menu", menu);
-      formData.append("category", p_category.value);
-      formData.append("submenu", submenu.value);
-
-      if (current_user.profile.user_type === "user") {
-        formData.append("user", current_user.profile.parent_user);
-      } else {
-        formData.append("user", current_user.id);
-      }
-
-      const response = await fetch(`${route}/api/dishes/`, {
+      const response = await fetch(`${route}/api/buffet-menus/`, {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${user.access}`,
         },
-        body: formData,
+        body: JSON.stringify({
+          title: title.value,
+          menu: menu.value,
+          buffet_dishes: data,
+        }),
       });
       const json = await response.json();
 
@@ -299,43 +174,152 @@ export default function BuffetMenu(props) {
 
       if (response.ok) {
         setisloading(false);
-        dispatch({ type: "Create_table_history", data: json });
+        dispatch({ type: "Create_table_history", data: [] });
+        setall_productscopy([]);
         success_toast();
-        setname("");
-        setarabicname("");
-        setmenu("");
 
-        setsubmenu("");
-        setp_category("");
+        settitle("");
+        setmenu("");
+        setcheckall(false);
+        setcheck_update(false);
       }
+    } else {
+      Red_toast("Select Menu and Title !");
     }
   };
 
-  const handleadd = (e) => {
+  const handleupdate = async (e) => {
     e.preventDefault();
-    dispatch({
-      type: "Create_table_history",
-      data: {
-        sub_menu: submenu.value,
-        menu: menu.value,
-        name: name,
-        arabicname: arabicname,
-      },
-    });
+    if (menu && title) {
+      setisloading(true);
+      const data = [];
+      all_products.map((item) => {
+        if (item.value) {
+          if (item.menuid) {
+            data.push({ id: item.menuid, dish: item.id });
+          } else {
+            data.push({ dish: item.id });
+          }
+        }
+      });
+
+      const response = await fetch(`${route}/api/buffet-menus/${id}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.access}`,
+        },
+        body: JSON.stringify({
+          title: title.value,
+          menu: menu.value,
+          buffet_dishes: data,
+        }),
+      });
+      const json = await response.json();
+
+      if (!response.ok) {
+        setisloading(false);
+        went_wrong_toast();
+      }
+
+      if (response.ok) {
+        setisloading(false);
+        dispatch({ type: "Create_table_history", data: [] });
+        success_toast();
+        setid(null);
+        settitle("");
+        setmenu("");
+        setcheckall(false);
+        setcheck_update(false);
+      }
+    } else {
+      Red_toast("Select Menu and Title !");
+    }
   };
 
-  const selectRow = {
-    mode: "checkbox",
-    clickToSelect: true,
-    onSelect: (row, isSelect, rowIndex, e) => {
-      if (isSelect) {
-        console.log(row);
+  const alltitle = [
+    { value: "Monday_Breakfast", label: "Monday Breakfast" },
+    { value: "Monday_Lunch", label: "Monday Lunch" },
+    { value: "Monday_Dinner", label: "Monday Dinner" },
+
+    { value: "Tuesday_Breakfast", label: "Tuesday Breakfast" },
+    { value: "Tuesday_Lunch", label: "Tuesday Lunch" },
+    { value: "Tuesday_Dinner", label: "Tuesday Dinner" },
+
+    { value: "Wednesday_Breakfast", label: "Wednesday Breakfast" },
+    { value: "Wednesday_Lunch", label: "Wednesday Lunch" },
+    { value: "Wednesday_Dinner", label: "Wednesday Dinner" },
+
+    { value: "Thursday_Breakfast", label: "Thursday Breakfast" },
+    { value: "Thursday_Lunch", label: "Thursday Lunch" },
+    { value: "Thursday_Dinner", label: "Thursday Dinner" },
+
+    { value: "Friday_Breakfast", label: "Friday Breakfast" },
+    { value: "Friday_Lunch", label: "Friday Lunch" },
+    { value: "Friday_Dinner", label: "Friday Dinner" },
+
+    { value: "Saturday_Breakfast", label: "Saturday Breakfast" },
+    { value: "Saturday_Lunch", label: "Saturday Lunch" },
+    { value: "Saturday_Dinner", label: "Saturday Dinner" },
+
+    { value: "Sunday_Breakfast", label: "Sunday Breakfast" },
+    { value: "Sunday_Lunch", label: "Sunday Lunch" },
+    { value: "Sunday_Dinner", label: "Sunday Dinner" },
+  ];
+
+  const handleallchange = (e) => {
+    if (e.target.checked) {
+      setcheckall(true);
+      const optimize = all_products.map((item) => {
+        item["value"] = true;
+
+        return item;
+      });
+      dispatch({ type: "Set_table_history", data: optimize });
+      setall_productscopy(optimize);
+    } else {
+      setcheckall(false);
+      const optimize = all_products.map((item) => {
+        item["value"] = false;
+        return item;
+      });
+      dispatch({ type: "Set_table_history", data: optimize });
+      setall_productscopy(optimize);
+    }
+  };
+
+  const handlecheckboxchange = (cell) => {
+    const optimize = all_products.map((item) => {
+      if (item.id === cell.id) {
+        if (item["value"]) {
+          item["value"] = false;
+        } else {
+          item["value"] = true;
+        }
       }
-    },
-    onSelectAll: (isSelect, rows, e) => {
-      if (isSelect) {
-      }
-    },
+      return item;
+    });
+    dispatch({ type: "Set_table_history", data: optimize });
+    setall_productscopy(optimize);
+  };
+
+  const handlesearch = (e) => {
+    const value = e.target.value;
+    setsearch(value);
+    if (value) {
+      const sortout = all_products.filter((item) => {
+        if (
+          item?.name.toLowerCase().includes(value) ||
+          item?.name.includes(value) ||
+          item?.arabic_name.includes(value)
+        ) {
+          return item;
+        }
+      });
+      dispatch({ type: "Set_table_history", data: sortout });
+    } else {
+      dispatch({ type: "Set_table_history", data: all_productscopy });
+    }
   };
 
   return (
@@ -344,7 +328,21 @@ export default function BuffetMenu(props) {
         <div className="card-header d-flex justify-content-between bg-white">
           <h3 className="mt-2 me-2">Add Buffet Menu</h3>
           <div className="mt-2 me-2 d-flex flex-row-reverse">
-            <Save_button isloading={isloading} />
+            <Button
+              onClick={check_update ? handleupdate : handlesubmit}
+              variant="outline-primary"
+            >
+              {isloading && (
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+              )}
+              <SaveIcon /> {t("save")}
+            </Button>
           </div>
         </div>
 
@@ -361,22 +359,13 @@ export default function BuffetMenu(props) {
             </div>
 
             <div className="col-md-3">
-              <TextField
-                className="form-control   mb-3"
-                label={"Buffet Title"}
-                value={name}
-                onChange={(e) => {
-                  setname(e.target.value);
-                }}
-                size="small"
-                required
+              <Select
+                options={alltitle}
+                placeholder={"Buffet Title"}
+                value={title}
+                funct={(e) => settitle(e)}
+                required={true}
               />
-            </div>
-
-            <div className="col-md-1">
-              <Button variant="outline-dark" onClick={handleadd}>
-                Add
-              </Button>
             </div>
           </div>
         </div>
@@ -384,61 +373,67 @@ export default function BuffetMenu(props) {
 
       <div className="card mt-3">
         <div className="card-body pt-0">
-          <ToolkitProvider
-            keyField="id"
-            data={all_products}
-            columns={columns}
-            search
-            exportCSV
-          >
-            {(props) => (
-              <div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
-                    <ExportCSVButton
-                      {...props.csvProps}
-                      className="csvbutton  border bg-secondary text-light me-2 mb-2"
-                    >
-                      Export CSV
-                    </ExportCSVButton>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 me-2 mb-2"
-                      variant="outline-primary"
-                      onClick={download}
-                    >
-                      <PictureAsPdfIcon /> PDF
-                    </Button>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 mb-2"
-                      variant="outline-success"
-                      onClick={print}
-                    >
-                      <PrintIcon /> Print
-                    </Button>
-                  </div>
-                  <SearchBar {...props.searchProps} />
-                </div>
-                {isloading && (
-                  <div className="text-center">
-                    <Spinner animation="border" variant="primary" />
-                  </div>
-                )}
-                <hr />
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={paginationFactory(options)}
-                  rowStyle={rowstyle}
-                  striped
-                  bootstrap4
-                  condensed
-                  selectRow={selectRow}
-                  wrapperClasses="table-responsive"
-                />
-              </div>
-            )}
-          </ToolkitProvider>
+          <div className="row mt-5">
+            <label className="d-flex justify-content-between align-items-end mb-2">
+              <h5 className="m-0">Roles</h5>
+              <TextField
+                label="Search"
+                variant="outlined"
+                value={search}
+                onChange={handlesearch}
+                size="small"
+              />
+            </label>
+
+            <div className="table-responsive">
+              <table
+                className="table table-striped table-bordered "
+                style={{ width: "100%" }}
+              >
+                <thead>
+                  <tr>
+                    <th className="border-0" style={{ width: "5%" }}>
+                      <input
+                        className="form-check-input m-0 me-2"
+                        type="checkbox"
+                        checked={checkall}
+                        onChange={handleallchange}
+                      />
+                    </th>
+                    <th className="text-center">Name</th>
+                    <th className="text-center">اسم الطبق</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {all_products.map((item) => {
+                    return (
+                      <tr key={item.id}>
+                        <td className="pt-0 pb-0 ">
+                          {item && (
+                            <div
+                              className="d-flex align-items-center "
+                              style={{ height: "40px" }}
+                            >
+                              <input
+                                className="form-check-input m-0 me-2"
+                                type="checkbox"
+                                checked={item.value}
+                                onChange={() => handlecheckboxchange(item)}
+                              />
+                            </div>
+                          )}
+                        </td>
+                        <td className=" pt-0 pb-0 text-center">{item.name}</td>
+                        <td className="pt-0 pb-0  text-center">
+                          {item.arabic_name}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>

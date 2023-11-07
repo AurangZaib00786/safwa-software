@@ -252,8 +252,10 @@ function User(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("ok");
     if (check_update) {
-      if (isloading) {
+      if (!isloading) {
+        console.log("ok");
         setisloading(true);
         const formData = new FormData();
         formData.append("username", username);

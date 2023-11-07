@@ -11,7 +11,7 @@ function Stockstore_page({ current_user }) {
   const tabs = ["Store", "Stock", "Stock Adjustment"];
   var current_tab = localStorage.getItem("activeTab");
   if (!tabs.includes(current_tab)) {
-    current_tab = "Store";
+    current_tab = "Stock";
   }
 
   const [activeTab, setActiveTab] = useState(current_tab);
@@ -32,11 +32,11 @@ function Stockstore_page({ current_user }) {
         id="noanim-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="Store" title="Store">
-          {activeTab === "Store" && <Store />}
-        </Tab>
         <Tab eventKey="Stock" title="Stock">
           {activeTab === "Stock" && <Stock />}
+        </Tab>
+        <Tab eventKey="Store" title="Store">
+          {activeTab === "Store" && <Store />}
         </Tab>
 
         <Tab eventKey="Stock Adjustment" title="Stock Adjustment"></Tab>

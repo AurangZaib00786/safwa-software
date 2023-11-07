@@ -152,8 +152,14 @@ export default function Stock(props) {
   const columns = [
     { dataField: "id", text: "Id", hidden: true, headerFormatter: headerstyle },
     {
-      dataField: "name",
+      dataField: "product_name",
       text: t("Item Name"),
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "quantity",
+      text: t("Qty"),
       sort: true,
       headerFormatter: headerstyle,
     },
@@ -164,20 +170,20 @@ export default function Stock(props) {
       headerFormatter: headerstyle,
     },
     {
-      dataField: "name",
-      text: t("VAT"),
+      dataField: "offer_rate",
+      text: t("Offer Rate"),
       sort: true,
       headerFormatter: headerstyle,
     },
     {
-      dataField: "name",
+      dataField: "sale_rate",
       text: t("Sale Rate"),
       sort: true,
       headerFormatter: headerstyle,
     },
     {
-      dataField: "name",
-      text: t("Qty"),
+      dataField: "percentage",
+      text: t("%"),
       sort: true,
       headerFormatter: headerstyle,
     },

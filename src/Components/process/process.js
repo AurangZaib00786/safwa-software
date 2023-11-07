@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
-import "./subcatgory.css";
+import "./process.css";
 import { IconButton, Avatar } from "@material-ui/core";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
@@ -12,8 +12,8 @@ import ToolkitProvider, {
 } from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import Subcategoriesform from "./subcatgoryform";
-import Updatesubcategories from "./updatesubcatgoryform";
+import Unitform from "./processform";
+import Unitformupdate from "./updateprocessform";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { ToastContainer } from "react-toastify";
@@ -26,19 +26,18 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
 import { useTranslation } from "react-i18next";
-import Select from "../alerts/select";
 
-export default function Subcategory(props) {
+export default function Process(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
-  const { t } = useTranslation();
   const user = props.state.setuser.user;
+  const { t } = useTranslation();
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
-
   const { SearchBar } = Search;
+  const settings = props.state.Setcurrentinfo.settings;
   const { ExportCSVButton } = CSVExport;
   const [showmodel, setshowmodel] = useState(false);
   const [data, setdata] = useState("");
@@ -47,17 +46,14 @@ export default function Subcategory(props) {
   const [url_to_delete, seturl_to_delete] = useState("");
   const [row_id, setrow_id] = useState("");
   const [isloading, setisloading] = useState(false);
-  const [menu, setmenu] = useState({ value: "all", label: "All" });
-  const [menulist, setmenulist] = useState([]);
 
   useEffect(() => {
     setisloading(true);
-    dispatch({ type: "Set_table_history", data: [] });
+
     const fetchWorkouts = async () => {
-      var url = `${route}/api/sub-categories/`;
-      if (menu.value !== "all") {
-        url = `${url}?category_id=${menu.value}`;
-      }
+      dispatch({ type: "Set_table_history", data: [] });
+
+      var url = `${route}/api/process/`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -77,36 +73,7 @@ export default function Subcategory(props) {
     if (user) {
       fetchWorkouts();
     }
-  }, [menu]);
-
-  useEffect(() => {
-    const fetchmenus = async () => {
-      dispatch({ type: "Set_table_history", data: [] });
-      var url = `${route}/api/categories/`;
-
-      const response = await fetch(`${url}`, {
-        headers: { Authorization: `Bearer ${user.access}` },
-      });
-      const json = await response.json();
-
-      if (response.ok) {
-        setisloading(false);
-        const optmize = json.map((item) => {
-          return { value: item.id, label: item.name };
-        });
-
-        setmenulist(optmize);
-      }
-      if (!response.ok) {
-        went_wrong_toast();
-        setisloading(false);
-      }
-    };
-
-    if (user) {
-      fetchmenus();
-    }
-  }, []);
+  }, [user, selected_branch]);
 
   const handleconfirm = (row) => {
     dispatch({ type: "Delete_table_history", data: { id: row } });
@@ -120,7 +87,7 @@ export default function Subcategory(props) {
           className="border border-danger rounded me-2"
           onClick={() => {
             setrow_id(row.id);
-            seturl_to_delete(`${route}/api/sub-categories/${row.id}/`);
+            seturl_to_delete(`${route}/api/process/${row.id}/`);
             setdelete_user(true);
           }}
         >
@@ -159,14 +126,14 @@ export default function Subcategory(props) {
   const columns = [
     { dataField: "id", text: "Id", hidden: true, headerFormatter: headerstyle },
     {
-      dataField: "category_name",
-      text: t("Category"),
+      dataField: "name",
+      text: t("name"),
       sort: true,
       headerFormatter: headerstyle,
     },
     {
-      dataField: "name",
-      text: t("name"),
+      dataField: "type",
+      text: t("Type"),
       sort: true,
       headerFormatter: headerstyle,
     },
@@ -216,8 +183,8 @@ export default function Subcategory(props) {
 
     const documentDefinition = {
       content: [
-        { text: "Categories", style: "header" },
-        { text: `Account Head: ${selected_branch.name}`, style: "body" },
+        { text: "Area", style: "header" },
+
         {
           canvas: [
             { type: "line", x1: 0, y1: 10, x2: 510, y2: 10, lineWidth: 1 },
@@ -263,7 +230,7 @@ export default function Subcategory(props) {
 
   const download = () => {
     const documentDefinition = makepdf();
-    pdfMake.createPdf(documentDefinition).download("categories.pdf");
+    pdfMake.createPdf(documentDefinition).download("Area.pdf");
   };
 
   const print = () => {
@@ -281,7 +248,7 @@ export default function Subcategory(props) {
             className="mb-3"
             style={{ fontSize: "1.3rem", fontWeight: "normal" }}
           >
-            {t("Sub Category")}
+            Process
           </h1>
           <Button
             type="button"
@@ -289,8 +256,8 @@ export default function Subcategory(props) {
             variant="outline-success"
             onClick={() => setshowmodel(!showmodel)}
           >
-            <FontAwesomeIcon icon={faUserPlus} className="me-2" />
-            {t("Add Submenu")}
+            <FontAwesomeIcon className="me-2" icon={faUserPlus} />
+            Add
           </Button>
         </div>
 
@@ -304,15 +271,6 @@ export default function Subcategory(props) {
           >
             {(props) => (
               <div>
-                <div className="col-md-2 mt-3">
-                  <Select
-                    options={[{ value: "all", label: "All" }, ...menulist]}
-                    placeholder="Category"
-                    value={menu}
-                    funct={(e) => setmenu(e)}
-                    required={true}
-                  />
-                </div>
                 <div className="d-sm-flex justify-content-between align-items-center mt-3">
                   <div>
                     <ExportCSVButton
@@ -347,15 +305,17 @@ export default function Subcategory(props) {
                 )}
 
                 <hr />
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={paginationFactory(options)}
-                  rowStyle={rowstyle}
-                  striped
-                  bootstrap4
-                  condensed
-                  wrapperClasses="table-responsive"
-                />
+                <div style={{ zoom: ".9" }}>
+                  <BootstrapTable
+                    {...props.baseProps}
+                    pagination={paginationFactory(options)}
+                    rowStyle={rowstyle}
+                    striped
+                    bootstrap4
+                    condensed
+                    wrapperClasses="table-responsive"
+                  />
+                </div>
               </div>
             )}
           </ToolkitProvider>
@@ -363,18 +323,18 @@ export default function Subcategory(props) {
       </div>
 
       {showmodel && (
-        <Subcategoriesform
+        <Unitform
           show={showmodel}
           onHide={() => setshowmodel(false)}
           user={user}
           route={route}
           callback={dispatch}
           selected_branch={selected_branch}
-          menulist={menulist}
+          current_user={current_user}
         />
       )}
       {showmodelupdate && (
-        <Updatesubcategories
+        <Unitformupdate
           show={showmodelupdate}
           onHide={() => setshowmodelupdate(false)}
           data={data}
@@ -382,7 +342,6 @@ export default function Subcategory(props) {
           route={route}
           fun={custom_toast}
           callback={dispatch}
-          menulist={menulist}
         />
       )}
       {delete_user && (
@@ -394,6 +353,7 @@ export default function Subcategory(props) {
           row_id={row_id}
         />
       )}
+      <ToastContainer autoClose={1000} hideProgressBar={true} theme="dark" />
     </div>
   );
 }
