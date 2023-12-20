@@ -29,7 +29,7 @@ import Save_button from "../buttons/save_button";
 import success_toast from "../alerts/success_toast";
 import SaveIcon from "@material-ui/icons/Save";
 
-export default function Product(props) {
+export default function Dish(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
   const { t } = useTranslation();
   const user = props.state.setuser.user;
@@ -166,8 +166,10 @@ export default function Product(props) {
         <IconButton
           className="border border-danger rounded me-2"
           onClick={() => {
-            const optimize = all_products.filter((u) => u.name !== row.name);
-            dispatch({ type: "Set_table_history", data: optimize });
+            dispatch({
+              type: "Delete_table_history",
+              data: { row: row, filter: "name" },
+            });
           }}
         >
           <DeleteRoundedIcon className="m-1" color="error" fontSize="medium" />
@@ -458,7 +460,7 @@ export default function Product(props) {
           </div>
         </div>
 
-        <div className="card-body pt-0">
+        <div className="card-body pt-0" style={{ minHeight: "100vh" }}>
           <div className="row mt-4">
             <div className="col-md-3">
               <Select
@@ -478,7 +480,9 @@ export default function Product(props) {
                 required={true}
               />
             </div>
-            <div className="col-md-2">
+          </div>
+          <form onSubmit={handleadd} className="row mt-4">
+            <div className="col-md-3">
               <TextField
                 className="form-control   mb-3"
                 label={"Dish Name"}
@@ -490,7 +494,7 @@ export default function Product(props) {
                 required
               />
             </div>
-            <div className="col-md-2">
+            <div className="col-md-3">
               <TextField
                 type="text"
                 className="form-control  mb-3"
@@ -500,20 +504,17 @@ export default function Product(props) {
                   setarabicname(e.target.value);
                 }}
                 size="small"
+                required
               />
             </div>
 
             <div className="col-md-1">
-              <Button variant="outline-dark" onClick={handleadd}>
+              <Button type="submit" variant="outline-dark">
                 Add
               </Button>
             </div>
-          </div>
-        </div>
-      </div>
+          </form>
 
-      <div className="card mt-3">
-        <div className="card-body pt-0">
           <ToolkitProvider
             keyField="id"
             data={all_products}
@@ -522,8 +523,8 @@ export default function Product(props) {
             exportCSV
           >
             {(props) => (
-              <div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
+              <div className="col-md-7">
+                {/* <div className="d-sm-flex justify-content-between align-items-center mt-3">
                   <div>
                     <ExportCSVButton
                       {...props.csvProps}
@@ -549,22 +550,24 @@ export default function Product(props) {
                     </Button>
                   </div>
                   <SearchBar {...props.searchProps} />
-                </div>
+                </div> */}
                 {isloading && (
                   <div className="text-center">
                     <Spinner animation="border" variant="primary" />
                   </div>
                 )}
                 <hr />
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={paginationFactory(options)}
-                  rowStyle={rowstyle}
-                  striped
-                  bootstrap4
-                  condensed
-                  wrapperClasses="table-responsive"
-                />
+                <div>
+                  <BootstrapTable
+                    {...props.baseProps}
+                    pagination={paginationFactory(options)}
+                    rowStyle={rowstyle}
+                    striped
+                    bootstrap4
+                    condensed
+                    wrapperClasses="table-responsive"
+                  />
+                </div>
               </div>
             )}
           </ToolkitProvider>

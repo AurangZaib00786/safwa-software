@@ -5,7 +5,7 @@ import Stock from "../../Container/stockContainer";
 import Store from "../../Container/storeContainer";
 
 import { ToastContainer } from "react-toastify";
-import Units from "../../Container/unitContainer";
+import StockAdjustment from "../../Container/stockadjustmentContainer";
 
 function Stockstore_page({ current_user }) {
   const tabs = ["Store", "Stock", "Stock Adjustment"];
@@ -39,7 +39,9 @@ function Stockstore_page({ current_user }) {
           {activeTab === "Store" && <Store />}
         </Tab>
 
-        <Tab eventKey="Stock Adjustment" title="Stock Adjustment"></Tab>
+        <Tab eventKey="Stock Adjustment" title="Stock Adjustment">
+          {activeTab === "Stock Adjustment" && <StockAdjustment />}
+        </Tab>
       </Tabs>
       <ToastContainer autoClose={2000} hideProgressBar={true} theme="dark" />
     </div>

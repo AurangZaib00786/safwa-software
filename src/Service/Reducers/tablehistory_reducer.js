@@ -15,12 +15,21 @@ export default function Settablehistory(state = initialstates, action) {
         menu_status: state.menu_status,
       };
     case "Delete_table_history":
-      return {
-        table_history: state.table_history.filter(
-          (u) => u.id !== action.payload.id
-        ),
-        menu_status: state.menu_status,
-      };
+      if (action.payload.filter) {
+        return {
+          table_history: state.table_history.filter(
+            (u) => u.name !== action.payload.row.name
+          ),
+          menu_status: state.menu_status,
+        };
+      } else {
+        return {
+          table_history: state.table_history.filter(
+            (u) => u.id !== action.payload.id
+          ),
+          menu_status: state.menu_status,
+        };
+      }
     case "Update_table_history":
       return {
         table_history: state.table_history.map((u) => {
