@@ -7,6 +7,7 @@ import Menu_page from "./menu_page/menu_page";
 import Buffet_page from "./buffet&schedule/buffet&schedule";
 import Items_page from "./itempage/itempage";
 import Stockstore_page from "./store&stock/store&stock";
+import Building_page from "./buildingpage/buildingpage";
 import Purchase_page from "./purchase_page/purchase_page";
 import Sale_page from "./sale_page/sale_page";
 import Payment_page from "./payments/payment_page";
@@ -111,6 +112,16 @@ function Routing(props) {
               element={
                 user ? (
                   <Stockstore_page current_user={current_user} />
+                ) : (
+                  <Navigate to={"/"} />
+                )
+              }
+            ></Route>
+            <Route
+              path="/building_page"
+              element={
+                user ? (
+                  <Building_page current_user={current_user} />
                 ) : (
                   <Navigate to={"/"} />
                 )

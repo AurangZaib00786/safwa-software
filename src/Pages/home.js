@@ -21,6 +21,7 @@ import TurnedInIcon from "@material-ui/icons/TurnedIn";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
 import StoreIcon from "@material-ui/icons/Store";
 import { useTranslation } from "react-i18next";
+import BusinessIcon from "@material-ui/icons/Business";
 
 function Layout(props) {
   const { t } = useTranslation();
@@ -154,6 +155,21 @@ function Layout(props) {
                 rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
               >
                 Store & Stock
+              </MenuItem>
+            </SubMenu>
+
+            <SubMenu
+              active={menu_status === "building"}
+              icon={<BusinessIcon />}
+              label={"Building Managment"}
+            >
+              <MenuItem
+                active={menu_status === "building"}
+                icon={<StoreIcon />}
+                component={<Link to="/building_page" />}
+                rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+              >
+                Building
               </MenuItem>
             </SubMenu>
 
