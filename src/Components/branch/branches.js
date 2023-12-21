@@ -361,7 +361,10 @@ function Accounts(props) {
 
         if (!response.ok) {
           setisloading(false);
-          Red_toast(`${json.error}`);
+          var error = Object.keys(json);
+          if (error.length > 0) {
+            Red_toast(`${json[error[0]]}`);
+          }
         }
 
         if (response.ok) {

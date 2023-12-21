@@ -5,7 +5,7 @@ import Stock from "../../Container/stockContainer";
 import Store from "../../Container/storeContainer";
 
 import { ToastContainer } from "react-toastify";
-import StockAdjustment from "../../Container/stockadjustmentContainer";
+import StockAdjustment from "../../Container/stockadjustment";
 
 function Stockstore_page({ current_user }) {
   const tabs = ["Store", "Stock", "Stock Adjustment"];

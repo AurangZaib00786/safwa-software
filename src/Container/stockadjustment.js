@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import Stock from "../Components/stock/stockeupdate";
+import StockAdjustment from "../Components/stockadjustment/stockadjustment";
 import { Settablehistory } from "../Service/Actions/action";
 
 const dispatchpart = (dispatch) => ({
@@ -10,4 +10,4 @@ const getpart = (state) => ({
   state,
 });
 
-export default connect(getpart, dispatchpart)(Stock);
+export default connect(getpart, dispatchpart)(StockAdjustment);

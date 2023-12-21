@@ -10,7 +10,7 @@ if (token) {
 
 const initialstates = {
   user: user_token,
-  route: "http://safwatapi.eavenir.com",
+  route: "https://safwatapi.eavenir.com",
 };
 
 export default function setuser(state = initialstates, action) {

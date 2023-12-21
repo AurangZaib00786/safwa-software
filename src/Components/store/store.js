@@ -347,7 +347,6 @@ export default function Store(props) {
           row_id={row_id}
         />
       )}
-      <ToastContainer autoClose={1000} hideProgressBar={true} theme="dark" />
     </div>
   );
 }

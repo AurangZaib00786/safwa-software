@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import "./stock.css";
-import { IconButton, Avatar } from "@material-ui/core";
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
+import Select from "../alerts/select";
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import ToolkitProvider, {
@@ -12,68 +10,36 @@ import ToolkitProvider, {
 } from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
-import { ToastContainer } from "react-toastify";
-import custom_toast from "../alerts/custom_toast";
 import went_wrong_toast from "../alerts/went_wrong_toast";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRotate } from "@fortawesome/free-solid-svg-icons";
 import Spinner from "react-bootstrap/Spinner";
-import Alert_before_delete from "../../Container/alertContainer";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
-import { useTranslation } from "react-i18next";
-import Select from "../alerts/select";
 
-export default function Stock(props) {
+export default function Stock_table({
+  user,
+  route,
+  selected_branch,
+  current_user,
+  setview_stock,
+}) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
-  const { t } = useTranslation();
-  const user = props.state.setuser.user;
-  const route = props.state.setuser.route;
-  const selected_branch = props.state.Setcurrentinfo.selected_branch;
-  const current_user = props.state.Setcurrentinfo.current_user;
-  const all_customers = props.state.Settablehistory.table_history;
-  const dispatch = props.Settable_history;
 
   const { SearchBar } = Search;
   const { ExportCSVButton } = CSVExport;
-  const [showmodel, setshowmodel] = useState(false);
-  const [data, setdata] = useState("");
-  const [showmodelupdate, setshowmodelupdate] = useState(false);
-  const [delete_user, setdelete_user] = useState(false);
-  const [url_to_delete, seturl_to_delete] = useState("");
-  const [row_id, setrow_id] = useState("");
+
+  const [data, setdata] = useState([]);
   const [isloading, setisloading] = useState(false);
-  const [menu, setmenu] = useState({ value: "all", label: "All" });
-  const [menulist, setmenulist] = useState([]);
+  const [store, setstore] = useState({ value: "all", label: "All" });
+  const [allstore, setallstore] = useState([]);
 
   useEffect(() => {
     setisloading(true);
-    dispatch({ type: "Set_table_history", data: [] });
-    const fetchWorkouts = async () => {
-      var url = `${route}/api/stock/`;
-      if (menu.value !== "all") {
-        url = `${url}?store_id=${menu.value}`;
-      }
 
-      const response = await fetch(`${url}`, {
-        headers: { Authorization: `Bearer ${user.access}` },
-      });
-      const json = await response.json();
-
-      if (response.ok) {
-        setisloading(false);
-        dispatch({ type: "Set_table_history", data: json });
-      }
-      if (!response.ok) {
-        went_wrong_toast();
-        setisloading(false);
-      }
-    };
-
-    const fetchmenus = async () => {
-      dispatch({ type: "Set_table_history", data: [] });
+    const fetchstore = async () => {
       var url = `${route}/api/stores/`;
 
       const response = await fetch(`${url}`, {
@@ -82,12 +48,37 @@ export default function Stock(props) {
       const json = await response.json();
 
       if (response.ok) {
-        setisloading(false);
-        const optmize = json.map((item) => {
+        const optimize = json.map((item) => {
           return { value: item.id, label: item.name };
         });
+        setallstore(optimize);
+      }
+      if (!response.ok) {
+      }
+    };
 
-        setmenulist(optmize);
+    if (user) {
+      fetchstore();
+    }
+  }, []);
+
+  useEffect(() => {
+    setisloading(true);
+
+    const fetchWorkouts = async () => {
+      var url = `${route}/api/stock/?account_head=${selected_branch.id}`;
+      if (store.value !== "all") {
+        url = `${url}&store_id=${store.value}`;
+      }
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        setisloading(false);
+        setdata(json);
       }
       if (!response.ok) {
         went_wrong_toast();
@@ -97,45 +88,8 @@ export default function Stock(props) {
 
     if (user) {
       fetchWorkouts();
-      fetchmenus();
     }
-  }, [menu]);
-
-  const handleconfirm = (row) => {
-    dispatch({ type: "Delete_table_history", data: { id: row } });
-    custom_toast("Delete");
-  };
-
-  const Action = (cell, row, rowIndex, formatExtraData) => {
-    return (
-      <span className="action d-flex">
-        <IconButton
-          className="border border-danger rounded me-2"
-          onClick={() => {
-            setrow_id(row.id);
-            seturl_to_delete(`${route}/api/stock/${row.id}/`);
-            setdelete_user(true);
-          }}
-        >
-          <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
-        </IconButton>
-
-        <IconButton
-          style={{ border: "1px solid #003049", borderRadius: "5px" }}
-          onClick={() => {
-            setdata(row);
-            setshowmodelupdate(true);
-          }}
-        >
-          <EditOutlinedIcon
-            className="m-1"
-            style={{ color: "#003049" }}
-            fontSize="small"
-          />
-        </IconButton>
-      </span>
-    );
-  };
+  }, [selected_branch, store]);
 
   const headerstyle = (column, colIndex, { sortElement }) => {
     return (
@@ -149,50 +103,54 @@ export default function Stock(props) {
     );
   };
 
+  const fix_formatter = (cell, row) => {
+    return <div>{parseFloat(cell).toFixed(2)}</div>;
+  };
+
   const columns = [
     { dataField: "id", text: "Id", hidden: true, headerFormatter: headerstyle },
+
     {
       dataField: "product_name",
-      text: t("Item Name"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "quantity",
-      text: t("Qty"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "purchase_rate",
-      text: t("Purchase rate"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "offer_rate",
-      text: t("Offer Rate"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "sale_rate",
-      text: t("Sale Rate"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "percentage",
-      text: t("%"),
+      text: "Product",
       sort: true,
       headerFormatter: headerstyle,
     },
 
     {
-      dataField: "action",
-      text: t("action"),
-      formatter: Action,
+      dataField: "quantity",
+      text: "Qty",
+      sort: true,
       headerFormatter: headerstyle,
+    },
+    {
+      dataField: "purchase_rate",
+      text: "Purchase Rate",
+      sort: true,
+      formatter: fix_formatter,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "offer_rate",
+      text: "Offer Rate",
+      sort: true,
+      headerFormatter: headerstyle,
+      formatter: fix_formatter,
+    },
+    {
+      dataField: "sale_rate",
+      text: "Sale Rate",
+      sort: true,
+      headerFormatter: headerstyle,
+      formatter: fix_formatter,
+    },
+
+    {
+      dataField: "percentage",
+      text: "VAT %",
+      sort: true,
+      headerFormatter: headerstyle,
+      formatter: fix_formatter,
     },
   ];
 
@@ -220,21 +178,43 @@ export default function Stock(props) {
       },
       {
         text: "All",
-        value: all_customers.length,
+        value: data.length,
       },
     ], // A numeric array is also available. the purpose of above example is custom the text
   };
 
   const makepdf = () => {
-    const body = all_customers.map((item, index) => {
-      return [index + 1, item.name];
+    const body = data.map((item, index) => {
+      return [
+        index + 1,
+
+        item.product_name,
+
+        item.quantity,
+        item.purchase_rate,
+        item.offer_rate,
+        item.sale_rate,
+
+        item.percentage,
+      ];
     });
-    body.splice(0, 0, ["#", "Name"]);
+    body.splice(0, 0, [
+      "#",
+
+      "Product",
+
+      "Qty",
+      "Purchase Rate",
+      "Offer Rate",
+      "Sale Rate",
+
+      "%",
+    ]);
 
     const documentDefinition = {
       content: [
-        { text: "Categories", style: "header" },
-        { text: `Account Head: ${selected_branch.name}`, style: "body" },
+        { text: "Stock", style: "header" },
+        { text: `Project Name: ${selected_branch.name}`, style: "body" },
         {
           canvas: [
             { type: "line", x1: 0, y1: 10, x2: 510, y2: 10, lineWidth: 1 },
@@ -246,7 +226,7 @@ export default function Stock(props) {
             // headers are automatically repeated if the table spans over multiple pages
             // you can declare how many rows should be treated as headers
             headerRows: 1,
-            widths: [50, "*"],
+            widths: [50, "*", "*", "*", "*", "*", "*"],
             body: body,
           },
           style: "tableStyle",
@@ -260,6 +240,7 @@ export default function Stock(props) {
           width: "100%", // Set the width of the table to 100%
           marginTop: 20,
           font: "ArabicFont",
+          fontSize: 7,
         },
 
         header: {
@@ -274,13 +255,14 @@ export default function Stock(props) {
           marginBottom: 10,
         },
       },
+      pageOrientation: "landscape",
     };
     return documentDefinition;
   };
 
   const download = () => {
     const documentDefinition = makepdf();
-    pdfMake.createPdf(documentDefinition).download("categories.pdf");
+    pdfMake.createPdf(documentDefinition).download("Stock.pdf");
   };
 
   const print = () => {
@@ -298,28 +280,39 @@ export default function Stock(props) {
             className="mb-3"
             style={{ fontSize: "1.3rem", fontWeight: "normal" }}
           >
-            {t("Stock")}
+            Stock
           </h1>
+          <Button
+            type="button"
+            className="mb-2"
+            variant="outline-success"
+            onClick={setview_stock}
+          >
+            <FontAwesomeIcon className="me-2" icon={faRotate} />
+            Update Stock
+          </Button>
         </div>
 
         <div className="card-body pt-0">
           <ToolkitProvider
             keyField="id"
-            data={all_customers}
+            data={data}
             columns={columns}
             search
             exportCSV
           >
             {(props) => (
               <div>
-                <div className="col-md-2 mt-3">
-                  <Select
-                    options={[{ value: "all", label: "All" }, ...menulist]}
-                    placeholder="Store"
-                    value={menu}
-                    funct={(e) => setmenu(e)}
-                    required={true}
-                  />
+                <div className="d-sm-flex justify-content-between align-items-center mt-3">
+                  <div className="col-md-2">
+                    <Select
+                      options={[{ value: "all", label: "All" }, ...allstore]}
+                      placeholder={"Stores"}
+                      value={store}
+                      funct={(e) => setstore(e)}
+                      required={true}
+                    />
+                  </div>
                 </div>
                 <div className="d-sm-flex justify-content-between align-items-center mt-3">
                   <div>
@@ -355,30 +348,22 @@ export default function Stock(props) {
                 )}
 
                 <hr />
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={paginationFactory(options)}
-                  rowStyle={rowstyle}
-                  striped
-                  bootstrap4
-                  condensed
-                  wrapperClasses="table-responsive"
-                />
+                <div style={{ zoom: ".9" }}>
+                  <BootstrapTable
+                    {...props.baseProps}
+                    pagination={paginationFactory(options)}
+                    rowStyle={rowstyle}
+                    striped
+                    bootstrap4
+                    condensed
+                    wrapperClasses="table-responsive"
+                  />
+                </div>
               </div>
             )}
           </ToolkitProvider>
         </div>
       </div>
-
-      {delete_user && (
-        <Alert_before_delete
-          show={delete_user}
-          onHide={() => setdelete_user(false)}
-          url={url_to_delete}
-          dis_fun={handleconfirm}
-          row_id={row_id}
-        />
-      )}
     </div>
   );
 }

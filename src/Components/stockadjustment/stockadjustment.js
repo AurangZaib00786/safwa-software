@@ -62,11 +62,8 @@ export default function StockAdjustment(props) {
   const [row_id, setrow_id] = useState("");
   const [isloading, setisloading] = useState(false);
 
-  const [allcompany, setallcompany] = useState([]);
-  const [company, setcompany] = useState({
-    value: "all",
-    label: "All",
-  });
+  const [allstore, setallstore] = useState([]);
+  const [store, setstore] = useState();
 
   const [allproduct, setallproduct] = useState([]);
   const [product, setproduct] = useState({
@@ -79,9 +76,10 @@ export default function StockAdjustment(props) {
     label: "All",
   });
   const [allvariant, setallvariant] = useState([]);
-  const [quantity, setquantity] = useState(0);
+  const [quantity, setquantity] = useState("");
   const [type, settype] = useState("");
 
+  const [notes, setnotes] = useState("");
   const [data, setdata] = useState([]);
 
   const [allstock, setallstock] = useState([]);
@@ -152,8 +150,8 @@ export default function StockAdjustment(props) {
   }, [selected_branch, date_range]);
 
   useEffect(() => {
-    const fetchcompany = async () => {
-      var url = `${route}/api/companies/`;
+    const fetchstore = async () => {
+      var url = `${route}/api/stores/`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -165,45 +163,18 @@ export default function StockAdjustment(props) {
           return { value: item.id, label: item.name };
         });
 
-        setallcompany(optimize);
+        setallstore(optimize);
       }
     };
 
     if (user) {
-      fetchcompany();
+      fetchstore();
     }
   }, []);
 
   useEffect(() => {
-    const fetchproduct = async () => {
-      var url = `${route}/api/products/?user_id=${current_user?.id}`;
-      if (company.value !== "all") {
-        url = `${url}&company_id=${company.value}`;
-      }
-
-      const response = await fetch(`${url}`, {
-        headers: { Authorization: `Bearer ${user.access}` },
-      });
-      const json = await response.json();
-
-      if (response.ok) {
-        const optimize = json.map((item) => {
-          return { value: item.id, label: item.name };
-        });
-
-        setallproduct(optimize);
-      }
-    };
-    fetchproduct();
-  }, [company]);
-
-  useEffect(() => {
     const fetchmaterial = async () => {
-      var url = `${route}/api/stock/?account_head=${selected_branch.id}`;
-
-      if (product.value !== "all") {
-        url = `${url}&product_id=${product.value}`;
-      }
+      var url = `${route}/api/stock/?account_head=${selected_branch.id}&store_id=${store.value}`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -214,15 +185,17 @@ export default function StockAdjustment(props) {
         const optimize = json.map((item) => {
           return {
             value: item.id,
-            label: `${item.product_name} | ${item.variant_name}`,
+            label: `${item.product_name}`,
           };
         });
 
         setallstock(optimize);
       }
     };
-    fetchmaterial();
-  }, [product, selected_branch]);
+    if (store) {
+      fetchmaterial();
+    }
+  }, [store, selected_branch]);
 
   const handlesubmit = async (e) => {
     e.preventDefault();
@@ -232,7 +205,6 @@ export default function StockAdjustment(props) {
         ...item,
         stock: item.stock.value,
         type: item.type.value,
-        quantity: item.quantity,
       };
     });
 
@@ -248,6 +220,7 @@ export default function StockAdjustment(props) {
         remarks: remarks,
         account_head: selected_branch.id,
         user: current_user.id,
+        store: store.value,
       }),
     });
     const json = await response.json();
@@ -266,6 +239,7 @@ export default function StockAdjustment(props) {
       setdata([]);
       setremarks("");
       setdate(curdate);
+      setstore("");
     }
   };
 
@@ -277,7 +251,6 @@ export default function StockAdjustment(props) {
         ...item,
         stock: item.stock.value,
         type: item.type.value,
-        quantity: item.quantity,
       };
     });
 
@@ -310,6 +283,7 @@ export default function StockAdjustment(props) {
       setremarks("");
       setdate(curdate);
       setcheck_update(false);
+      setstore("");
     }
   };
 
@@ -332,11 +306,15 @@ export default function StockAdjustment(props) {
       });
       setdata(newdata);
     } else {
-      setdata([{ stock: stock, type: type, quantity: quantity }, ...data]);
+      setdata([
+        ...data,
+        { stock: stock, type: type, quantity: quantity, remarks: notes },
+      ]);
     }
 
     setstock("");
-    setquantity(0);
+    setquantity("");
+    setnotes("");
   };
 
   const handlesavequantitychange = (value, row) => {
@@ -381,6 +359,7 @@ export default function StockAdjustment(props) {
           onClick={() => {
             setdate(row.date);
             setremarks(row.remarks);
+            setstore({ value: row.store, label: row.store_name });
 
             setdata(
               row.adjustment_detail.map((item) => {
@@ -426,6 +405,12 @@ export default function StockAdjustment(props) {
     {
       dataField: "date",
       text: "Date",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "store_name",
+      text: "Store",
       sort: true,
       headerFormatter: headerstyle,
     },
@@ -612,18 +597,10 @@ export default function StockAdjustment(props) {
                 <div className="d-sm-flex  align-items-center mt-3">
                   <div className="col-md-4 me-3">
                     <Select
-                      options={[{ value: "all", label: "All" }, ...allcompany]}
-                      placeholder={"Comapny"}
-                      value={company}
-                      funct={(e) => setcompany(e)}
-                    />
-                  </div>
-                  <div className="col-md-4 pe-3">
-                    <Select
-                      options={[{ value: "all", label: "All" }, ...allproduct]}
-                      placeholder={"Product"}
-                      value={product}
-                      funct={(e) => setproduct(e)}
+                      options={allstore}
+                      placeholder={" Select Store..."}
+                      value={store}
+                      funct={(e) => setstore(e)}
                     />
                   </div>
                 </div>
@@ -638,14 +615,78 @@ export default function StockAdjustment(props) {
                           <h6 className=" col-4  p-2 pb-0 m-0">Type</h6>
 
                           <h6 className="col-4 p-2 pb-0 m-0">Qty</h6>
+                          <h6 className="col-4 p-2 pb-0 m-0">Remarks</h6>
                         </th>
                       </tr>
+                      {data?.map((item) => {
+                        return (
+                          <tr key={item.stock.value}>
+                            <th className="d-flex align-items-center p-0 border-0">
+                              <div className="col-4">
+                                <TextField
+                                  className="form-control"
+                                  size="small"
+                                  value={item.stock.label}
+                                />
+                              </div>
+
+                              <div className="col-4">
+                                <TextField
+                                  className="form-control"
+                                  size="small"
+                                  value={item.type.label}
+                                />
+                              </div>
+
+                              <div className="col-4">
+                                <TextField
+                                  type="number"
+                                  className="form-control"
+                                  size="small"
+                                  value={item.quantity}
+                                  onChange={(e) => {
+                                    handlesavequantitychange(
+                                      e.target.value,
+                                      item
+                                    );
+                                  }}
+                                />
+                              </div>
+                              <div className="col-4">
+                                <InputGroup>
+                                  <TextField
+                                    className="form-control"
+                                    size="small"
+                                    value={item.remarks}
+                                  />
+
+                                  <IconButton
+                                    className="p-0 ps-2 pe-2"
+                                    style={{
+                                      backgroundColor: "red",
+                                      borderRadius: "0",
+                                    }}
+                                    onClick={() => handledelete(item.stock)}
+                                  >
+                                    <ClearIcon
+                                      style={{
+                                        color: "white",
+                                        height: "fit-content",
+                                      }}
+                                      fontSize="medium"
+                                    />
+                                  </IconButton>
+                                </InputGroup>
+                              </div>
+                            </th>
+                          </tr>
+                        );
+                      })}
+                    </thead>
+                    <tbody>
                       <tr>
-                        <th className=" p-0 border-0">
-                          <form
-                            onSubmit={handleaddclick}
-                            className="d-flex align-items-center"
-                          >
+                        <td className=" p-0 border-0">
+                          <form onSubmit={handleaddclick} className="d-flex ">
                             <div className="col-4">
                               <Select
                                 options={allstock}
@@ -672,17 +713,28 @@ export default function StockAdjustment(props) {
                             </div>
 
                             <div className="col-4">
+                              <TextField
+                                type="number"
+                                placeholder={"Qty"}
+                                size="small"
+                                className="form-control"
+                                value={quantity}
+                                onChange={(e) => {
+                                  setquantity(e.target.value);
+                                }}
+                                required
+                              />
+                            </div>
+                            <div className="col-4">
                               <InputGroup>
                                 <TextField
-                                  type="number"
-                                  placeholder={"Qty"}
+                                  placeholder={"Remarks"}
                                   size="small"
                                   className="form-control"
-                                  value={quantity}
+                                  value={notes}
                                   onChange={(e) => {
-                                    setquantity(e.target.value);
+                                    setnotes(e.target.value);
                                   }}
-                                  required
                                 />
 
                                 <IconButton
@@ -704,67 +756,8 @@ export default function StockAdjustment(props) {
                               </InputGroup>
                             </div>
                           </form>
-                        </th>
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {data?.map((item) => {
-                        return (
-                          <tr key={item.stock.value}>
-                            <td className="d-flex align-items-center p-0 border-0">
-                              <div className="col-4">
-                                <TextField
-                                  className="form-control"
-                                  size="small"
-                                  value={item.stock.label}
-                                />
-                              </div>
-
-                              <div className="col-4">
-                                <TextField
-                                  className="form-control"
-                                  size="small"
-                                  value={item.type.label}
-                                />
-                              </div>
-
-                              <div className="col-4">
-                                <InputGroup>
-                                  <TextField
-                                    type="number"
-                                    className="form-control"
-                                    size="small"
-                                    value={item.quantity}
-                                    onChange={(e) => {
-                                      handlesavequantitychange(
-                                        e.target.value,
-                                        item
-                                      );
-                                    }}
-                                  />
-
-                                  <IconButton
-                                    className="p-0 ps-2 pe-2"
-                                    style={{
-                                      backgroundColor: "red",
-                                      borderRadius: "0",
-                                    }}
-                                    onClick={() => handledelete(item.stock)}
-                                  >
-                                    <ClearIcon
-                                      style={{
-                                        color: "white",
-                                        height: "fit-content",
-                                      }}
-                                      fontSize="medium"
-                                    />
-                                  </IconButton>
-                                </InputGroup>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
                     </tbody>
                   </table>
                 </div>
