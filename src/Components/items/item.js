@@ -59,7 +59,7 @@ export default function Item(props) {
   const [row_id, setrow_id] = useState("");
   const [isloading, setisloading] = useState(false);
 
-  const [check_update, setcheck_update] = useState(true);
+  const [check_update, setcheck_update] = useState(false);
   const [callagain, setcallagain] = useState(false);
   const [id, setid] = useState("");
 
@@ -198,13 +198,16 @@ export default function Item(props) {
 
             setmenu({
               value: row.category,
-              label: row.customer_type_name,
+              label: row.category_name,
             });
-            setsubmenu({ value: row.area, label: row.area_name });
-            setunits({ value: row.area, label: row.area_name });
+            setsubmenu({
+              value: row.sub_category,
+              label: row.sub_category_name,
+            });
+            setunits({ value: row.unit, label: row.unit_name });
 
             setid(row.id);
-            setcheck_update(false);
+            setcheck_update(true);
           }}
         >
           <EditOutlinedIcon
@@ -385,44 +388,82 @@ export default function Item(props) {
 
   const handlesubmit = async (e) => {
     e.preventDefault();
-    if (check_update) {
-      setisloading(true);
-      const formData = new FormData();
 
-      formData.append("name", name);
-      formData.append("arabic_name", arabicname);
+    setisloading(true);
+    const formData = new FormData();
 
-      formData.append("unit", units.value);
-      formData.append("category", menu.value);
-      formData.append("sub_category", submenu.value);
+    formData.append("name", name);
+    formData.append("arabic_name", arabicname);
 
-      const response = await fetch(`${route}/api/products/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${user.access}`,
-        },
-        body: formData,
-      });
-      const json = await response.json();
+    formData.append("unit", units.value);
+    formData.append("category", menu.value);
+    formData.append("sub_category", submenu.value);
 
-      if (!response.ok) {
-        setisloading(false);
-        went_wrong_toast();
-      }
+    const response = await fetch(`${route}/api/products/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${user.access}`,
+      },
+      body: formData,
+    });
+    const json = await response.json();
 
-      if (response.ok) {
-        setisloading(false);
-        dispatch({ type: "Create_table_history", data: json });
-        success_toast();
-        setname("");
-        setarabicname("");
-        setmenu("");
-        setsubmenu("");
-        setunits("");
-      }
+    if (!response.ok) {
+      setisloading(false);
+      went_wrong_toast();
+    }
+
+    if (response.ok) {
+      setisloading(false);
+      dispatch({ type: "Create_table_history", data: json });
+      success_toast();
+      setname("");
+      setarabicname("");
+      setmenu("");
+      setsubmenu("");
+      setunits("");
     }
   };
 
+  const handleupdate = async (e) => {
+    e.preventDefault();
+
+    setisloading(true);
+    const formData = new FormData();
+
+    formData.append("name", name);
+    formData.append("arabic_name", arabicname);
+
+    formData.append("unit", units.value);
+    formData.append("category", menu.value);
+    formData.append("sub_category", submenu.value);
+
+    const response = await fetch(`${route}/api/products/${id}/`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${user.access}`,
+      },
+      body: formData,
+    });
+    const json = await response.json();
+
+    if (!response.ok) {
+      setisloading(false);
+      went_wrong_toast();
+    }
+
+    if (response.ok) {
+      setisloading(false);
+      dispatch({ type: "Update_table_history", data: json });
+      success_toast();
+      setname("");
+      setarabicname("");
+      setmenu("");
+      setsubmenu("");
+      setunits("");
+      setcheck_update(false);
+    }
+  };
   const onButtonClick = () => {
     // `current` points to the mounted file input element
     inputFile.current.click();
@@ -461,7 +502,7 @@ export default function Item(props) {
   return (
     <div className="p-3 pt-2">
       <div className="card">
-        <form onSubmit={handlesubmit}>
+        <form onSubmit={check_update ? handleupdate : handlesubmit}>
           <div className="card-header d-flex justify-content-between bg-white">
             <h3 className="mt-2 me-2">Add Item</h3>
             <div className="mt-2 me-2 d-flex flex-row-reverse">

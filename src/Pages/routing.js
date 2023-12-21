@@ -20,6 +20,7 @@ import Journal_page from "./journals/journals_page";
 import Expense_page from "./expenses_page/expense_page";
 import Invoice80mm from "../Components/sale/80mminvoice";
 import { useEffect, useState } from "react";
+import Issueform from "../Components/materialissueform/formprint";
 function Routing(props) {
   const user = props.state.setuser.user;
   const current_user = props.state.Setcurrentinfo.current_user;
@@ -182,11 +183,8 @@ function Routing(props) {
               }
             ></Route> */}
           </Route>
+          <Route path="/issueform" element={user && <Issueform />}></Route>
           {/* <Route
-            path="/invoice/:name"
-            element={user && <Sale_invoice />}
-          ></Route>
-          <Route
             path="/invoice_80/:name"
             element={user && <Invoice80mm />}
           ></Route>

@@ -27,6 +27,7 @@ import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import Alert_before_delete from "../../Container/alertContainer";
 import custom_toast from "../alerts/custom_toast";
+import PrintRoundedIcon from "@material-ui/icons/PrintRounded";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
 import Overlay from "react-bootstrap/Overlay";
@@ -218,8 +219,6 @@ export default function Materialissueform(props) {
   }, [selected_branch]);
 
   const handlesubmit = async (e) => {
-    e.preventDefault();
-
     const optimizedata = data.map((item) => {
       return {
         ...item,
@@ -284,12 +283,14 @@ export default function Materialissueform(props) {
       setincharge("");
       setapprovedby("");
       setremarks("");
+      if (e) {
+        localStorage.setItem("data", JSON.stringify(json));
+        window.open("/issueform", "_blank");
+      }
     }
   };
 
   const handleupdate = async (e) => {
-    e.preventDefault();
-
     const optimizedata = data.map((item) => {
       return {
         ...item,
@@ -353,6 +354,10 @@ export default function Materialissueform(props) {
       setapprovedby("");
       setremarks("");
       setcheck_update(false);
+      if (e) {
+        localStorage.setItem("data", JSON.stringify(json));
+        window.open("/issueform", "_blank");
+      }
     }
   };
 
@@ -412,7 +417,7 @@ export default function Materialissueform(props) {
 
   const handlesavequantitychange = (value, row) => {
     const optimize = data.map((item) => {
-      if (item.stock.value.id == row.stock.value.id) {
+      if (item.stock.id == row.stock.id) {
         item["quantity"] = value;
         return item;
       }
@@ -423,9 +428,16 @@ export default function Materialissueform(props) {
 
   const handledelete = (stock) => {
     const optimize = data.filter((item) => {
-      return item.stock.value.id !== stock.value.id;
+      return item.stock.id !== stock.id;
     });
     setdata(optimize);
+  };
+
+  const handledishdelete = (row) => {
+    const optimize = dishdata.filter((item) => {
+      return item.dish.value !== row.dish.value;
+    });
+    setdishdata(optimize);
   };
 
   const handleconfirm = (row) => {
@@ -703,7 +715,17 @@ export default function Materialissueform(props) {
           <div className="mt-2 me-2 d-flex flex-row-reverse">
             <Button
               variant="outline-primary"
-              onClick={check_update ? handleupdate : handlesubmit}
+              onClick={
+                check_update
+                  ? (e) => {
+                      e.preventDefault();
+                      handleupdate(false);
+                    }
+                  : (e) => {
+                      e.preventDefault();
+                      handlesubmit(false);
+                    }
+              }
               disabled={
                 !(
                   data.length > 0 &&
@@ -725,8 +747,36 @@ export default function Materialissueform(props) {
                   aria-hidden="true"
                 />
               )}
-              <FontAwesomeIcon icon={faRotate} />{" "}
+              <FontAwesomeIcon icon={faRotate} className="me-1" />{" "}
               {check_update ? "Update" : "Save"}
+            </Button>
+
+            <Button
+              variant="outline-success me-2"
+              onClick={
+                check_update
+                  ? (e) => {
+                      e.preventDefault();
+                      handleupdate(true);
+                    }
+                  : (e) => {
+                      e.preventDefault();
+                      handlesubmit(true);
+                    }
+              }
+              disabled={
+                !(
+                  data.length > 0 &&
+                  dishdata.length > 0 &&
+                  type &&
+                  cooker &&
+                  preparedby &&
+                  approvedby &&
+                  incharge
+                )
+              }
+            >
+              <PrintRoundedIcon className="me-1" /> Print
             </Button>
           </div>
         </div>
@@ -1013,13 +1063,13 @@ export default function Materialissueform(props) {
                     </tbody>
                   </table>
                 </div>
-                <div className="col-md-4 ">
+                <div className="col-md-3 ">
                   <h6 className="col-6 p-2 ps-0 pb-0 m-0">Dishes</h6>
 
                   <div>
                     {dishdata?.map((item) => {
                       return (
-                        <div key={item.dish.value} className="col-8">
+                        <div key={item.dish.value} className="col-10">
                           <InputGroup>
                             <div className="col-10">
                               <TextField
@@ -1034,7 +1084,7 @@ export default function Materialissueform(props) {
                                 backgroundColor: "red",
                                 borderRadius: "0",
                               }}
-                              onClick={() => handledelete(item.stock)}
+                              onClick={() => handledishdelete(item)}
                             >
                               <ClearIcon
                                 style={{
@@ -1050,7 +1100,7 @@ export default function Materialissueform(props) {
                     })}
                   </div>
 
-                  <form onSubmit={handleadddishclick} className="col-8">
+                  <form onSubmit={handleadddishclick} className="col-10">
                     <InputGroup>
                       <div className="col-10">
                         <Select
