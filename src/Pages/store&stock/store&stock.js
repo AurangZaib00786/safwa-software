@@ -6,9 +6,10 @@ import Store from "../../Container/storeContainer";
 
 import { ToastContainer } from "react-toastify";
 import StockAdjustment from "../../Container/stockadjustment";
+import Materialissueform from "../../Container/materialissueformContainer";
 
 function Stockstore_page({ current_user }) {
-  const tabs = ["Store", "Stock", "Stock Adjustment"];
+  const tabs = ["Store", "Stock", "Stock Adjustment", "materialform"];
   var current_tab = localStorage.getItem("activeTab");
   if (!tabs.includes(current_tab)) {
     current_tab = "Stock";
@@ -41,6 +42,9 @@ function Stockstore_page({ current_user }) {
 
         <Tab eventKey="Stock Adjustment" title="Stock Adjustment">
           {activeTab === "Stock Adjustment" && <StockAdjustment />}
+        </Tab>
+        <Tab eventKey="materialform" title="Material Issue Form">
+          {activeTab === "materialform" && <Materialissueform />}
         </Tab>
       </Tabs>
       <ToastContainer autoClose={2000} hideProgressBar={true} theme="dark" />
