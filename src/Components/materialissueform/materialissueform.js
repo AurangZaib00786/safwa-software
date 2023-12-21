@@ -61,33 +61,35 @@ export default function Materialissueform(props) {
   const [url_to_delete, seturl_to_delete] = useState("");
   const [row_id, setrow_id] = useState("");
   const [isloading, setisloading] = useState(false);
-
-  const [allstore, setallstore] = useState([]);
-  const [store, setstore] = useState();
-
-  const [allproduct, setallproduct] = useState([]);
-  const [product, setproduct] = useState({
-    value: "all",
-    label: "All",
-  });
-
-  const [variant, setvariant] = useState({
-    value: "all",
-    label: "All",
-  });
-  const [allvariant, setallvariant] = useState([]);
-  const [quantity, setquantity] = useState("");
-  const [type, settype] = useState("");
-
-  const [notes, setnotes] = useState("");
-  const [data, setdata] = useState([]);
-
-  const [allstock, setallstock] = useState([]);
-  const [stock, setstock] = useState("");
   var curr = new Date();
   var curdate = curr.toISOString().substring(0, 10);
   const [date, setdate] = useState(curdate);
+  const [type, settype] = useState("");
+  const [govthajj, setgovthajj] = useState("");
+  const [pvthajj, setpvthajj] = useState("");
+  const [extra, setextra] = useState("");
+  const [staff, setstaff] = useState("");
+
+  const [cooker, setcooker] = useState("");
+  const [preparedby, setpreparedby] = useState("");
+  const [incharge, setincharge] = useState("");
+  const [approvedby, setapprovedby] = useState("");
   const [remarks, setremarks] = useState("");
+
+  const [allemployee, setallemployee] = useState([]);
+
+  const [allstock, setallstock] = useState([]);
+  const [stock, setstock] = useState("");
+  const [quantity, setquantity] = useState("");
+  const [unit, setunit] = useState("");
+  const [notes, setnotes] = useState("");
+
+  const [data, setdata] = useState([]);
+
+  const [dish, setdish] = useState("");
+  const [alldish, setalldish] = useState([]);
+  const [dishdata, setdishdata] = useState([]);
+
   const [start_date, setstart_date] = useState(
     addMonths(new Date(), -1).toISOString().substring(0, 10)
   );
@@ -124,7 +126,7 @@ export default function Materialissueform(props) {
     setisloading(true);
 
     const fetchWorkouts = async () => {
-      var url = `${route}/api/stock-adjustment/?account_head=${selected_branch.id}&start_date=${start_date}&end_date=${end_date}`;
+      var url = `${route}/api/issued-stock/?account_head=${selected_branch.id}&start_date=${start_date}&end_date=${end_date}`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -150,8 +152,8 @@ export default function Materialissueform(props) {
   }, [selected_branch, date_range]);
 
   useEffect(() => {
-    const fetchstore = async () => {
-      var url = `${route}/api/stores/`;
+    const fetchemployee = async () => {
+      var url = `${route}/api/employee/`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -163,18 +165,36 @@ export default function Materialissueform(props) {
           return { value: item.id, label: item.name };
         });
 
-        setallstore(optimize);
+        setallemployee(optimize);
+      }
+    };
+
+    const fetchdishes = async () => {
+      var url = `${route}/api/dishes/`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        const optimize = json.map((item) => {
+          return { value: item.id, label: item.name };
+        });
+
+        setalldish(optimize);
       }
     };
 
     if (user) {
-      fetchstore();
+      fetchemployee();
+      fetchdishes();
     }
   }, []);
 
   useEffect(() => {
     const fetchmaterial = async () => {
-      var url = `${route}/api/stock/?account_head=${selected_branch.id}&store_id=${store.value}`;
+      var url = `${route}/api/stock/?account_head=${selected_branch.id}`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -184,7 +204,7 @@ export default function Materialissueform(props) {
       if (response.ok) {
         const optimize = json.map((item) => {
           return {
-            value: item.id,
+            value: item,
             label: `${item.product_name}`,
           };
         });
@@ -192,10 +212,10 @@ export default function Materialissueform(props) {
         setallstock(optimize);
       }
     };
-    if (store) {
+    if (user) {
       fetchmaterial();
     }
-  }, [store, selected_branch]);
+  }, [selected_branch]);
 
   const handlesubmit = async (e) => {
     e.preventDefault();
@@ -203,24 +223,39 @@ export default function Materialissueform(props) {
     const optimizedata = data.map((item) => {
       return {
         ...item,
-        stock: item.stock.value,
-        type: item.type.value,
+        stock: item.stock.id,
       };
     });
 
-    const response = await fetch(`${route}/api/stock-adjustment/`, {
+    const optimizedishdata = dishdata.map((item) => {
+      return {
+        ...item,
+        dish: item.dish.value,
+      };
+    });
+
+    const response = await fetch(`${route}/api/issued-stock/`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${user.access}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        adjustment_detail: optimizedata,
+        product_details: optimizedata,
+        dish_details: optimizedishdata,
         date: date,
+        meal_type: type.value,
+        govt_hujjaj: govthajj,
+        private_hujjaj: pvthajj,
+        staff: staff,
+        extra: extra,
         remarks: remarks,
+        cook: cooker.value,
+        prepared_by: preparedby.value,
+        approved_by: approvedby.value,
+        store_incharge: incharge.value,
         account_head: selected_branch.id,
         user: current_user.id,
-        store: store.value,
       }),
     });
     const json = await response.json();
@@ -237,9 +272,18 @@ export default function Materialissueform(props) {
       dispatch({ type: "Create_table_history", data: json });
       success_toast();
       setdata([]);
-      setremarks("");
+      setdishdata([]);
       setdate(curdate);
-      setstore("");
+      settype("");
+      setgovthajj("");
+      setpvthajj("");
+      setextra("");
+      setstaff("");
+      setcooker("");
+      setpreparedby("");
+      setincharge("");
+      setapprovedby("");
+      setremarks("");
     }
   };
 
@@ -249,21 +293,37 @@ export default function Materialissueform(props) {
     const optimizedata = data.map((item) => {
       return {
         ...item,
-        stock: item.stock.value,
-        type: item.type.value,
+        stock: item.stock.id,
       };
     });
 
-    const response = await fetch(`${route}/api/stock-adjustment/${id}/`, {
+    const optimizedishdata = dishdata.map((item) => {
+      return {
+        ...item,
+        dish: item.dish.value,
+      };
+    });
+
+    const response = await fetch(`${route}/api/issued-stock/${id}/`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${user.access}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        adjustment_detail: optimizedata,
+        product_details: optimizedata,
+        dish_details: optimizedishdata,
         date: date,
+        meal_type: type.value,
+        govt_hujjaj: govthajj,
+        private_hujjaj: pvthajj,
+        staff: staff,
+        extra: extra,
         remarks: remarks,
+        cook: cooker.value,
+        prepared_by: preparedby.value,
+        approved_by: approvedby.value,
+        store_incharge: incharge.value,
       }),
     });
     const json = await response.json();
@@ -280,10 +340,19 @@ export default function Materialissueform(props) {
       dispatch({ type: "Update_table_history", data: json });
       success_toast();
       setdata([]);
-      setremarks("");
+      setdishdata([]);
       setdate(curdate);
+      settype("");
+      setgovthajj("");
+      setpvthajj("");
+      setextra("");
+      setstaff("");
+      setcooker("");
+      setpreparedby("");
+      setincharge("");
+      setapprovedby("");
+      setremarks("");
       setcheck_update(false);
-      setstore("");
     }
   };
 
@@ -291,12 +360,12 @@ export default function Materialissueform(props) {
     e.preventDefault();
 
     const optimize = data.filter((item) => {
-      return item.stock.value === stock.value;
+      return item.stock.id === stock.value.id;
     });
     if (optimize.length > 0) {
       let pitem = optimize.shift();
       let newdata = data.map((item) => {
-        if (item.stock.value === pitem.stock.value) {
+        if (item.stock.id === pitem.stock.id) {
           item["quantity"] = parseInt(pitem.quantity) + parseInt(quantity);
 
           return item;
@@ -308,7 +377,11 @@ export default function Materialissueform(props) {
     } else {
       setdata([
         ...data,
-        { stock: stock, type: type, quantity: quantity, remarks: notes },
+        {
+          stock: stock.value,
+          quantity: quantity,
+          remarks: notes,
+        },
       ]);
     }
 
@@ -317,9 +390,29 @@ export default function Materialissueform(props) {
     setnotes("");
   };
 
+  const handleadddishclick = (e) => {
+    e.preventDefault();
+
+    const optimize = dishdata.filter((item) => {
+      return item.dish.value === dish.value;
+    });
+    if (optimize.length > 0) {
+      Red_toast("Dish already Selected !");
+    } else {
+      setdishdata([
+        ...dishdata,
+        {
+          dish: dish,
+        },
+      ]);
+    }
+
+    setdish("");
+  };
+
   const handlesavequantitychange = (value, row) => {
     const optimize = data.map((item) => {
-      if (item.stock.value == row.stock.value) {
+      if (item.stock.value.id == row.stock.value.id) {
         item["quantity"] = value;
         return item;
       }
@@ -330,7 +423,7 @@ export default function Materialissueform(props) {
 
   const handledelete = (stock) => {
     const optimize = data.filter((item) => {
-      return item.stock.value !== stock.value;
+      return item.stock.value.id !== stock.value.id;
     });
     setdata(optimize);
   };
@@ -347,7 +440,7 @@ export default function Materialissueform(props) {
           className="border border-danger rounded me-2"
           onClick={() => {
             setrow_id(row.id);
-            seturl_to_delete(`${route}/api/stock-adjustment/${row.id}/`);
+            seturl_to_delete(`${route}/api/issued-stock/${row.id}/`);
             setdelete_user(true);
           }}
         >
@@ -358,17 +451,42 @@ export default function Materialissueform(props) {
           style={{ border: "1px solid #003049", borderRadius: "5px" }}
           onClick={() => {
             setdate(row.date);
+            settype({ value: row.meal_type, label: row.meal_type });
+            setgovthajj(row.govt_hujjaj);
+            setpvthajj(row.private_hujjaj);
+            setextra(row.extra);
+            setstaff(row.staff);
+            setcooker({ value: row.cook, label: row.cook_name });
+            setpreparedby({
+              value: row.prepared_by,
+              label: row.prepared_by_name,
+            });
+            setincharge({
+              value: row.store_incharge,
+              label: row.store_incharge_name,
+            });
+            setapprovedby({
+              value: row.approved_by,
+              label: row.approved_by_name,
+            });
             setremarks(row.remarks);
-            setstore({ value: row.store, label: row.store_name });
 
-            setdata(
-              row.adjustment_detail.map((item) => {
+            setdishdata(
+              row.dish_details.map((item) => {
                 return {
                   ...item,
-                  stock: { value: item.stock, label: item.stock_name },
-                  type: {
-                    value: item.type,
-                    label: item.type === "stock_out" ? "Stock Out" : "Stock In",
+                  dish: { value: item.dish, label: item.dish_name },
+                };
+              })
+            );
+            setdata(
+              row.product_details.map((item) => {
+                return {
+                  ...item,
+                  stock: {
+                    id: item.stock,
+                    product_name: item.stock_name,
+                    unit_name: item.unit_name,
                   },
                 };
               })
@@ -409,20 +527,62 @@ export default function Materialissueform(props) {
       headerFormatter: headerstyle,
     },
     {
-      dataField: "store_name",
-      text: "Store",
+      dataField: "meal_type",
+      text: "Meal",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "govt_hujjaj",
+      text: "Govt. Hajj",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "private_hujjaj",
+      text: "Pvt.Hajj",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "extra",
+      text: "Extra",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "staff",
+      text: "Staff",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "cook_name",
+      text: "Cook",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "prepared_by_name",
+      text: "Prepared By",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "approved_by_name",
+      text: "Approved By",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "store_incharge_name",
+      text: "Incharge",
       sort: true,
       headerFormatter: headerstyle,
     },
     {
       dataField: "remarks",
       text: "Remarks",
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "user_name",
-      text: "User",
       sort: true,
       headerFormatter: headerstyle,
     },
@@ -544,7 +704,17 @@ export default function Materialissueform(props) {
             <Button
               variant="outline-primary"
               onClick={check_update ? handleupdate : handlesubmit}
-              disabled={!data.length > 0}
+              disabled={
+                !(
+                  data.length > 0 &&
+                  dishdata.length > 0 &&
+                  type &&
+                  cooker &&
+                  preparedby &&
+                  approvedby &&
+                  incharge
+                )
+              }
             >
               {isloading && (
                 <Spinner
@@ -570,7 +740,7 @@ export default function Materialissueform(props) {
                 </div>
               )}
 
-              <div className="row d-sm-flex  align-items-center mt-3">
+              <div className="row d-sm-flex  align-items-center mt-md-3">
                 <div className="col-6 col-md-3 pe-3">
                   <TextField
                     type="date"
@@ -590,8 +760,8 @@ export default function Materialissueform(props) {
                       { value: "Dinner", label: "Dinner" },
                     ]}
                     placeholder={"Type"}
-                    value={stock}
-                    funct={(e) => setstock(e)}
+                    value={type}
+                    funct={(e) => settype(e)}
                     required={true}
                   />
                 </div>
@@ -600,8 +770,8 @@ export default function Materialissueform(props) {
                     type="number"
                     className="form-control mb-3"
                     label={"Govt. Hajj"}
-                    value={remarks}
-                    onChange={(e) => setremarks(e.target.value)}
+                    value={govthajj}
+                    onChange={(e) => setgovthajj(e.target.value)}
                     size="small"
                   />
                 </div>
@@ -610,6 +780,79 @@ export default function Materialissueform(props) {
                     type="number"
                     className="form-control mb-3"
                     label={"Pvt. Hajj"}
+                    value={pvthajj}
+                    onChange={(e) => setpvthajj(e.target.value)}
+                    size="small"
+                  />
+                </div>
+              </div>
+
+              <div className="row d-sm-flex  align-items-center mt-md-3">
+                <div className="col-6 col-md-3 pe-3">
+                  <TextField
+                    type="number"
+                    className="form-control mb-3"
+                    label={"Staff"}
+                    value={staff}
+                    onChange={(e) => setstaff(e.target.value)}
+                    size="small"
+                  />
+                </div>
+                <div className="col-6 col-md-3 pe-3">
+                  <TextField
+                    type="number"
+                    className="form-control mb-3"
+                    label={"Extra"}
+                    value={extra}
+                    onChange={(e) => setextra(e.target.value)}
+                    size="small"
+                  />
+                </div>
+                <div className="col-6 col-md-3 pe-3">
+                  <Select
+                    options={allemployee}
+                    placeholder={"Cook Name"}
+                    value={cooker}
+                    funct={(e) => setcooker(e)}
+                    required={true}
+                  />
+                </div>
+                <div className="col-6 col-md-3 pe-3">
+                  <Select
+                    options={allemployee}
+                    placeholder={"Prepared By"}
+                    value={preparedby}
+                    funct={(e) => setpreparedby(e)}
+                    required={true}
+                  />
+                </div>
+              </div>
+
+              <div className="row d-sm-flex  align-items-center mt-md-3">
+                <div className="col-6 col-md-3 pe-3">
+                  <Select
+                    options={allemployee}
+                    placeholder={"Store Incharge"}
+                    value={incharge}
+                    funct={(e) => setincharge(e)}
+                    required={true}
+                  />
+                </div>
+                <div className="col-6 col-md-3 pe-3">
+                  <Select
+                    options={allemployee}
+                    placeholder={"Approved By"}
+                    value={approvedby}
+                    funct={(e) => setapprovedby(e)}
+                    required={true}
+                  />
+                </div>
+
+                <div className="col-6 col-md-3 pe-3">
+                  <TextField
+                    multiline
+                    className="form-control mb-3"
+                    label={"Remarks"}
                     value={remarks}
                     onChange={(e) => setremarks(e.target.value)}
                     size="small"
@@ -617,81 +860,144 @@ export default function Materialissueform(props) {
                 </div>
               </div>
 
-              <div className="d-sm-flex  align-items-center mt-3">
-                <div className="col-md-4 me-3">
-                  <Select
-                    options={allstore}
-                    placeholder={" Select Store..."}
-                    value={store}
-                    funct={(e) => setstore(e)}
-                  />
-                </div>
-              </div>
+              <div className=" d-sm-flex mb-4">
+                <div className="col-md-8 me-md-5">
+                  <table className="table">
+                    <thead className="border-0">
+                      <tr>
+                        <th className="d-flex align-items-center border-0 p-0">
+                          <h6 className="col-3 p-2 ps-0 pb-0 m-0">Stock</h6>
 
-              <div className="mb-4">
-                <table className="table">
-                  <thead className="border-0">
-                    <tr>
-                      <th className="d-flex align-items-center border-0 p-0">
-                        <h6 className="col-4 p-2 ps-0 pb-0 m-0">Stock</h6>
+                          <h6 className=" col-2  p-2 pb-0 m-0">Unit</h6>
 
-                        <h6 className=" col-4  p-2 pb-0 m-0">Type</h6>
+                          <h6 className="col-3 p-2 pb-0 m-0">Qty</h6>
+                          <h6 className="col-4 p-2 pb-0 m-0">Remarks</h6>
+                        </th>
+                      </tr>
+                      {data?.map((item) => {
+                        return (
+                          <tr key={item.stock.id}>
+                            <th className="d-flex align-items-center p-0 border-0">
+                              <div className="col-3">
+                                <TextField
+                                  className="form-control"
+                                  size="small"
+                                  value={item.stock.product_name}
+                                />
+                              </div>
 
-                        <h6 className="col-4 p-2 pb-0 m-0">Qty</h6>
-                        <h6 className="col-4 p-2 pb-0 m-0">Remarks</h6>
-                      </th>
-                    </tr>
-                    {data?.map((item) => {
-                      return (
-                        <tr key={item.stock.value}>
-                          <th className="d-flex align-items-center p-0 border-0">
-                            <div className="col-4">
-                              <TextField
-                                className="form-control"
-                                size="small"
-                                value={item.stock.label}
+                              <div className="col-2">
+                                <TextField
+                                  className="form-control"
+                                  size="small"
+                                  value={item.stock.unit_name}
+                                />
+                              </div>
+
+                              <div className="col-3">
+                                <TextField
+                                  type="number"
+                                  className="form-control"
+                                  size="small"
+                                  value={item.quantity}
+                                  onChange={(e) => {
+                                    handlesavequantitychange(
+                                      e.target.value,
+                                      item
+                                    );
+                                  }}
+                                />
+                              </div>
+                              <div className="col-4">
+                                <InputGroup>
+                                  <TextField
+                                    className="form-control"
+                                    size="small"
+                                    value={item.remarks}
+                                  />
+
+                                  <IconButton
+                                    className="p-0 ps-2 pe-2"
+                                    style={{
+                                      backgroundColor: "red",
+                                      borderRadius: "0",
+                                    }}
+                                    onClick={() => handledelete(item.stock)}
+                                  >
+                                    <ClearIcon
+                                      style={{
+                                        color: "white",
+                                        height: "fit-content",
+                                      }}
+                                      fontSize="medium"
+                                    />
+                                  </IconButton>
+                                </InputGroup>
+                              </div>
+                            </th>
+                          </tr>
+                        );
+                      })}
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className=" p-0 border-0">
+                          <form onSubmit={handleaddclick} className="d-flex ">
+                            <div className="col-3">
+                              <Select
+                                options={allstock}
+                                placeholder={""}
+                                value={stock}
+                                funct={(e) => setstock(e)}
+                                margin={true}
+                                required={true}
                               />
                             </div>
 
-                            <div className="col-4">
+                            <div className="col-2">
                               <TextField
-                                className="form-control"
+                                placeholder={"Unit"}
                                 size="small"
-                                value={item.type.label}
+                                className="form-control"
+                                value={stock?.value?.unit_name}
+                                required
                               />
                             </div>
 
-                            <div className="col-4">
+                            <div className="col-3">
                               <TextField
                                 type="number"
-                                className="form-control"
+                                placeholder={"Qty"}
                                 size="small"
-                                value={item.quantity}
+                                className="form-control"
+                                value={quantity}
                                 onChange={(e) => {
-                                  handlesavequantitychange(
-                                    e.target.value,
-                                    item
-                                  );
+                                  setquantity(e.target.value);
                                 }}
+                                required
                               />
                             </div>
                             <div className="col-4">
                               <InputGroup>
                                 <TextField
-                                  className="form-control"
+                                  placeholder={"Remarks"}
                                   size="small"
-                                  value={item.remarks}
+                                  className="form-control"
+                                  value={notes}
+                                  onChange={(e) => {
+                                    setnotes(e.target.value);
+                                  }}
                                 />
 
                                 <IconButton
                                   className="p-0 ps-2 pe-2"
                                   style={{
-                                    backgroundColor: "red",
+                                    backgroundColor: "#0d6efd",
                                     borderRadius: "0",
                                   }}
-                                  onClick={() => handledelete(item.stock)}
+                                  type="submit"
                                 >
-                                  <ClearIcon
+                                  <AddIcon
                                     style={{
                                       color: "white",
                                       height: "fit-content",
@@ -701,88 +1007,80 @@ export default function Materialissueform(props) {
                                 </IconButton>
                               </InputGroup>
                             </div>
-                          </th>
-                        </tr>
+                          </form>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div className="col-md-4 ">
+                  <h6 className="col-6 p-2 ps-0 pb-0 m-0">Dishes</h6>
+
+                  <div>
+                    {dishdata?.map((item) => {
+                      return (
+                        <div key={item.dish.value} className="col-8">
+                          <InputGroup>
+                            <div className="col-10">
+                              <TextField
+                                className="form-control"
+                                size="small"
+                                value={item.dish.label}
+                              />
+                            </div>
+                            <IconButton
+                              className="p-0 ps-2 pe-2"
+                              style={{
+                                backgroundColor: "red",
+                                borderRadius: "0",
+                              }}
+                              onClick={() => handledelete(item.stock)}
+                            >
+                              <ClearIcon
+                                style={{
+                                  color: "white",
+                                  height: "fit-content",
+                                }}
+                                fontSize="medium"
+                              />
+                            </IconButton>
+                          </InputGroup>
+                        </div>
                       );
                     })}
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className=" p-0 border-0">
-                        <form onSubmit={handleaddclick} className="d-flex ">
-                          <div className="col-4">
-                            <Select
-                              options={allstock}
-                              placeholder={""}
-                              value={stock}
-                              funct={(e) => setstock(e)}
-                              margin={true}
-                              required={true}
-                            />
-                          </div>
+                  </div>
 
-                          <div className="col-4">
-                            <Select
-                              options={[
-                                { value: "stock_in", label: "Stock In" },
-                                { value: "stock_out", label: "Stock Out" },
-                              ]}
-                              placeholder={""}
-                              margin={true}
-                              value={type}
-                              funct={(e) => settype(e)}
-                              required={true}
-                            />
-                          </div>
-
-                          <div className="col-4">
-                            <TextField
-                              type="number"
-                              placeholder={"Qty"}
-                              size="small"
-                              className="form-control"
-                              value={quantity}
-                              onChange={(e) => {
-                                setquantity(e.target.value);
-                              }}
-                              required
-                            />
-                          </div>
-                          <div className="col-4">
-                            <InputGroup>
-                              <TextField
-                                placeholder={"Remarks"}
-                                size="small"
-                                className="form-control"
-                                value={notes}
-                                onChange={(e) => {
-                                  setnotes(e.target.value);
-                                }}
-                              />
-
-                              <IconButton
-                                className="p-0 ps-2 pe-2"
-                                style={{
-                                  backgroundColor: "#0d6efd",
-                                  borderRadius: "0",
-                                }}
-                                type="submit"
-                              >
-                                <AddIcon
-                                  style={{
-                                    color: "white",
-                                    height: "fit-content",
-                                  }}
-                                  fontSize="medium"
-                                />
-                              </IconButton>
-                            </InputGroup>
-                          </div>
-                        </form>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                  <form onSubmit={handleadddishclick} className="col-8">
+                    <InputGroup>
+                      <div className="col-10">
+                        <Select
+                          options={alldish}
+                          placeholder={""}
+                          value={dish}
+                          funct={(e) => setdish(e)}
+                          margin={true}
+                          required={true}
+                        />
+                      </div>
+                      <IconButton
+                        className="p-0 ps-2 pe-2"
+                        style={{
+                          backgroundColor: "#0d6efd",
+                          borderRadius: "0",
+                        }}
+                        type="submit"
+                      >
+                        <AddIcon
+                          style={{
+                            color: "white",
+                            height: "fit-content",
+                          }}
+                          fontSize="medium"
+                        />
+                      </IconButton>
+                    </InputGroup>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
