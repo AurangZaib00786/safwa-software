@@ -107,7 +107,7 @@ export default function Order(props) {
 
       if (response.ok) {
         const optimize = json.map((item) => {
-          return { value: item, label: item.name };
+          return { value: item.id, label: item.name };
         });
         setallemployee(optimize);
       }
@@ -127,27 +127,27 @@ export default function Order(props) {
 
   const handlesubmit = async (e) => {
     e.preventDefault();
-    if (building) {
+    if (employee) {
       const optimizedata = data.map((item) => {
         return {
           ...item,
-          employee: item.employee.value.id,
+          building: item.building.value.id,
         };
       });
 
-      const response = await fetch(
-        `${route}/api/buildings/${building.value.id}/`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${user.access}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            details: optimizedata,
-          }),
-        }
-      );
+      const response = await fetch(`${route}/api/orders/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user.access}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          details: optimizedata,
+          user: current_user.id,
+          customer: employee.value,
+          date: date,
+        }),
+      });
       const json = await response.json();
 
       if (!response.ok) {
@@ -161,78 +161,114 @@ export default function Order(props) {
       if (response.ok) {
         success_toast();
         setdata([]);
+        setemployee("");
+        setdate(curdate);
       }
     } else {
-      Red_toast("Pleae Select Building First!");
+      Red_toast("Pleae Select Customer!");
     }
-  };
-
-  const handlebuildingchange = (e) => {
-    setbuilding(e);
   };
 
   const handleaddclick = (e) => {
     e.preventDefault();
 
     const optimize = data.filter((item) => {
-      return item.employee.value === employee.value;
+      return item.building.value.id === building.value.id;
     });
     if (optimize.length > 0) {
-      let pitem = optimize.shift();
-      let newdata = data.map((item) => {
-        if (item.employee.value === pitem.employee.value) {
-          item["breakfast"] = parseInt(pitem.breakfast) + parseInt(breakfast);
-
-          return item;
-        } else {
-          return item;
-        }
-      });
-      setdata(newdata);
+      Red_toast("Building Already Selected!");
     } else {
       setdata([
         ...data,
         {
-          employee: employee,
-          type: type.value,
+          building: building,
           breakfast: breakfast,
+          lunch: lunch,
+          dinner: dinner,
           remarks: remarks,
         },
       ]);
     }
 
-    setemployee("");
+    setbuilding("");
     setbreakfast("");
+    setlunch("");
+    setdinner("");
     setremarks("");
-    settype("");
   };
 
-  const handlesavebreakfastchange = (value, row) => {
-    const optimize = data.map((item) => {
-      if (item.employee.value == row.employee.value) {
-        item["breakfast"] = value;
-        return item;
+  const handlesavedchange = (value, field, row) => {
+    console.log(row);
+    if (field !== "remarks") {
+      if (value <= row.value.capacity) {
+        switch (field) {
+          case "breakfast":
+            var optimize = data.map((item) => {
+              if (item.building.value.id === row.value.id) {
+                item["breakfast"] = value;
+                return item;
+              }
+            });
+            return setdata(optimize);
+          case "lunch":
+            optimize = data.map((item) => {
+              if (item.building.value.id === row.value.id) {
+                item["lunch"] = value;
+                return item;
+              }
+            });
+            return setdata(optimize);
+          case "dinner":
+            optimize = data.map((item) => {
+              if (item.building.value.id === row.value.id) {
+                item["dinner"] = value;
+                return item;
+              }
+            });
+            return setdata(optimize);
+        }
+      } else {
+        Red_toast(
+          `${field} value should be less than building capacity ${row.value.capacity}`
+        );
       }
-      return item;
-    });
-    setdata(optimize);
-  };
-  const handlesaveremarkschange = (value, row) => {
-    const optimize = data.map((item) => {
-      if (item.employee.value == row.employee.value) {
-        item["remarks"] = value;
-        return item;
-      }
-      return item;
-    });
-    setdata(optimize);
+    } else {
+      const optimize = data.map((item) => {
+        if (item.building.value.id === row.value.id) {
+          item["remarks"] = value;
+          return item;
+        }
+      });
+      return setdata(optimize);
+    }
   };
 
   const handledelete = (row) => {
     const optimize = data.filter((item) => {
-      return item.employee.value !== row.value;
+      return item.building.value.id !== row.value.id;
     });
     setdata(optimize);
+  };
+
+  const handlequantityvhange = (value, field) => {
+    if (building) {
+      if (value <= building.value.capacity) {
+        switch (field) {
+          case "breakfast":
+            return setbreakfast(value);
+          case "lunch":
+            return setlunch(value);
+          case "dinner":
+            return setdinner(value);
+        }
+      } else {
+        Red_toast(
+          `${field} value should be less than building capacity ${building.value.capacity}`
+        );
+      }
+    } else {
+      Red_toast("Please select Building first!");
+    }
   };
 
   return (
@@ -255,7 +291,7 @@ export default function Order(props) {
                   aria-hidden="true"
                 />
               )}
-              <FontAwesomeIcon icon={faRotate} /> Update
+              <FontAwesomeIcon icon={faRotate} /> Save
             </Button>
           </div>
         </div>
@@ -289,7 +325,9 @@ export default function Order(props) {
                       options={allemployee}
                       placeholder={" Select Customer..."}
                       value={employee}
-                      funct={handlebuildingchange}
+                      funct={(e) => {
+                        setemployee(e);
+                      }}
                     />
                   </div>
                 </div>
@@ -312,34 +350,55 @@ export default function Order(props) {
                       </tr>
                       {data?.map((item) => {
                         return (
-                          <tr key={item.employee.value}>
+                          <tr key={item.building.value.id}>
                             <th className="d-flex align-items-center p-0 border-0">
                               <div className="col-4">
                                 <TextField
                                   className="form-control"
                                   size="small"
-                                  value={item.employee.label}
+                                  value={item.building.label}
                                 />
                               </div>
 
                               <div className="col-4">
                                 <TextField
-                                  className="form-control"
-                                  size="small"
-                                  value={item.type}
-                                />
-                              </div>
-
-                              <div className="col-4">
-                                <TextField
-                                  type="date"
                                   className="form-control"
                                   size="small"
                                   value={item.breakfast}
                                   onChange={(e) => {
-                                    handlesavebreakfastchange(
+                                    handlesavedchange(
                                       e.target.value,
-                                      item
+                                      "breakfast",
+                                      item.building
+                                    );
+                                  }}
+                                />
+                              </div>
+
+                              <div className="col-4">
+                                <TextField
+                                  className="form-control"
+                                  size="small"
+                                  value={item.lunch}
+                                  onChange={(e) => {
+                                    handlesavedchange(
+                                      e.target.value,
+                                      "lunch",
+                                      item.building
+                                    );
+                                  }}
+                                />
+                              </div>
+                              <div className="col-4">
+                                <TextField
+                                  className="form-control"
+                                  size="small"
+                                  value={item.dinner}
+                                  onChange={(e) => {
+                                    handlesavedchange(
+                                      e.target.value,
+                                      "dinner",
+                                      item.building
                                     );
                                   }}
                                 />
@@ -347,14 +406,14 @@ export default function Order(props) {
                               <div className="col-4">
                                 <InputGroup>
                                   <TextField
-                                    type="date"
                                     className="form-control"
                                     size="small"
                                     value={item.remarks}
                                     onChange={(e) => {
-                                      handlesaveremarkschange(
+                                      handlesavedchange(
                                         e.target.value,
-                                        item
+                                        "remarks",
+                                        item.building
                                       );
                                     }}
                                   />
@@ -405,7 +464,10 @@ export default function Order(props) {
                                 className="form-control"
                                 value={breakfast}
                                 onChange={(e) => {
-                                  setbreakfast(e.target.value);
+                                  handlequantityvhange(
+                                    e.target.value,
+                                    "breakfast"
+                                  );
                                 }}
                                 required
                               />
@@ -419,7 +481,7 @@ export default function Order(props) {
                                 className="form-control"
                                 value={lunch}
                                 onChange={(e) => {
-                                  setlunch(e.target.value);
+                                  handlequantityvhange(e.target.value, "lunch");
                                 }}
                                 required
                               />
@@ -432,7 +494,10 @@ export default function Order(props) {
                                 className="form-control"
                                 value={dinner}
                                 onChange={(e) => {
-                                  setdinner(e.target.value);
+                                  handlequantityvhange(
+                                    e.target.value,
+                                    "dinner"
+                                  );
                                 }}
                                 required
                               />

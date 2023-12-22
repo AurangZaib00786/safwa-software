@@ -79,7 +79,7 @@ export default function BuildingManagement(props) {
 
       if (response.ok) {
         setisloading(false);
-        setallbuilding(json);
+
         const optimize = json.map((item) => {
           return { value: item, label: item.building_number };
         });
@@ -158,6 +158,7 @@ export default function BuildingManagement(props) {
       if (response.ok) {
         success_toast();
         setdata([]);
+        setbuilding("");
       }
     } else {
       Red_toast("Pleae Select Building First!");
@@ -166,34 +167,35 @@ export default function BuildingManagement(props) {
 
   const handlebuildingchange = (e) => {
     setbuilding(e);
+    setdata(
+      e.value.details.map((item) => {
+        return {
+          ...item,
+          employee: { value: { id: item.employee }, label: item.employee_name },
+          employee_type: item.employee_type,
+          start_date: item.start_date,
+          end_date: item.end_date,
+        };
+      })
+    );
   };
 
   const handleaddclick = (e) => {
     e.preventDefault();
 
     const optimize = data.filter((item) => {
-      return item.employee.value === employee.value;
+      return item.employee.value.id === employee.value.id;
     });
     if (optimize.length > 0) {
-      let pitem = optimize.shift();
-      let newdata = data.map((item) => {
-        if (item.employee.value === pitem.employee.value) {
-          item["joindate"] = parseInt(pitem.joindate) + parseInt(joindate);
-
-          return item;
-        } else {
-          return item;
-        }
-      });
-      setdata(newdata);
+      Red_toast("Already Selected!");
     } else {
       setdata([
         ...data,
         {
           employee: employee,
-          type: type.value,
-          joindate: joindate,
-          enddate: enddate,
+          employee_type: type.value,
+          start_date: joindate,
+          end_date: enddate,
         },
       ]);
     }
@@ -207,7 +209,7 @@ export default function BuildingManagement(props) {
   const handlesavejoindatechange = (value, row) => {
     const optimize = data.map((item) => {
       if (item.employee.value == row.employee.value) {
-        item["joindate"] = value;
+        item["start_date"] = value;
         return item;
       }
       return item;
@@ -217,7 +219,7 @@ export default function BuildingManagement(props) {
   const handlesaveenddatechange = (value, row) => {
     const optimize = data.map((item) => {
       if (item.employee.value == row.employee.value) {
-        item["enddate"] = value;
+        item["end_date"] = value;
         return item;
       }
       return item;
@@ -306,7 +308,7 @@ export default function BuildingManagement(props) {
                                 <TextField
                                   className="form-control"
                                   size="small"
-                                  value={item.type}
+                                  value={item.employee_type}
                                 />
                               </div>
 
@@ -315,7 +317,7 @@ export default function BuildingManagement(props) {
                                   type="date"
                                   className="form-control"
                                   size="small"
-                                  value={item.joindate}
+                                  value={item.start_date}
                                   onChange={(e) => {
                                     handlesavejoindatechange(
                                       e.target.value,
@@ -330,7 +332,7 @@ export default function BuildingManagement(props) {
                                     type="date"
                                     className="form-control"
                                     size="small"
-                                    value={item.enddate}
+                                    value={item.end_date}
                                     onChange={(e) => {
                                       handlesaveenddatechange(
                                         e.target.value,
