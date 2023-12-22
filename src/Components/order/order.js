@@ -43,7 +43,7 @@ import {
   isSameDay,
 } from "date-fns";
 
-export default function BuildingManagement(props) {
+export default function Order(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
   const { t } = useTranslation();
 
@@ -53,22 +53,25 @@ export default function BuildingManagement(props) {
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_stock = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
-
+  var curr = new Date();
+  var curdate = curr.toISOString().substring(0, 10);
+  const [date, setdate] = useState(curdate);
   const [data, setdata] = useState([]);
-  const [allbuilding, setallbuilding] = useState([]);
+  const [lunch, setlunch] = useState("");
+  const [dinner, setdinner] = useState("");
   const [building, setbuilding] = useState("");
   const [buildingoption, setbuildingoption] = useState([]);
 
   const [allemployee, setallemployee] = useState([]);
   const [employee, setemployee] = useState("");
   const [type, settype] = useState("");
-  const [joindate, setjoindate] = useState("");
-  const [enddate, setenddate] = useState("");
+  const [breakfast, setbreakfast] = useState("");
+  const [remarks, setremarks] = useState("");
   const [isloading, setisloading] = useState(false);
 
   useEffect(() => {
     setisloading(true);
-    dispatch({ type: "Set_menuitem", data: "building" });
+    dispatch({ type: "Set_menuitem", data: "order" });
     const fetchWorkouts = async () => {
       var url = `${route}/api/buildings/`;
 
@@ -79,7 +82,7 @@ export default function BuildingManagement(props) {
 
       if (response.ok) {
         setisloading(false);
-        setallbuilding(json);
+
         const optimize = json.map((item) => {
           return { value: item, label: item.building_number };
         });
@@ -95,7 +98,7 @@ export default function BuildingManagement(props) {
     };
 
     const fetchemployess = async () => {
-      var url = `${route}/api/employee/`;
+      var url = `${route}/api/parties/?account_head=${selected_branch.id}&type=customer`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -120,7 +123,7 @@ export default function BuildingManagement(props) {
       fetchWorkouts();
       fetchemployess();
     }
-  }, []);
+  }, [selected_branch]);
 
   const handlesubmit = async (e) => {
     e.preventDefault();
@@ -178,7 +181,7 @@ export default function BuildingManagement(props) {
       let pitem = optimize.shift();
       let newdata = data.map((item) => {
         if (item.employee.value === pitem.employee.value) {
-          item["joindate"] = parseInt(pitem.joindate) + parseInt(joindate);
+          item["breakfast"] = parseInt(pitem.breakfast) + parseInt(breakfast);
 
           return item;
         } else {
@@ -192,32 +195,32 @@ export default function BuildingManagement(props) {
         {
           employee: employee,
           type: type.value,
-          joindate: joindate,
-          enddate: enddate,
+          breakfast: breakfast,
+          remarks: remarks,
         },
       ]);
     }
 
     setemployee("");
-    setjoindate("");
-    setenddate("");
+    setbreakfast("");
+    setremarks("");
     settype("");
   };
 
-  const handlesavejoindatechange = (value, row) => {
+  const handlesavebreakfastchange = (value, row) => {
     const optimize = data.map((item) => {
       if (item.employee.value == row.employee.value) {
-        item["joindate"] = value;
+        item["breakfast"] = value;
         return item;
       }
       return item;
     });
     setdata(optimize);
   };
-  const handlesaveenddatechange = (value, row) => {
+  const handlesaveremarkschange = (value, row) => {
     const optimize = data.map((item) => {
       if (item.employee.value == row.employee.value) {
-        item["enddate"] = value;
+        item["remarks"] = value;
         return item;
       }
       return item;
@@ -236,7 +239,7 @@ export default function BuildingManagement(props) {
     <div className="p-3 pt-2">
       <div className="card">
         <div className="card-header d-flex justify-content-between bg-white">
-          <h3 className="mt-2 me-2">Building Management</h3>
+          <h3 className="mt-2 me-2">Order </h3>
           <div className="mt-2 me-2 d-flex flex-row-reverse">
             <Button
               variant="outline-primary"
@@ -268,10 +271,24 @@ export default function BuildingManagement(props) {
               <div className="col-md-7">
                 <div className="d-sm-flex  align-items-center mt-3">
                   <div className="col-md-4 me-3">
+                    <TextField
+                      type="date"
+                      InputLabelProps={{ shrink: true }}
+                      className="form-control mb-3"
+                      size="small"
+                      label="Delivery date"
+                      value={date}
+                      onChange={(e) => {
+                        setdate(e.target.value);
+                      }}
+                    />
+                  </div>
+
+                  <div className="col-md-4 me-3">
                     <Select
-                      options={buildingoption}
-                      placeholder={" Select Building..."}
-                      value={building}
+                      options={allemployee}
+                      placeholder={" Select Customer..."}
+                      value={employee}
                       funct={handlebuildingchange}
                     />
                   </div>
@@ -282,12 +299,15 @@ export default function BuildingManagement(props) {
                     <thead className="border-0">
                       <tr>
                         <th className="d-flex align-items-center border-0 p-0">
-                          <h6 className="col-4 p-2 ps-0 pb-0 m-0">Employees</h6>
+                          <h6 className="col-4 p-2 ps-0 pb-0 m-0">
+                            Building No
+                          </h6>
 
-                          <h6 className=" col-4  p-2 pb-0 m-0">Type</h6>
+                          <h6 className=" col-4  p-2 pb-0 m-0">Breakfast</h6>
 
-                          <h6 className="col-4 p-2 pb-0 m-0">Join Date</h6>
-                          <h6 className="col-4 p-2 pb-0 m-0">End Date</h6>
+                          <h6 className="col-4 p-2 pb-0 m-0">Lunch</h6>
+                          <h6 className="col-4 p-2 pb-0 m-0">Dinner</h6>
+                          <h6 className="col-4 p-2 pb-0 m-0">Remarks</h6>
                         </th>
                       </tr>
                       {data?.map((item) => {
@@ -315,9 +335,9 @@ export default function BuildingManagement(props) {
                                   type="date"
                                   className="form-control"
                                   size="small"
-                                  value={item.joindate}
+                                  value={item.breakfast}
                                   onChange={(e) => {
-                                    handlesavejoindatechange(
+                                    handlesavebreakfastchange(
                                       e.target.value,
                                       item
                                     );
@@ -330,9 +350,9 @@ export default function BuildingManagement(props) {
                                     type="date"
                                     className="form-control"
                                     size="small"
-                                    value={item.enddate}
+                                    value={item.remarks}
                                     onChange={(e) => {
-                                      handlesaveenddatechange(
+                                      handlesaveremarkschange(
                                         e.target.value,
                                         item
                                       );
@@ -368,38 +388,51 @@ export default function BuildingManagement(props) {
                           <form onSubmit={handleaddclick} className="d-flex ">
                             <div className="col-4">
                               <Select
-                                options={allemployee}
+                                options={buildingoption}
                                 placeholder={""}
-                                value={employee}
-                                funct={(e) => setemployee(e)}
+                                value={building}
+                                funct={(e) => setbuilding(e)}
                                 margin={true}
-                                required={true}
-                              />
-                            </div>
-
-                            <div className="col-4">
-                              <Select
-                                options={[
-                                  { value: "Captain", label: "Captain" },
-                                  { value: "Worker", label: "Worker" },
-                                ]}
-                                placeholder={""}
-                                margin={true}
-                                value={type}
-                                funct={(e) => settype(e)}
                                 required={true}
                               />
                             </div>
 
                             <div className="col-4">
                               <TextField
-                                type="date"
-                                placeholder={"JOin Date"}
+                                type="number"
+                                placeholder={"Breakfast"}
                                 size="small"
                                 className="form-control"
-                                value={joindate}
+                                value={breakfast}
                                 onChange={(e) => {
-                                  setjoindate(e.target.value);
+                                  setbreakfast(e.target.value);
+                                }}
+                                required
+                              />
+                            </div>
+
+                            <div className="col-4">
+                              <TextField
+                                type="number"
+                                placeholder={"Lunch"}
+                                size="small"
+                                className="form-control"
+                                value={lunch}
+                                onChange={(e) => {
+                                  setlunch(e.target.value);
+                                }}
+                                required
+                              />
+                            </div>
+                            <div className="col-4">
+                              <TextField
+                                type="number"
+                                placeholder={"Dinner"}
+                                size="small"
+                                className="form-control"
+                                value={dinner}
+                                onChange={(e) => {
+                                  setdinner(e.target.value);
                                 }}
                                 required
                               />
@@ -407,13 +440,12 @@ export default function BuildingManagement(props) {
                             <div className="col-4">
                               <InputGroup>
                                 <TextField
-                                  type="date"
-                                  placeholder={"End date"}
+                                  placeholder={"Remarks"}
                                   size="small"
                                   className="form-control"
-                                  value={enddate}
+                                  value={remarks}
                                   onChange={(e) => {
-                                    setenddate(e.target.value);
+                                    setremarks(e.target.value);
                                   }}
                                 />
 

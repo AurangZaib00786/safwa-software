@@ -159,10 +159,18 @@ function Layout(props) {
             </SubMenu>
 
             <SubMenu
-              active={menu_status === "building"}
+              active={menu_status === "building" || menu_status === "order"}
               icon={<BusinessIcon />}
               label={"Building Managment"}
             >
+              <MenuItem
+                active={menu_status === "order"}
+                icon={<StoreIcon />}
+                component={<Link to="/order" />}
+                rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+              >
+                Order
+              </MenuItem>
               <MenuItem
                 active={menu_status === "building"}
                 icon={<StoreIcon />}
