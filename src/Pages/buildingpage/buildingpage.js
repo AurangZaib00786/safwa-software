@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Building from "../../Container/buildingContainer";
+import BuildingManagement from "../../Container/buildingmanagmentContainer";
 import { ToastContainer } from "react-toastify";
 
 function Items_page({ current_user }) {
-  const tabs = ["building"];
+  const tabs = ["building", "buildingmanagement"];
   var current_tab = localStorage.getItem("activeTab");
   if (!tabs.includes(current_tab)) {
     current_tab = "building";
@@ -31,6 +32,9 @@ function Items_page({ current_user }) {
       >
         <Tab eventKey="building" title="Building">
           {activeTab === "building" && <Building />}
+        </Tab>
+        <Tab eventKey="buildingmanagement" title="Building Management">
+          {activeTab === "buildingmanagement" && <BuildingManagement />}
         </Tab>
       </Tabs>
       <ToastContainer autoClose={2000} hideProgressBar={true} theme="dark" />
