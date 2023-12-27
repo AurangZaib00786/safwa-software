@@ -9,6 +9,8 @@ import Items_page from "./itempage/itempage";
 import Stockstore_page from "./store&stock/store&stock";
 import Building_page from "./buildingpage/buildingpage";
 import Order from "../Container/orderContainer";
+import Customer from "../Container/customerContainer";
+import Supplier from "../Container/supplierContainer";
 import Purchase_page from "./purchase_page/purchase_page";
 import Sale_page from "./sale_page/sale_page";
 import Payment_page from "./payments/payment_page";
@@ -66,7 +68,16 @@ function Routing(props) {
             ></Route>
 
             <Route
-              path="/parties"
+              path="/customers"
+              element={user ? <Customer /> : <Navigate to={"/"} />}
+            ></Route>
+            <Route
+              path="/suppliers"
+              element={user ? <Supplier /> : <Navigate to={"/"} />}
+            ></Route>
+
+            <Route
+              path="/employees"
               element={
                 user ? (
                   <Parties_page current_user={current_user} />

@@ -96,6 +96,7 @@ export default function Dish(props) {
   }, [menu, submenu]);
 
   useEffect(() => {
+    dispatch({ type: "Set_menuitem", data: "dish" });
     const fetchmenu = async () => {
       var url = `${route}/api/menu/`;
 

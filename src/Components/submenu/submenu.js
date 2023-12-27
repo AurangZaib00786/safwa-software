@@ -80,6 +80,7 @@ export default function Submenu(props) {
   }, [menu]);
 
   useEffect(() => {
+    dispatch({ type: "Set_menuitem", data: "dish" });
     const fetchmenus = async () => {
       dispatch({ type: "Set_table_history", data: [] });
       var url = `${route}/api/menu/`;

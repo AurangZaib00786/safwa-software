@@ -34,6 +34,7 @@ export default function BuffetMenu(props) {
 
   useEffect(() => {
     dispatch({ type: "Set_table_history", data: [] });
+
     const fetchWorkouts = async () => {
       setisloading(true);
       var url = `${route}/api/dishes/`;
@@ -121,6 +122,7 @@ export default function BuffetMenu(props) {
   }, [title, callagain]);
 
   useEffect(() => {
+    dispatch({ type: "Set_menuitem", data: "buffet" });
     const fetchmenu = async () => {
       var url = `${route}/api/menu/`;
 

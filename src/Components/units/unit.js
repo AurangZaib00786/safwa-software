@@ -51,6 +51,7 @@ export default function Unit(props) {
     setisloading(true);
 
     const fetchWorkouts = async () => {
+      dispatch({ type: "Set_menuitem", data: "item" });
       dispatch({ type: "Set_table_history", data: [] });
 
       var url = `${route}/api/units/`;
@@ -73,7 +74,7 @@ export default function Unit(props) {
     if (user) {
       fetchWorkouts();
     }
-  }, [user, selected_branch]);
+  }, []);
 
   const handleconfirm = (row) => {
     dispatch({ type: "Delete_table_history", data: { id: row } });

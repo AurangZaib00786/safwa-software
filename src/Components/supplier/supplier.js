@@ -57,6 +57,7 @@ function Supplier(props) {
 
   useEffect(() => {
     dispatch({ type: "Set_table_history", data: [] });
+    dispatch({ type: "Set_menuitem", data: "supplier" });
     setisloading(true);
 
     const fetchWorkouts = async () => {

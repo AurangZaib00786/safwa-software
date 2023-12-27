@@ -30,6 +30,7 @@ export default function Schedule(props) {
   const [callagain, setcallagain] = useState(false);
 
   useEffect(() => {
+    dispatch({ type: "Set_menuitem", data: "buffet" });
     const fetchtimings = async () => {
       var url = `${route}/api/buffet-timing/`;
 

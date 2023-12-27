@@ -101,22 +101,48 @@ function Layout(props) {
               User Management
             </MenuItem>
 
-            <MenuItem
-              active={menu_status === "customer"}
+            <SubMenu
+              active={
+                menu_status === "customer" ||
+                menu_status === "supplier" ||
+                menu_status === "employee"
+              }
               icon={<SupervisorAccountIcon />}
-              component={<Link to={`/parties`} />}
-              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+              label={"Parties"}
             >
-              Parties
-            </MenuItem>
+              <MenuItem
+                active={menu_status === "customer"}
+                icon={<SupervisorAccountIcon />}
+                component={<Link to={`/customers`} />}
+                rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+              >
+                Customers
+              </MenuItem>
+              <MenuItem
+                active={menu_status === "supplier"}
+                icon={<SupervisorAccountIcon />}
+                component={<Link to={`/suppliers`} />}
+                rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+              >
+                Vendors
+              </MenuItem>
+              <MenuItem
+                active={menu_status === "employee"}
+                icon={<SupervisorAccountIcon />}
+                component={<Link to={`/employees`} />}
+                rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+              >
+                Employees
+              </MenuItem>
+            </SubMenu>
 
             <SubMenu
-              active={menu_status === "products"}
+              active={menu_status === "dish" || menu_status === "buffet"}
               icon={<TurnedInIcon />}
               label={"Menu Managment"}
             >
               <MenuItem
-                active={menu_status === "products"}
+                active={menu_status === "dish"}
                 icon={<TurnedInIcon />}
                 component={<Link to="/menu_page" />}
                 rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
@@ -125,7 +151,7 @@ function Layout(props) {
               </MenuItem>
 
               <MenuItem
-                active={menu_status === "products"}
+                active={menu_status === "buffet"}
                 icon={<TurnedInIcon />}
                 component={<Link to="/buffet&schedule" />}
                 rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
@@ -135,12 +161,12 @@ function Layout(props) {
             </SubMenu>
 
             <SubMenu
-              active={menu_status === "products"}
+              active={menu_status === "item" || menu_status === "store"}
               icon={<StoreIcon />}
               label={"Store Managment"}
             >
               <MenuItem
-                active={menu_status === "products"}
+                active={menu_status === "item"}
                 icon={<TurnedInIcon />}
                 component={<Link to="/items" />}
                 rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
@@ -149,7 +175,7 @@ function Layout(props) {
               </MenuItem>
 
               <MenuItem
-                active={menu_status === "products"}
+                active={menu_status === "store"}
                 icon={<StoreIcon />}
                 component={<Link to="/store&stock" />}
                 rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}

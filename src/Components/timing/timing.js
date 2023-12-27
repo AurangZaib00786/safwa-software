@@ -49,7 +49,7 @@ export default function Timing(props) {
 
   useEffect(() => {
     setisloading(true);
-
+    dispatch({ type: "Set_menuitem", data: "buffet" });
     const fetchWorkouts = async () => {
       dispatch({ type: "Set_table_history", data: [] });
 
@@ -73,7 +73,7 @@ export default function Timing(props) {
     if (user) {
       fetchWorkouts();
     }
-  }, [user, selected_branch]);
+  }, []);
 
   const handleconfirm = (row) => {
     dispatch({ type: "Delete_table_history", data: { id: row } });

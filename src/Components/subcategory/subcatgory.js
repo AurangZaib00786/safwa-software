@@ -53,6 +53,7 @@ export default function Subcategory(props) {
   useEffect(() => {
     setisloading(true);
     dispatch({ type: "Set_table_history", data: [] });
+
     const fetchWorkouts = async () => {
       var url = `${route}/api/sub-categories/`;
       if (menu.value !== "all") {
@@ -80,6 +81,7 @@ export default function Subcategory(props) {
   }, [menu]);
 
   useEffect(() => {
+    dispatch({ type: "Set_menuitem", data: "item" });
     const fetchmenus = async () => {
       dispatch({ type: "Set_table_history", data: [] });
       var url = `${route}/api/categories/`;

@@ -56,7 +56,7 @@ export default function CustomerType(props) {
   const [contact, setcontact] = useState("");
   const [prdaywage, setprdaywage] = useState("");
   const [address, setaddress] = useState("");
-  const [balance, setbalance] = useState("");
+  const [type, settype] = useState("");
   const [workinghours, setworkinghours] = useState("");
   const [hiredate, sethiredate] = useState("");
   const [firedate, setfiredate] = useState("");
@@ -76,8 +76,10 @@ export default function CustomerType(props) {
   const [workpermit, setworkpermit] = useState("");
   const [workpermitdate, setworkpermitdate] = useState("");
   const [allcategory, setallcategory] = useState([]);
+  const [allcountries, setallcountries] = useState([]);
   const [category, setcategory] = useState("");
   const [isloading, setisloading] = useState(false);
+  const [salary, setsalary] = useState("");
   const [id, setid] = useState("");
   const [check_update, setcheck_update] = useState(true);
 
@@ -110,6 +112,7 @@ export default function CustomerType(props) {
   }, [selected_branch]);
 
   useEffect(() => {
+    dispatch({ type: "Set_menuitem", data: "employee" });
     const fetchcategory = async () => {
       var url = `${route}/api/employee-categories/`;
 
@@ -130,8 +133,27 @@ export default function CustomerType(props) {
       }
     };
 
+    const fetchcountries = async () => {
+      var url = `https://restcountries.com/v3.1/all`;
+
+      const response = await fetch(`${url}`);
+      const json = await response.json();
+
+      if (response.ok) {
+        const optimize = json.map((item) => {
+          return { value: item.name.common, label: item.name.common };
+        });
+
+        setallcountries(optimize);
+      }
+      if (!response.ok) {
+        went_wrong_toast();
+      }
+    };
+
     if (user) {
       fetchcategory();
+      fetchcountries();
     }
   }, []);
 
@@ -166,7 +188,7 @@ export default function CustomerType(props) {
             setcontact(row.contact);
             setprdaywage(row.wage_per_day);
             setcategory({ value: row.category, label: row.category_name });
-            setbalance(row.balance);
+            settype(row.type);
             setnationality(row.country);
             setaddress(row.address);
             sethiredate(row.hiring_date);
@@ -233,8 +255,8 @@ export default function CustomerType(props) {
     },
 
     {
-      dataField: "balance",
-      text: t("Balance"),
+      dataField: "type",
+      text: t("type"),
       sort: true,
       headerFormatter: headerstyle,
     },
@@ -381,12 +403,12 @@ export default function CustomerType(props) {
 
         formData.append("name", name);
         formData.append("contact", contact);
-        formData.append("country", nationality);
+        formData.append("country", nationality?.value);
         formData.append("address", address);
         formData.append("working_hours", workinghours);
-        formData.append("wage_per_day", prdaywage);
-        formData.append("balance", balance);
-        formData.append("basic_salary", basicsalary);
+
+        formData.append("type", type.value);
+        formData.append("salary", salary);
         formData.append("transport_allowance", transportallowance);
         formData.append("food_allowance", foodallowance);
         formData.append("accomodation_allowance", accomallowance);
@@ -428,9 +450,9 @@ export default function CustomerType(props) {
           setname("");
           setarabicname("");
           setcontact("");
-          setprdaywage("");
+
           setcategory("");
-          setbalance("");
+          settype("");
           setnationality("");
           setaddress("");
           sethiredate("");
@@ -439,7 +461,7 @@ export default function CustomerType(props) {
           setfoodallowance("");
           setprallowance("");
           setextraallowance("");
-          setbasicsalary("");
+          setsalary("");
           setaccomallowance("");
           setpassport("");
           setpassportdate("");
@@ -463,12 +485,12 @@ export default function CustomerType(props) {
 
       formData.append("name", name);
       formData.append("contact", contact);
-      formData.append("country", nationality);
+      formData.append("country", nationality?.value);
       formData.append("address", address);
       formData.append("working_hours", workinghours);
-      formData.append("wage_per_day", prdaywage);
-      formData.append("balance", balance);
-      formData.append("basic_salary", basicsalary);
+
+      formData.append("type", type.value);
+      formData.append("salary", salary);
       formData.append("transport_allowance", transportallowance);
       formData.append("food_allowance", foodallowance);
       formData.append("accomodation_allowance", accomallowance);
@@ -509,9 +531,9 @@ export default function CustomerType(props) {
         setname("");
         setarabicname("");
         setcontact("");
-        setprdaywage("");
+
         setcategory("");
-        setbalance("");
+        settype("");
         setnationality("");
         setaddress("");
         sethiredate("");
@@ -520,7 +542,7 @@ export default function CustomerType(props) {
         setfoodallowance("");
         setprallowance("");
         setextraallowance("");
-        setbasicsalary("");
+        setsalary("");
         setaccomallowance("");
         setpassport("");
         setpassportdate("");
@@ -551,7 +573,7 @@ export default function CustomerType(props) {
           <div className="card-body pt-0">
             <div className="mt-4">
               <div className="row">
-                <div className="col-md-3">
+                <div className="col-6 col-md-3">
                   <TextField
                     className="form-control   mb-3"
                     label={"Name"}
@@ -564,7 +586,7 @@ export default function CustomerType(props) {
                     autoFocus
                   />
                 </div>
-                <div className="col-md-3">
+                <div className="col-6 col-md-3">
                   <TextField
                     className="form-control  mb-3"
                     label={"اسم"}
@@ -576,7 +598,7 @@ export default function CustomerType(props) {
                   />
                 </div>
 
-                <div className="col-md-3">
+                <div className="col-6  col-md-3">
                   <TextField
                     className="form-control  mb-3"
                     label={"Cell"}
@@ -587,56 +609,7 @@ export default function CustomerType(props) {
                     size="small"
                   />
                 </div>
-                <div className="col-md-3">
-                  <TextField
-                    type="number"
-                    className="form-control   mb-3"
-                    label={"Per Day Wage"}
-                    value={prdaywage}
-                    onChange={(e) => {
-                      setprdaywage(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-              </div>
-
-              <div className="row">
-                <div className=" col-md-3 mb-3">
-                  <Select
-                    options={allcategory}
-                    placeholder={"Employee Category"}
-                    value={category}
-                    funct={(e) => setcategory(e)}
-                    required={true}
-                  ></Select>
-                </div>
-                <div className="col-md-3">
-                  <TextField
-                    className="form-control  mb-3"
-                    label={"Balance"}
-                    value={balance}
-                    onChange={(e) => {
-                      setbalance(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-
-                <div className="col-md-3">
-                  <TextField
-                    multiline
-                    className="form-control   mb-3"
-                    label={"Working Hours"}
-                    value={workinghours}
-                    onChange={(e) => {
-                      setworkinghours(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-
-                <div className=" col-md-3">
+                <div className=" col-6  col-md-3">
                   <TextField
                     multiline
                     className="form-control  mb-3"
@@ -651,130 +624,136 @@ export default function CustomerType(props) {
               </div>
 
               <div className="row">
-                <div className=" col-md-3">
+                <div className="col-6  col-md-3 mb-3">
+                  <Select
+                    options={allcategory}
+                    placeholder={"Category"}
+                    value={category}
+                    funct={(e) => setcategory(e)}
+                    required={true}
+                  ></Select>
+                </div>
+                <div className="col-6  col-md-3 mb-3">
+                  <Select
+                    options={[
+                      { value: "Daily Wage", label: "Daily Wage" },
+                      { value: "Monthly Wage", label: "Monthly Wage" },
+                    ]}
+                    placeholder={"Wage Type"}
+                    value={type}
+                    funct={(e) => settype(e)}
+                    required={true}
+                  ></Select>
+                </div>
+
+                <div className="col-6  col-md-3">
                   <TextField
-                    type="Date"
-                    className="form-control  mb-3"
-                    label={t("Hiring Date")}
-                    InputLabelProps={{ shrink: true }}
-                    value={hiredate}
+                    className="form-control   mb-3"
+                    label={"Working Hours"}
+                    value={workinghours}
                     onChange={(e) => {
-                      sethiredate(e.target.value);
+                      setworkinghours(e.target.value);
                     }}
                     size="small"
                   />
                 </div>
-
-                <div className=" col-md-3">
+                <div className="col-6  col-md-3">
                   <TextField
-                    type="Date"
-                    className="form-control  mb-3"
-                    label={t("Firing Date")}
-                    InputLabelProps={{ shrink: true }}
-                    value={firedate}
+                    className="form-control   mb-3"
+                    label={"Salary"}
+                    value={salary}
                     onChange={(e) => {
-                      setfiredate(e.target.value);
+                      setsalary(e.target.value);
                     }}
                     size="small"
                   />
                 </div>
+              </div>
 
-                <div className=" col-md-3">
-                  <TextField
-                    className="form-control  mb-3"
-                    label={t("Nationality")}
+              {type?.value === "Monthly Wage" && (
+                <div className="row">
+                  <div className="col-6 col-md-3">
+                    <TextField
+                      type="number"
+                      className="form-control  mb-3"
+                      label={t("Transport Allowance")}
+                      value={transportallowance}
+                      onChange={(e) => {
+                        settransportallowance(e.target.value);
+                      }}
+                      size="small"
+                    />
+                  </div>
+
+                  <div className="col-6 col-md-3">
+                    <TextField
+                      type="number"
+                      className="form-control  mb-3"
+                      label={t("Food Allowance")}
+                      value={foodallowance}
+                      onChange={(e) => {
+                        setfoodallowance(e.target.value);
+                      }}
+                      size="small"
+                    />
+                  </div>
+
+                  <div className="col-6 col-md-3">
+                    <TextField
+                      type="number"
+                      className="form-control  mb-3"
+                      label={t("Accomodation Allowance")}
+                      value={accomallowance}
+                      onChange={(e) => {
+                        setaccomallowance(e.target.value);
+                      }}
+                      size="small"
+                    />
+                  </div>
+
+                  <div className="col-6 col-md-3">
+                    <TextField
+                      type="Number"
+                      className="form-control  mb-3"
+                      label={t("PR Allowance")}
+                      value={prallowance}
+                      onChange={(e) => {
+                        setprallowance(e.target.value);
+                      }}
+                      size="small"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="row">
+                {type?.value === "Monthly Wage" && (
+                  <div className="col-6 col-md-3">
+                    <TextField
+                      type="number"
+                      className="form-control  mb-3"
+                      label={t("Extra Allowance")}
+                      value={extraallowance}
+                      onChange={(e) => {
+                        setextraallowance(e.target.value);
+                      }}
+                      size="small"
+                    />
+                  </div>
+                )}
+
+                <div className="col-6 col-md-3">
+                  <Select
+                    options={allcountries}
+                    placeholder={"Country"}
                     value={nationality}
-                    onChange={(e) => {
-                      setnationality(e.target.value);
-                    }}
-                    size="small"
-                  />
+                    funct={(e) => setnationality(e)}
+                    required={true}
+                  ></Select>
                 </div>
 
-                <div className=" col-md-3">
-                  <TextField
-                    type="Number"
-                    className="form-control  mb-3"
-                    label={t("Basic Salary")}
-                    value={basicsalary}
-                    onChange={(e) => {
-                      setbasicsalary(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-              </div>
-
-              <div className="row">
-                <div className=" col-md-3">
-                  <TextField
-                    type="number"
-                    className="form-control  mb-3"
-                    label={t("Transport Allowance")}
-                    value={transportallowance}
-                    onChange={(e) => {
-                      settransportallowance(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-
-                <div className=" col-md-3">
-                  <TextField
-                    type="number"
-                    className="form-control  mb-3"
-                    label={t("Food Allowance")}
-                    value={foodallowance}
-                    onChange={(e) => {
-                      setfoodallowance(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-
-                <div className=" col-md-3">
-                  <TextField
-                    type="number"
-                    className="form-control  mb-3"
-                    label={t("Accomodation Allowance")}
-                    value={accomallowance}
-                    onChange={(e) => {
-                      setaccomallowance(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-
-                <div className=" col-md-3">
-                  <TextField
-                    type="Number"
-                    className="form-control  mb-3"
-                    label={t("PR Allowance")}
-                    value={prallowance}
-                    onChange={(e) => {
-                      setprallowance(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-              </div>
-
-              <div className="row">
-                <div className=" col-md-3">
-                  <TextField
-                    type="number"
-                    className="form-control  mb-3"
-                    label={t("Extra Allowance")}
-                    value={extraallowance}
-                    onChange={(e) => {
-                      setextraallowance(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-
-                <div className="d-flex col-md-3">
-                  <div className=" col-md-6">
+                <div className="d-flex col-6 col-md-3">
+                  <div className=" col-6">
                     <TextField
                       className="form-control   mb-3"
                       label={t("Passport No")}
@@ -785,7 +764,7 @@ export default function CustomerType(props) {
                       size="small"
                     />
                   </div>
-                  <div className="ps-3 col-md-6 ">
+                  <div className="ps-3 col-6 ">
                     <TextField
                       type="Date"
                       className="form-control  mb-3"
@@ -800,8 +779,8 @@ export default function CustomerType(props) {
                   </div>
                 </div>
 
-                <div className="d-flex col-md-3 ">
-                  <div className="col-md-6">
+                <div className="d-flex col-6 col-md-3 ">
+                  <div className="col-6">
                     <TextField
                       className="form-control  mb-3"
                       label={t("Muncipilaty Card")}
@@ -812,7 +791,7 @@ export default function CustomerType(props) {
                       size="small"
                     />
                   </div>
-                  <div className="ps-3 col-md-6 ">
+                  <div className="ps-3 col-6 ">
                     <TextField
                       type="Date"
                       className="form-control  mb-3"
@@ -827,40 +806,70 @@ export default function CustomerType(props) {
                   </div>
                 </div>
 
-                <div className="d-flex col-md-3 ">
-                  <div className=" col-md-6">
-                    <TextField
-                      className="form-control  mb-3"
-                      label={t("Driving License")}
-                      value={drivinglicense}
-                      onChange={(e) => {
-                        setdrivinglicense(e.target.value);
-                      }}
-                      size="small"
-                    />
+                {type?.value !== "Monthly Wage" && (
+                  <div className="d-flex col-6 col-md-3 ">
+                    <div className=" col-6">
+                      <TextField
+                        className="form-control  mb-3"
+                        label={t("Driving License")}
+                        value={drivinglicense}
+                        onChange={(e) => {
+                          setdrivinglicense(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                    <div className="ps-3 col-6">
+                      <TextField
+                        type="Date"
+                        className="form-control  mb-3"
+                        label={t("Expiry")}
+                        InputLabelProps={{ shrink: true }}
+                        value={drivinglicensedate}
+                        onChange={(e) => {
+                          setdrivinglicensedate(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
                   </div>
-                  <div className="ps-3 col-md-6">
-                    <TextField
-                      type="Date"
-                      className="form-control  mb-3"
-                      label={t("Expiry")}
-                      InputLabelProps={{ shrink: true }}
-                      value={drivinglicensedate}
-                      onChange={(e) => {
-                        setdrivinglicensedate(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-                </div>
+                )}
               </div>
 
               <div className="row">
-                <div className="d-flex col-md-3">
-                  <div className=" col-md-6">
+                {type?.value === "Monthly Wage" && (
+                  <div className="d-flex col-6 col-md-3 ">
+                    <div className=" col-6">
+                      <TextField
+                        className="form-control  mb-3"
+                        label={t("Driving License")}
+                        value={drivinglicense}
+                        onChange={(e) => {
+                          setdrivinglicense(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                    <div className="ps-3 col-6">
+                      <TextField
+                        type="Date"
+                        className="form-control  mb-3"
+                        label={t("Expiry")}
+                        InputLabelProps={{ shrink: true }}
+                        value={drivinglicensedate}
+                        onChange={(e) => {
+                          setdrivinglicensedate(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                  </div>
+                )}
+                <div className="d-flex col-6 col-md-3">
+                  <div className=" col--6">
                     <TextField
                       className="form-control   mb-3"
-                      label={t("Work Permit")}
+                      label={t("ID No.")}
                       value={workpermit}
                       onChange={(e) => {
                         setworkpermit(e.target.value);
@@ -868,7 +877,7 @@ export default function CustomerType(props) {
                       size="small"
                     />
                   </div>
-                  <div className="ps-3 col-md-6 ">
+                  <div className="ps-3 col-6 ">
                     <TextField
                       type="Date"
                       className="form-control  mb-3"
@@ -881,6 +890,33 @@ export default function CustomerType(props) {
                       size="small"
                     />
                   </div>
+                </div>
+                <div className="col-6 col-md-3">
+                  <TextField
+                    type="Date"
+                    className="form-control  mb-3"
+                    label={t("Hiring Date")}
+                    InputLabelProps={{ shrink: true }}
+                    value={hiredate}
+                    onChange={(e) => {
+                      sethiredate(e.target.value);
+                    }}
+                    size="small"
+                  />
+                </div>
+
+                <div className="col-6 col-md-3">
+                  <TextField
+                    type="Date"
+                    className="form-control  mb-3"
+                    label={t("Firing Date")}
+                    InputLabelProps={{ shrink: true }}
+                    value={firedate}
+                    onChange={(e) => {
+                      setfiredate(e.target.value);
+                    }}
+                    size="small"
+                  />
                 </div>
               </div>
             </div>

@@ -114,6 +114,7 @@ export default function Item(props) {
   }, [menu]);
 
   useEffect(() => {
+    dispatch({ type: "Set_menuitem", data: "item" });
     const fetchmenu = async () => {
       var url = `${route}/api/categories/`;
 

@@ -50,7 +50,7 @@ export default function Menu(props) {
 
   useEffect(() => {
     setisloading(true);
-
+    dispatch({ type: "Set_menuitem", data: "dish" });
     const fetchWorkouts = async () => {
       dispatch({ type: "Set_table_history", data: [] });
       var url = `${route}/api/menu/`;
@@ -73,7 +73,7 @@ export default function Menu(props) {
     if (user) {
       fetchWorkouts();
     }
-  }, [user]);
+  }, []);
 
   const handleconfirm = (row) => {
     dispatch({ type: "Delete_table_history", data: { id: row } });

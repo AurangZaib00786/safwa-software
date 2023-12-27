@@ -31,7 +31,7 @@ function StockUpdate(props) {
   const [allstore, setallstore] = useState([]);
 
   useEffect(() => {
-    dispatch({ type: "Set_menuitem", data: "products" });
+    dispatch({ type: "Set_menuitem", data: "store" });
     const fetchstore = async () => {
       var url = `${route}/api/stores/`;
 
