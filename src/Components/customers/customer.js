@@ -293,13 +293,14 @@ export default function Customer(props) {
     const body = all_customers.map((item, index) => {
       return [
         index + 1,
-        item.customer_type_name,
-        item.area_name,
         item.name,
+        item.arabic_name,
+
         item.contact,
-        item.vatno,
-        item.menu,
-        item.bankdetails,
+        item.vat_number,
+        item.bank,
+        item.timing_name,
+        item.menu_name,
         item.address,
       ];
     });

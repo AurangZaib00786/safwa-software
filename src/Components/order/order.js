@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import Select from "../alerts/select";
+import Selectr from "react-select";
 import { IconButton } from "@material-ui/core";
 import InputGroup from "react-bootstrap/InputGroup";
 import AddIcon from "@material-ui/icons/Add";
@@ -13,47 +14,15 @@ import TextField from "@mui/material/TextField";
 import success_toast from "../alerts/success_toast";
 import ClearIcon from "@material-ui/icons/Clear";
 
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
-import BootstrapTable from "react-bootstrap-table-next";
-import paginationFactory from "react-bootstrap-table2-paginator";
-import ToolkitProvider, {
-  Search,
-  CSVExport,
-} from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
-import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
-import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
-import Alert_before_delete from "../../Container/alertContainer";
-import custom_toast from "../alerts/custom_toast";
-import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
-import PrintIcon from "@material-ui/icons/Print";
-import Overlay from "react-bootstrap/Overlay";
-import Popover from "react-bootstrap/Popover";
-import "react-date-range/dist/styles.css"; // main style file
-import "react-date-range/dist/theme/default.css";
-import { DateRangePicker, defaultStaticRanges } from "react-date-range";
-import {
-  endOfDay,
-  startOfYear,
-  endOfYear,
-  addMonths,
-  addYears,
-  isSameDay,
-} from "date-fns";
-
 export default function Order(props) {
-  pdfMake.vfs = pdfFonts.pdfMake.vfs;
-  const { t } = useTranslation();
-
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const current_user = props.state.Setcurrentinfo.current_user;
-  const all_stock = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
+  const setActiveTab = props.setActiveTab;
   var curr = new Date();
+  const buildingref = useRef(null);
   var curdate = curr.toISOString().substring(0, 10);
   const [date, setdate] = useState(curdate);
   const [data, setdata] = useState([]);
@@ -61,13 +30,40 @@ export default function Order(props) {
   const [dinner, setdinner] = useState("");
   const [building, setbuilding] = useState("");
   const [buildingoption, setbuildingoption] = useState([]);
-
   const [allemployee, setallemployee] = useState([]);
   const [employee, setemployee] = useState("");
-  const [type, settype] = useState("");
+
   const [breakfast, setbreakfast] = useState("");
   const [remarks, setremarks] = useState("");
   const [isloading, setisloading] = useState(false);
+  const [update, setupdate] = useState(false);
+  const order = JSON.parse(localStorage.getItem("data"));
+  useEffect(() => {
+    if (order?.order) {
+      setupdate(true);
+      let orderdata = order.data;
+      setemployee({
+        value: orderdata.customer,
+        label: orderdata.customer_name,
+      });
+      setdate(orderdata.date);
+      setdata(
+        orderdata.details?.map((item) => {
+          return {
+            id: item.id,
+            building: {
+              value: { id: item.building },
+              label: item.building_number,
+            },
+            breakfast: item.breakfast,
+            lunch: item.launch,
+            dinner: item.dinner,
+            remarks: item.remarks,
+          };
+        })
+      );
+    }
+  }, []);
 
   useEffect(() => {
     setisloading(true);
@@ -169,6 +165,56 @@ export default function Order(props) {
     }
   };
 
+  const handleupdate = async (e) => {
+    e.preventDefault();
+
+    const optimizedata = data.map((item) => {
+      return {
+        ...item,
+        building: item.building.value.id,
+      };
+    });
+
+    const response = await fetch(`${route}/api/orders/${order.data.id}/`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${user.access}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        details: optimizedata,
+        customer: employee.value,
+        date: date,
+      }),
+    });
+    const json = await response.json();
+
+    if (!response.ok) {
+      setisloading(false);
+      var error = Object.keys(json);
+      if (error.length > 0) {
+        Red_toast(`${json[error[0]]}`);
+      }
+    }
+
+    if (response.ok) {
+      success_toast();
+      setdata([]);
+      setemployee("");
+      localStorage.setItem("data", JSON.stringify(""));
+      setupdate(false);
+      setActiveTab("assignorderhistory");
+    }
+  };
+
+  const handleclear = () => {
+    setdata([]);
+    setemployee("");
+    setdate(curdate);
+    setupdate(false);
+    localStorage.setItem("data", JSON.stringify(""));
+  };
+
   const handleaddclick = (e) => {
     e.preventDefault();
 
@@ -178,6 +224,7 @@ export default function Order(props) {
     if (optimize.length > 0) {
       Red_toast("Building Already Selected!");
     } else {
+      console.log(data);
       setdata([
         ...data,
         {
@@ -195,10 +242,10 @@ export default function Order(props) {
     setlunch("");
     setdinner("");
     setremarks("");
+    buildingref.current.focus();
   };
 
   const handlesavedchange = (value, field, row) => {
-    console.log(row);
     if (field !== "remarks") {
       if (value <= row.value.capacity) {
         switch (field) {
@@ -279,7 +326,7 @@ export default function Order(props) {
           <div className="mt-2 me-2 d-flex flex-row-reverse">
             <Button
               variant="outline-primary"
-              onClick={handlesubmit}
+              onClick={update ? handleupdate : handlesubmit}
               disabled={!data.length > 0}
             >
               {isloading && (
@@ -291,7 +338,10 @@ export default function Order(props) {
                   aria-hidden="true"
                 />
               )}
-              <FontAwesomeIcon icon={faRotate} /> Save
+              <FontAwesomeIcon icon={faRotate} /> {update ? "Update" : "Save"}
+            </Button>
+            <Button variant="outline-secondary me-2" onClick={handleclear}>
+              Clear
             </Button>
           </div>
         </div>
@@ -446,13 +496,12 @@ export default function Order(props) {
                         <td className=" p-0 border-0">
                           <form onSubmit={handleaddclick} className="d-flex ">
                             <div className="col-4">
-                              <Select
+                              <Selectr
                                 options={buildingoption}
-                                placeholder={""}
                                 value={building}
-                                funct={(e) => setbuilding(e)}
-                                margin={true}
+                                onChange={(e) => setbuilding(e)}
                                 required={true}
+                                ref={buildingref}
                               />
                             </div>
 

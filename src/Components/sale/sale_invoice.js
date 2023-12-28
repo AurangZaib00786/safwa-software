@@ -12,13 +12,12 @@ import { toArabicWord } from "number-to-arabic-words/dist/index-node.js";
 
 function Invoice(props) {
   const { name } = useParams();
-  const [company, setcompany] = useState(
-    JSON.parse(localStorage.getItem("selected_branch"))
-  );
-  const response = JSON.parse(localStorage.getItem("data"));
-  const [data, setdata] = useState(response);
-  const [customer, setcustomer] = useState(response.customer_info);
-  const [details, setdetails] = useState(response.details);
+  const company = JSON.parse(localStorage.getItem("selected_branch"));
+
+  const data = JSON.parse(localStorage.getItem("data"));
+
+  const customer = data.customer_info;
+  const details = data.details;
 
   const name_column_formater = (cell, row) => {
     return <div style={{ width: "20vw" }}>{cell}</div>;
@@ -54,7 +53,7 @@ function Invoice(props) {
   var offeer = 0;
   var scheme = 0;
   var discount = 0;
-  response.details.map((item) => {
+  data.details.map((item) => {
     offeer += item.offer_value;
     scheme += item.scheme_value;
     discount += item.discount_amount;

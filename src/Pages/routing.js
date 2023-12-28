@@ -8,7 +8,7 @@ import Buffet_page from "./buffet&schedule/buffet&schedule";
 import Items_page from "./itempage/itempage";
 import Stockstore_page from "./store&stock/store&stock";
 import Building_page from "./buildingpage/buildingpage";
-import Order from "../Container/orderContainer";
+import Orderpage from "./orderpage/orderpage";
 import Customer from "../Container/customerContainer";
 import Supplier from "../Container/supplierContainer";
 import Purchase_page from "./purchase_page/purchase_page";
@@ -25,6 +25,8 @@ import Expense_page from "./expenses_page/expense_page";
 import Invoice80mm from "../Components/sale/80mminvoice";
 import { useEffect, useState } from "react";
 import Issueform from "../Components/materialissueform/formprint";
+import EmployeePrint from "../Components/employee/employeeprint";
+
 function Routing(props) {
   const user = props.state.setuser.user;
   const current_user = props.state.Setcurrentinfo.current_user;
@@ -143,7 +145,7 @@ function Routing(props) {
               path="/order"
               element={
                 user ? (
-                  <Order current_user={current_user} />
+                  <Orderpage current_user={current_user} />
                 ) : (
                   <Navigate to={"/"} />
                 )
@@ -217,6 +219,10 @@ function Routing(props) {
             ></Route> */}
           </Route>
           <Route path="/issueform" element={user && <Issueform />}></Route>
+          <Route
+            path="/employeeprint"
+            element={user && <EmployeePrint />}
+          ></Route>
           {/* <Route
             path="/invoice_80/:name"
             element={user && <Invoice80mm />}

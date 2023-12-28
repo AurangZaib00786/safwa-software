@@ -15,5 +15,7 @@
 .activeMenuItem {
     background-color: #f0f0f0;
   }
-
+  .sidebarclass::-webkit-scrollbar {
+    display: none;
+}
 

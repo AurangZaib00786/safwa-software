@@ -220,20 +220,20 @@ function Supplier(props) {
       return [
         index + 1,
         item.name,
-        item.email,
+        item.arabic_name,
         item.contact,
-        item.ntn,
-        item.strn,
+        item.vat_number,
+        item.bank,
         item.address,
       ];
     });
     body.splice(0, 0, [
       "#",
       "Name",
-      "Email",
+      "Arabic Name",
       "Contact",
-      "NTN",
-      "STRN",
+      "VAT No.",
+      "Bank",
       "Address",
     ]);
 

@@ -1,0 +1,63 @@
+/* .table_class > thead{
+    border: 1px solid black !important;
+}
+.table_class > tbody{
+    border: 1px solid black !important;
+} */
+
+
+.tabel-class{
+    border: 1px solid white !important;
+    
+}
+
+.tabel-class>thead{
+    border: 1px solid white !important;
+    
+}
+
+
+
+.tabel-class >thead>tr> th:first-child{
+    background-color: #661b1c;
+    color: white;
+    margin-right: 2px;
+}
+
+.tabel-class >thead>tr> th:nth-child(2){
+    background-color: #661b1c;
+    color: white;
+    margin-right: 2px;
+}
+
+.tabel-class >thead>tr> th:nth-child(3){
+    background-color: #000;
+    color: white;
+}
+.tabel-class >thead>tr> th:nth-child(4){
+    background-color: #000;
+    color: white;
+}
+.tabel-class >thead>tr> th:last-child{
+    background-color: #000;
+    color: white;
+}
+
+.printclass{
+        height: 100%;
+        margin-top: 0;
+        page-break-after: avoid;
+        page-break-before: avoid;
+}
+
+.mydiv{
+    font-family: 'Times New Roman', Times, serif;
+
+}
+
+/* @media  print {
+    
+    @page {
+        size: 5.75in 9in;
+      }
+} */

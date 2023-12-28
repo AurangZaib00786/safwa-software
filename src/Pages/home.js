@@ -65,6 +65,7 @@ function Layout(props) {
             <h5>{current_user && current_user.username}</h5>
           </div>
           <Menu
+            className="sidebarclass"
             onMouseEnter={handlemouseenter}
             onMouseLeave={handlemouseleave}
             style={{ height: "135vh", overflow: "auto" }}

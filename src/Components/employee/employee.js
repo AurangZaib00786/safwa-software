@@ -6,13 +6,15 @@ import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
+import { faRotate } from "@fortawesome/free-solid-svg-icons";
+import PrintRoundedIcon from "@material-ui/icons/PrintRounded";
 import ToolkitProvider, {
   Search,
   CSVExport,
 } from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import CustomerTypeform from "./typeform";
+import Red_toast from "../alerts/red_toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { ToastContainer } from "react-toastify";
@@ -44,9 +46,6 @@ export default function CustomerType(props) {
   const settings = props.state.Setcurrentinfo.settings;
   const { SearchBar } = Search;
   const { ExportCSVButton } = CSVExport;
-  const [showmodel, setshowmodel] = useState(false);
-  const [data, setdata] = useState("");
-  const [showmodelupdate, setshowmodelupdate] = useState(false);
   const [delete_user, setdelete_user] = useState(false);
   const [url_to_delete, seturl_to_delete] = useState("");
   const [row_id, setrow_id] = useState("");
@@ -81,7 +80,7 @@ export default function CustomerType(props) {
   const [isloading, setisloading] = useState(false);
   const [salary, setsalary] = useState("");
   const [id, setid] = useState("");
-  const [check_update, setcheck_update] = useState(true);
+  const [check_update, setcheck_update] = useState(false);
 
   useEffect(() => {
     setisloading(true);
@@ -109,7 +108,7 @@ export default function CustomerType(props) {
     if (user) {
       fetchWorkouts();
     }
-  }, [selected_branch]);
+  }, []);
 
   useEffect(() => {
     dispatch({ type: "Set_menuitem", data: "employee" });
@@ -180,16 +179,13 @@ export default function CustomerType(props) {
           style={{ border: "1px solid #003049", borderRadius: "5px" }}
           onClick={() => {
             setid(row.id);
-            setcheck_update(false);
-
+            setcheck_update(true);
             setname(row.name);
-
             setworkinghours(row.working_hours);
             setcontact(row.contact);
-            setprdaywage(row.wage_per_day);
             setcategory({ value: row.category, label: row.category_name });
-            settype(row.type);
-            setnationality(row.country);
+            settype({ value: row.type, label: row.type });
+            setnationality({ value: row.country, label: row.country });
             setaddress(row.address);
             sethiredate(row.hiring_date);
             setfiredate(row.expelled_date);
@@ -197,7 +193,7 @@ export default function CustomerType(props) {
             setfoodallowance(row.food_allowance);
             setprallowance(row.pr_allowance);
             setextraallowance(row.extra_allowance);
-            setbasicsalary(row.basic_salary);
+            setsalary(row.salary);
             setaccomallowance(row.accomodation_allowance);
             setpassport(row.passport_number);
             setpassportdate(row.passport_expiry_date);
@@ -394,91 +390,6 @@ export default function CustomerType(props) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (check_update) {
-      if (!isloading) {
-        setisloading(true);
-        const formData = new FormData();
-
-        formData.append("name", name);
-        formData.append("contact", contact);
-        formData.append("country", nationality?.value);
-        formData.append("address", address);
-        formData.append("working_hours", workinghours);
-
-        formData.append("type", type.value);
-        formData.append("salary", salary);
-        formData.append("transport_allowance", transportallowance);
-        formData.append("food_allowance", foodallowance);
-        formData.append("accomodation_allowance", accomallowance);
-        formData.append("pr_allowance", prallowance);
-        formData.append("extra_allowance", extraallowance);
-        formData.append("hiring_date", hiredate);
-        formData.append("expelled_date", firedate);
-        formData.append("passport_number", passport);
-        formData.append("passport_expiry_date", passportdate);
-        formData.append("identity_number", municipalno);
-        formData.append("identity_expiry_date", municipaldate);
-        formData.append("driving_license_number", drivinglicense);
-        formData.append("driving_license_date", drivinglicensedate);
-        formData.append("work_permit_number", workpermit);
-        formData.append("work_permit_date", workpermitdate);
-        formData.append("account_head", selected_branch.id);
-        formData.append("user", current_user.id);
-        formData.append("category", category.value);
-
-        const response = await fetch(`${route}/api/employee/`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${user.access}`,
-          },
-          body: formData,
-        });
-        const json = await response.json();
-
-        if (!response.ok) {
-          setisloading(false);
-          went_wrong_toast();
-        }
-
-        if (response.ok) {
-          dispatch({ type: "Create_table_history", data: json });
-          setisloading(false);
-          success_toast();
-          setworkinghours("");
-          setname("");
-          setarabicname("");
-          setcontact("");
-
-          setcategory("");
-          settype("");
-          setnationality("");
-          setaddress("");
-          sethiredate("");
-          setfiredate("");
-          settransportallowance("");
-          setfoodallowance("");
-          setprallowance("");
-          setextraallowance("");
-          setsalary("");
-          setaccomallowance("");
-          setpassport("");
-          setpassportdate("");
-          setmunicipaldate("");
-          setmunicipalno("");
-          setdrivinglicense("");
-          setdrivinglicensedate("");
-          setworkpermit("");
-          setworkpermitdate("");
-        }
-      }
-    } else {
-      handleSubmit_update();
-    }
-  };
-
-  const handleSubmit_update = async (e) => {
     if (!isloading) {
       setisloading(true);
       const formData = new FormData();
@@ -506,6 +417,98 @@ export default function CustomerType(props) {
       formData.append("driving_license_date", drivinglicensedate);
       formData.append("work_permit_number", workpermit);
       formData.append("work_permit_date", workpermitdate);
+      formData.append("account_head", selected_branch.id);
+      formData.append("user", current_user.id);
+      formData.append("category", category.value);
+
+      const response = await fetch(`${route}/api/employee/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user.access}`,
+        },
+        body: formData,
+      });
+      const json = await response.json();
+
+      if (!response.ok) {
+        setisloading(false);
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${json[error[0]]}`);
+        }
+      }
+
+      if (response.ok) {
+        dispatch({ type: "Create_table_history", data: json });
+        setisloading(false);
+        success_toast();
+        setworkinghours("");
+        setname("");
+        setarabicname("");
+        setcontact("");
+
+        setcategory("");
+        settype("");
+        setnationality("");
+        setaddress("");
+        sethiredate("");
+        setfiredate("");
+        settransportallowance("");
+        setfoodallowance("");
+        setprallowance("");
+        setextraallowance("");
+        setsalary("");
+        setaccomallowance("");
+        setpassport("");
+        setpassportdate("");
+        setmunicipaldate("");
+        setmunicipalno("");
+        setdrivinglicense("");
+        setdrivinglicensedate("");
+        setworkpermit("");
+        setworkpermitdate("");
+        if (e) {
+          localStorage.setItem("data", JSON.stringify(json));
+          window.open("/employeeprint", "_blank");
+        }
+      }
+    }
+  };
+
+  const handleSubmit_update = async (e) => {
+    if (!isloading) {
+      setisloading(true);
+      const formData = new FormData();
+
+      formData.append("name", name);
+      formData.append("contact", contact);
+      formData.append("country", nationality?.value);
+      formData.append("address", address);
+      formData.append("working_hours", workinghours);
+
+      formData.append("type", type.value);
+      formData.append("salary", salary);
+      formData.append("transport_allowance", transportallowance);
+      formData.append("food_allowance", foodallowance);
+      formData.append("accomodation_allowance", accomallowance);
+      formData.append("pr_allowance", prallowance);
+      formData.append("extra_allowance", extraallowance);
+      formData.append("hiring_date", hiredate ? hiredate : "");
+      formData.append("expelled_date", firedate ? firedate : "");
+      formData.append("passport_number", passport);
+      formData.append("passport_expiry_date", passportdate ? passportdate : "");
+      formData.append("identity_number", municipalno);
+      formData.append(
+        "identity_expiry_date",
+        municipaldate ? municipaldate : ""
+      );
+      formData.append("driving_license_number", drivinglicense);
+      formData.append(
+        "driving_license_date",
+        drivinglicensedate ? drivinglicensedate : ""
+      );
+      formData.append("work_permit_number", workpermit);
+      formData.append("work_permit_date", workpermitdate ? workpermitdate : "");
 
       formData.append("category", category.value);
 
@@ -520,7 +523,10 @@ export default function CustomerType(props) {
 
       if (!response.ok) {
         setisloading(false);
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${json[error[0]]}`);
+        }
       }
 
       if (response.ok) {
@@ -554,7 +560,11 @@ export default function CustomerType(props) {
         setworkpermitdate("");
 
         setid("");
-        setcheck_update(true);
+        setcheck_update(false);
+        if (e) {
+          localStorage.setItem("data", JSON.stringify(json));
+          window.open("/employeeprint", "_blank");
+        }
       }
     }
   };
@@ -562,11 +572,60 @@ export default function CustomerType(props) {
   return (
     <div className="p-3">
       <div className="card">
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={
+            check_update
+              ? (e) => {
+                  e.preventDefault();
+                  if (document.activeElement.name === "printbtn") {
+                    handleSubmit_update(true);
+                  } else {
+                    handleSubmit_update(false);
+                  }
+                }
+              : (e) => {
+                  e.preventDefault();
+                  if (document.activeElement.name === "printbtn") {
+                    handleSubmit(true);
+                  } else {
+                    handleSubmit(false);
+                  }
+                }
+          }
+        >
           <div className="card-header d-flex justify-content-between bg-white">
             <h3 className="mt-2 me-2">Add Employee</h3>
             <div className="mt-2 me-2 d-flex flex-row-reverse">
-              <Save_button isloading={isloading} />
+              <Button name="savebtn" variant="outline-primary" type="submit">
+                {isloading && (
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                )}
+                <FontAwesomeIcon icon={faRotate} className="me-1" />{" "}
+                {check_update ? "Update" : "Save"}
+              </Button>
+
+              <Button
+                name="printbtn"
+                type="submit"
+                variant="outline-success me-2"
+              >
+                {isloading && (
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                )}
+                <PrintRoundedIcon className="me-1" /> Print
+              </Button>
             </div>
           </div>
 
@@ -936,7 +995,7 @@ export default function CustomerType(props) {
             {(props) => (
               <div>
                 <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
+                  {/* <div>
                     <ExportCSVButton
                       {...props.csvProps}
                       className="csvbutton  border bg-secondary text-light me-2 mb-2"
@@ -959,7 +1018,7 @@ export default function CustomerType(props) {
                     >
                       <PrintIcon /> Print
                     </Button>
-                  </div>
+                  </div> */}
                   <SearchBar {...props.searchProps} />
                 </div>
                 {isloading && (
