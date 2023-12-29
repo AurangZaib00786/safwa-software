@@ -165,6 +165,16 @@ export default function CustomerType(props) {
     return (
       <span className="action d-flex">
         <IconButton
+          className="border border-primary rounded me-2"
+          onClick={() => {
+            localStorage.setItem("data", JSON.stringify(row));
+
+            window.open("/employeeprint", "_blank");
+          }}
+        >
+          <PrintRoundedIcon className="m-1" color="primary" fontSize="medium" />
+        </IconButton>
+        <IconButton
           className="border border-danger rounded me-2"
           onClick={() => {
             setrow_id(row.id);
@@ -800,6 +810,24 @@ export default function CustomerType(props) {
                     />
                   </div>
                 )}
+                {type?.value === "Monthly Wage" && (
+                  <div className="col-6 col-md-3">
+                    <TextField
+                      type="number"
+                      className="form-control  mb-3"
+                      label={t("Total")}
+                      value={
+                        Number(extraallowance) +
+                        Number(transportallowance) +
+                        Number(foodallowance) +
+                        Number(accomallowance) +
+                        Number(prallowance) +
+                        Number(salary)
+                      }
+                      size="small"
+                    />
+                  </div>
+                )}
 
                 <div className="col-6 col-md-3">
                   <Select
@@ -838,32 +866,34 @@ export default function CustomerType(props) {
                   </div>
                 </div>
 
-                <div className="d-flex col-6 col-md-3 ">
-                  <div className="col-6">
-                    <TextField
-                      className="form-control  mb-3"
-                      label={t("Muncipilaty Card")}
-                      value={municipalno}
-                      onChange={(e) => {
-                        setmunicipalno(e.target.value);
-                      }}
-                      size="small"
-                    />
+                {type?.value !== "Monthly Wage" && (
+                  <div className="d-flex col-6 col-md-3 ">
+                    <div className="col-6">
+                      <TextField
+                        className="form-control  mb-3"
+                        label={t("Muncipilaty Card")}
+                        value={municipalno}
+                        onChange={(e) => {
+                          setmunicipalno(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                    <div className="ps-3 col-6 ">
+                      <TextField
+                        type="Date"
+                        className="form-control  mb-3"
+                        label={t("Expiry")}
+                        InputLabelProps={{ shrink: true }}
+                        value={municipaldate}
+                        onChange={(e) => {
+                          setmunicipaldate(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
                   </div>
-                  <div className="ps-3 col-6 ">
-                    <TextField
-                      type="Date"
-                      className="form-control  mb-3"
-                      label={t("Expiry")}
-                      InputLabelProps={{ shrink: true }}
-                      value={municipaldate}
-                      onChange={(e) => {
-                        setmunicipaldate(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-                </div>
+                )}
 
                 {type?.value !== "Monthly Wage" && (
                   <div className="d-flex col-6 col-md-3 ">
@@ -896,6 +926,34 @@ export default function CustomerType(props) {
               </div>
 
               <div className="row">
+                {type?.value === "Monthly Wage" && (
+                  <div className="d-flex col-6 col-md-3 ">
+                    <div className="col-6">
+                      <TextField
+                        className="form-control  mb-3"
+                        label={t("Muncipilaty Card")}
+                        value={municipalno}
+                        onChange={(e) => {
+                          setmunicipalno(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                    <div className="ps-3 col-6 ">
+                      <TextField
+                        type="Date"
+                        className="form-control  mb-3"
+                        label={t("Expiry")}
+                        InputLabelProps={{ shrink: true }}
+                        value={municipaldate}
+                        onChange={(e) => {
+                          setmunicipaldate(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                  </div>
+                )}
                 {type?.value === "Monthly Wage" && (
                   <div className="d-flex col-6 col-md-3 ">
                     <div className=" col-6">
@@ -964,20 +1022,40 @@ export default function CustomerType(props) {
                   />
                 </div>
 
-                <div className="col-6 col-md-3">
-                  <TextField
-                    type="Date"
-                    className="form-control  mb-3"
-                    label={t("Firing Date")}
-                    InputLabelProps={{ shrink: true }}
-                    value={firedate}
-                    onChange={(e) => {
-                      setfiredate(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
+                {type?.value !== "Monthly Wage" && (
+                  <div className="col-6 col-md-3">
+                    <TextField
+                      type="Date"
+                      className="form-control  mb-3"
+                      label={t("Firing Date")}
+                      InputLabelProps={{ shrink: true }}
+                      value={firedate}
+                      onChange={(e) => {
+                        setfiredate(e.target.value);
+                      }}
+                      size="small"
+                    />
+                  </div>
+                )}
               </div>
+
+              {type?.value === "Monthly Wage" && (
+                <div className="row">
+                  <div className="col-6 col-md-3">
+                    <TextField
+                      type="Date"
+                      className="form-control  mb-3"
+                      label={t("Firing Date")}
+                      InputLabelProps={{ shrink: true }}
+                      value={firedate}
+                      onChange={(e) => {
+                        setfiredate(e.target.value);
+                      }}
+                      size="small"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </form>

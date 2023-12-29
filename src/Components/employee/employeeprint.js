@@ -22,7 +22,7 @@ function EmployeePrint(props) {
     content: () => componentRef.current,
     bodyClass: "printclass",
     onAfterPrint: () => {
-      // window.close();
+      window.close();
     },
   });
 
@@ -187,14 +187,6 @@ function EmployeePrint(props) {
                 </p>
               </p>
             </div>
-          </div>
-
-          <div className="border border-top-0 border-dark pe-2 ps-2 ">
-            <h4 className="text-center">
-              <strong className="ps-3 pe-3 border-bottom border-dark ">
-                Additional Information
-              </strong>
-            </h4>
 
             <div className="d-flex mt-3 ">
               <div className="col-6 me-2 ">
@@ -206,20 +198,28 @@ function EmployeePrint(props) {
                   <div className="col-6">Working Hours : </div>
                   <strong className="col-6">{data.working_hours}</strong>
                 </p>
-                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-6">Transport Allowance : </div>
-                  <strong className="col-6">{data.transport_allowance}</strong>
-                </p>
-                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-6">Accomodation Allowance : </div>
-                  <strong className="col-6">
-                    {data.accomodation_allowance}
-                  </strong>
-                </p>
-                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-6">Extra Allowance : </div>
-                  <strong className="col-6">{data.extra_allowance}</strong>
-                </p>
+                {data.type !== "Daily Wage" && (
+                  <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                    <div className="col-6">Transport Allowance : </div>
+                    <strong className="col-6">
+                      {data.transport_allowance}
+                    </strong>
+                  </p>
+                )}
+                {data.type !== "Daily Wage" && (
+                  <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                    <div className="col-6">Accomodation Allowance : </div>
+                    <strong className="col-6">
+                      {data.accomodation_allowance}
+                    </strong>
+                  </p>
+                )}
+                {data.type !== "Daily Wage" && (
+                  <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                    <div className="col-6">Extra Allowance : </div>
+                    <strong className="col-6">{data.extra_allowance}</strong>
+                  </p>
+                )}
               </div>
 
               <div className="col-6 ">
@@ -231,14 +231,18 @@ function EmployeePrint(props) {
                   <div className="col-4">Salary : </div>
                   <strong className="col-8">{data.salary}</strong>
                 </p>
-                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-4">Food Allowance : </div>
-                  <strong className="col-8">{data.food_allowance}</strong>
-                </p>
-                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-4">PR Allowance : </div>
-                  <strong className="col-8">{data.pr_allowance}</strong>
-                </p>
+                {data.type !== "Daily Wage" && (
+                  <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                    <div className="col-4">Food Allowance : </div>
+                    <strong className="col-8">{data.food_allowance}</strong>
+                  </p>
+                )}
+                {data.type !== "Daily Wage" && (
+                  <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                    <div className="col-4">PR Allowance : </div>
+                    <strong className="col-8">{data.pr_allowance}</strong>
+                  </p>
+                )}
               </div>
             </div>
 
@@ -291,11 +295,6 @@ function EmployeePrint(props) {
               <div style={{ height: "0.7in" }}></div>
             </div>
           </div>
-
-          <hr className="m-0" />
-          <hr className="m-0 mt-1 mb-1" style={{ opacity: "1" }} />
-          <hr className="m-0" />
-          {/* #################################################### */}
         </>
       )}
     </div>
