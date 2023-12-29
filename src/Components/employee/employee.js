@@ -708,7 +708,7 @@ export default function CustomerType(props) {
             </div>
           </div>
 
-          <div className="card-body pt-0">
+          <div className="card-body pt-0" style={{ minHeight: "50vh" }}>
             <Tabs
               defaultActiveKey={"information"}
               transition={true}
