@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import "./employee.css";
 import { IconButton, Avatar } from "@material-ui/core";
@@ -25,10 +25,10 @@ import Alert_before_delete from "../../Container/alertContainer";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
-import PrintIcon from "@material-ui/icons/Print";
+import Badge from "@mui/material/Badge";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import Save_button from "../buttons/save_button";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
 import Select from "../alerts/select";
 import TextField from "@mui/material/TextField";
 import success_toast from "../alerts/success_toast";
@@ -43,24 +43,26 @@ export default function CustomerType(props) {
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
-  const settings = props.state.Setcurrentinfo.settings;
+
   const { SearchBar } = Search;
-  const { ExportCSVButton } = CSVExport;
+
   const [delete_user, setdelete_user] = useState(false);
   const [url_to_delete, seturl_to_delete] = useState("");
   const [row_id, setrow_id] = useState("");
+  const inputFile = useRef(null);
 
+  const [all_files, setall_files] = useState([]);
   const [name, setname] = useState("");
   const [arabicname, setarabicname] = useState("");
   const [contact, setcontact] = useState("");
-  const [prdaywage, setprdaywage] = useState("");
+
   const [address, setaddress] = useState("");
   const [type, settype] = useState("");
   const [workinghours, setworkinghours] = useState("");
   const [hiredate, sethiredate] = useState("");
   const [firedate, setfiredate] = useState("");
   const [nationality, setnationality] = useState("");
-  const [basicsalary, setbasicsalary] = useState("");
+
   const [transportallowance, settransportallowance] = useState("");
   const [foodallowance, setfoodallowance] = useState("");
   const [prallowance, setprallowance] = useState("");
@@ -213,6 +215,16 @@ export default function CustomerType(props) {
             setdrivinglicensedate(row.driving_license_date);
             setworkpermit(row.work_permit_number);
             setworkpermitdate(row.work_permit_date);
+            setall_files(
+              row.documents.map((item) => {
+                return {
+                  ...item,
+                  picture: { name: item.file },
+                  url: item.file,
+                  type: item.type,
+                };
+              })
+            );
           }}
         >
           <EditOutlinedIcon
@@ -430,6 +442,10 @@ export default function CustomerType(props) {
       formData.append("account_head", selected_branch.id);
       formData.append("user", current_user.id);
       formData.append("category", category.value);
+      all_files.forEach((item, index) => {
+        formData.append(`documents[${index}]file`, item.picture);
+        formData.append(`documents[${index}]type`, item.type);
+      });
 
       const response = await fetch(`${route}/api/employee/`, {
         method: "POST",
@@ -456,7 +472,7 @@ export default function CustomerType(props) {
         setname("");
         setarabicname("");
         setcontact("");
-
+        setall_files([]);
         setcategory("");
         settype("");
         setnationality("");
@@ -521,6 +537,14 @@ export default function CustomerType(props) {
       formData.append("work_permit_date", workpermitdate ? workpermitdate : "");
 
       formData.append("category", category.value);
+      all_files.forEach((item, index) => {
+        if (item.id) {
+          formData.append(`documents[${index}]id`, item.id);
+        } else {
+          formData.append(`documents[${index}]file`, item.file);
+          formData.append(`documents[${index}]type`, item.type);
+        }
+      });
 
       const response = await fetch(`${route}/api/employee/${id}/`, {
         method: "PATCH",
@@ -547,7 +571,7 @@ export default function CustomerType(props) {
         setname("");
         setarabicname("");
         setcontact("");
-
+        setall_files([]);
         setcategory("");
         settype("");
         setnationality("");
@@ -576,6 +600,51 @@ export default function CustomerType(props) {
           window.open("/employeeprint", "_blank");
         }
       }
+    }
+  };
+
+  const onButtonClick = () => {
+    // `current` points to the mounted file input element
+    inputFile.current.click();
+  };
+
+  const handlepictureselection = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      const type = file.type.split("/").shift();
+      if (type === "application") {
+        setall_files([
+          ...all_files,
+          { picture: file, type: type, url: file, file: file },
+        ]);
+      } else if (type === "image") {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setall_files([
+            ...all_files,
+            { picture: file, type: type, url: reader.result, file: file },
+          ]);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+
+  const handleClick = (file) => {
+    const backend_url = all_files.filter((item) => {
+      return item.picture.name !== file.picture.name;
+    });
+
+    setall_files(backend_url);
+  };
+
+  const handleimageclick = (item) => {
+    if (item.file instanceof File) {
+      const fileURL = URL.createObjectURL(item.file);
+      window.open(fileURL, "_blank");
+    } else {
+      window.open(item.file, "_blank");
     }
   };
 
@@ -640,423 +709,507 @@ export default function CustomerType(props) {
           </div>
 
           <div className="card-body pt-0">
-            <div className="mt-4">
-              <div className="row">
-                <div className="col-6 col-md-3">
-                  <TextField
-                    className="form-control   mb-3"
-                    label={"Name"}
-                    value={name}
-                    onChange={(e) => {
-                      setname(e.target.value);
-                    }}
-                    size="small"
-                    required
-                    autoFocus
-                  />
-                </div>
-                <div className="col-6 col-md-3">
-                  <TextField
-                    className="form-control  mb-3"
-                    label={"اسم"}
-                    value={arabicname}
-                    onChange={(e) => {
-                      setarabicname(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-
-                <div className="col-6  col-md-3">
-                  <TextField
-                    className="form-control  mb-3"
-                    label={"Cell"}
-                    value={contact}
-                    onChange={(e) => {
-                      setcontact(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-                <div className=" col-6  col-md-3">
-                  <TextField
-                    multiline
-                    className="form-control  mb-3"
-                    label={t("address")}
-                    value={address}
-                    onChange={(e) => {
-                      setaddress(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="col-6  col-md-3 mb-3">
-                  <Select
-                    options={allcategory}
-                    placeholder={"Category"}
-                    value={category}
-                    funct={(e) => setcategory(e)}
-                    required={true}
-                  ></Select>
-                </div>
-                <div className="col-6  col-md-3 mb-3">
-                  <Select
-                    options={[
-                      { value: "Daily Wage", label: "Daily Wage" },
-                      { value: "Monthly Wage", label: "Monthly Wage" },
-                    ]}
-                    placeholder={"Wage Type"}
-                    value={type}
-                    funct={(e) => settype(e)}
-                    required={true}
-                  ></Select>
-                </div>
-
-                <div className="col-6  col-md-3">
-                  <TextField
-                    className="form-control   mb-3"
-                    label={"Working Hours"}
-                    value={workinghours}
-                    onChange={(e) => {
-                      setworkinghours(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-                <div className="col-6  col-md-3">
-                  <TextField
-                    className="form-control   mb-3"
-                    label={"Salary"}
-                    value={salary}
-                    onChange={(e) => {
-                      setsalary(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
-              </div>
-
-              {type?.value === "Monthly Wage" && (
-                <div className="row">
-                  <div className="col-6 col-md-3">
-                    <TextField
-                      type="number"
-                      className="form-control  mb-3"
-                      label={t("Transport Allowance")}
-                      value={transportallowance}
-                      onChange={(e) => {
-                        settransportallowance(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-
-                  <div className="col-6 col-md-3">
-                    <TextField
-                      type="number"
-                      className="form-control  mb-3"
-                      label={t("Food Allowance")}
-                      value={foodallowance}
-                      onChange={(e) => {
-                        setfoodallowance(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-
-                  <div className="col-6 col-md-3">
-                    <TextField
-                      type="number"
-                      className="form-control  mb-3"
-                      label={t("Accomodation Allowance")}
-                      value={accomallowance}
-                      onChange={(e) => {
-                        setaccomallowance(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-
-                  <div className="col-6 col-md-3">
-                    <TextField
-                      type="Number"
-                      className="form-control  mb-3"
-                      label={t("PR Allowance")}
-                      value={prallowance}
-                      onChange={(e) => {
-                        setprallowance(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div className="row">
-                {type?.value === "Monthly Wage" && (
-                  <div className="col-6 col-md-3">
-                    <TextField
-                      type="number"
-                      className="form-control  mb-3"
-                      label={t("Extra Allowance")}
-                      value={extraallowance}
-                      onChange={(e) => {
-                        setextraallowance(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-                )}
-                {type?.value === "Monthly Wage" && (
-                  <div className="col-6 col-md-3">
-                    <TextField
-                      type="number"
-                      className="form-control  mb-3"
-                      label={t("Total")}
-                      value={
-                        Number(extraallowance) +
-                        Number(transportallowance) +
-                        Number(foodallowance) +
-                        Number(accomallowance) +
-                        Number(prallowance) +
-                        Number(salary)
-                      }
-                      size="small"
-                    />
-                  </div>
-                )}
-
-                <div className="col-6 col-md-3">
-                  <Select
-                    options={allcountries}
-                    placeholder={"Country"}
-                    value={nationality}
-                    funct={(e) => setnationality(e)}
-                    required={true}
-                  ></Select>
-                </div>
-
-                <div className="d-flex col-6 col-md-3">
-                  <div className=" col-6">
-                    <TextField
-                      className="form-control   mb-3"
-                      label={t("Passport No")}
-                      value={passport}
-                      onChange={(e) => {
-                        setpassport(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-                  <div className="ps-3 col-6 ">
-                    <TextField
-                      type="Date"
-                      className="form-control  mb-3"
-                      label={t("Expiry")}
-                      InputLabelProps={{ shrink: true }}
-                      value={passportdate}
-                      onChange={(e) => {
-                        setpassportdate(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-                </div>
-
-                {type?.value !== "Monthly Wage" && (
-                  <div className="d-flex col-6 col-md-3 ">
-                    <div className="col-6">
+            <Tabs
+              defaultActiveKey={"information"}
+              transition={true}
+              id="noanim-tab-example"
+              className="mb-3"
+            >
+              <Tab eventKey="information" title="Information">
+                <div className="mt-4">
+                  <div className="row">
+                    <div className="col-6 col-md-3">
+                      <TextField
+                        className="form-control   mb-3"
+                        label={"Name"}
+                        value={name}
+                        onChange={(e) => {
+                          setname(e.target.value);
+                        }}
+                        size="small"
+                        required
+                        autoFocus
+                      />
+                    </div>
+                    <div className="col-6 col-md-3">
                       <TextField
                         className="form-control  mb-3"
-                        label={t("Muncipilaty Card")}
-                        value={municipalno}
+                        label={"اسم"}
+                        value={arabicname}
                         onChange={(e) => {
-                          setmunicipalno(e.target.value);
+                          setarabicname(e.target.value);
                         }}
                         size="small"
                       />
                     </div>
-                    <div className="ps-3 col-6 ">
+
+                    <div className="col-6  col-md-3">
+                      <TextField
+                        className="form-control  mb-3"
+                        label={"Cell"}
+                        value={contact}
+                        onChange={(e) => {
+                          setcontact(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                    <div className=" col-6  col-md-3">
+                      <TextField
+                        multiline
+                        className="form-control  mb-3"
+                        label={t("address")}
+                        value={address}
+                        onChange={(e) => {
+                          setaddress(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-6  col-md-3 mb-3">
+                      <Select
+                        options={allcategory}
+                        placeholder={"Category"}
+                        value={category}
+                        funct={(e) => setcategory(e)}
+                        required={true}
+                      ></Select>
+                    </div>
+                    <div className="col-6  col-md-3 mb-3">
+                      <Select
+                        options={[
+                          { value: "Daily Wage", label: "Daily Wage" },
+                          { value: "Monthly Wage", label: "Monthly Wage" },
+                        ]}
+                        placeholder={"Wage Type"}
+                        value={type}
+                        funct={(e) => settype(e)}
+                        required={true}
+                      ></Select>
+                    </div>
+
+                    <div className="col-6  col-md-3">
+                      <TextField
+                        className="form-control   mb-3"
+                        label={"Working Hours"}
+                        value={workinghours}
+                        onChange={(e) => {
+                          setworkinghours(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                    <div className="col-6  col-md-3">
+                      <TextField
+                        className="form-control   mb-3"
+                        label={"Salary"}
+                        value={salary}
+                        onChange={(e) => {
+                          setsalary(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                  </div>
+
+                  {type?.value === "Monthly Wage" && (
+                    <div className="row">
+                      <div className="col-6 col-md-3">
+                        <TextField
+                          type="number"
+                          className="form-control  mb-3"
+                          label={t("Transport Allowance")}
+                          value={transportallowance}
+                          onChange={(e) => {
+                            settransportallowance(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+
+                      <div className="col-6 col-md-3">
+                        <TextField
+                          type="number"
+                          className="form-control  mb-3"
+                          label={t("Food Allowance")}
+                          value={foodallowance}
+                          onChange={(e) => {
+                            setfoodallowance(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+
+                      <div className="col-6 col-md-3">
+                        <TextField
+                          type="number"
+                          className="form-control  mb-3"
+                          label={t("Accomodation Allowance")}
+                          value={accomallowance}
+                          onChange={(e) => {
+                            setaccomallowance(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+
+                      <div className="col-6 col-md-3">
+                        <TextField
+                          type="Number"
+                          className="form-control  mb-3"
+                          label={t("PR Allowance")}
+                          value={prallowance}
+                          onChange={(e) => {
+                            setprallowance(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="row">
+                    {type?.value === "Monthly Wage" && (
+                      <div className="col-6 col-md-3">
+                        <TextField
+                          type="number"
+                          className="form-control  mb-3"
+                          label={t("Extra Allowance")}
+                          value={extraallowance}
+                          onChange={(e) => {
+                            setextraallowance(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                    )}
+                    {type?.value === "Monthly Wage" && (
+                      <div className="col-6 col-md-3">
+                        <TextField
+                          type="number"
+                          className="form-control  mb-3"
+                          label={t("Total")}
+                          value={
+                            Number(extraallowance) +
+                            Number(transportallowance) +
+                            Number(foodallowance) +
+                            Number(accomallowance) +
+                            Number(prallowance) +
+                            Number(salary)
+                          }
+                          size="small"
+                        />
+                      </div>
+                    )}
+
+                    <div className="col-6 col-md-3">
+                      <Select
+                        options={allcountries}
+                        placeholder={"Country"}
+                        value={nationality}
+                        funct={(e) => setnationality(e)}
+                        required={true}
+                      ></Select>
+                    </div>
+
+                    <div className="d-flex col-6 col-md-3">
+                      <div className=" col-6">
+                        <TextField
+                          className="form-control   mb-3"
+                          label={t("Passport No")}
+                          value={passport}
+                          onChange={(e) => {
+                            setpassport(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                      <div className="ps-3 col-6 ">
+                        <TextField
+                          type="Date"
+                          className="form-control  mb-3"
+                          label={t("Expiry")}
+                          InputLabelProps={{ shrink: true }}
+                          value={passportdate}
+                          onChange={(e) => {
+                            setpassportdate(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                    </div>
+
+                    {type?.value !== "Monthly Wage" && (
+                      <div className="d-flex col-6 col-md-3 ">
+                        <div className="col-6">
+                          <TextField
+                            className="form-control  mb-3"
+                            label={t("Muncipilaty Card")}
+                            value={municipalno}
+                            onChange={(e) => {
+                              setmunicipalno(e.target.value);
+                            }}
+                            size="small"
+                          />
+                        </div>
+                        <div className="ps-3 col-6 ">
+                          <TextField
+                            type="Date"
+                            className="form-control  mb-3"
+                            label={t("Expiry")}
+                            InputLabelProps={{ shrink: true }}
+                            value={municipaldate}
+                            onChange={(e) => {
+                              setmunicipaldate(e.target.value);
+                            }}
+                            size="small"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {type?.value !== "Monthly Wage" && (
+                      <div className="d-flex col-6 col-md-3 ">
+                        <div className=" col-6">
+                          <TextField
+                            className="form-control  mb-3"
+                            label={t("Driving License")}
+                            value={drivinglicense}
+                            onChange={(e) => {
+                              setdrivinglicense(e.target.value);
+                            }}
+                            size="small"
+                          />
+                        </div>
+                        <div className="ps-3 col-6">
+                          <TextField
+                            type="Date"
+                            className="form-control  mb-3"
+                            label={t("Expiry")}
+                            InputLabelProps={{ shrink: true }}
+                            value={drivinglicensedate}
+                            onChange={(e) => {
+                              setdrivinglicensedate(e.target.value);
+                            }}
+                            size="small"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="row">
+                    {type?.value === "Monthly Wage" && (
+                      <div className="d-flex col-6 col-md-3 ">
+                        <div className="col-6">
+                          <TextField
+                            className="form-control  mb-3"
+                            label={t("Muncipilaty Card")}
+                            value={municipalno}
+                            onChange={(e) => {
+                              setmunicipalno(e.target.value);
+                            }}
+                            size="small"
+                          />
+                        </div>
+                        <div className="ps-3 col-6 ">
+                          <TextField
+                            type="Date"
+                            className="form-control  mb-3"
+                            label={t("Expiry")}
+                            InputLabelProps={{ shrink: true }}
+                            value={municipaldate}
+                            onChange={(e) => {
+                              setmunicipaldate(e.target.value);
+                            }}
+                            size="small"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {type?.value === "Monthly Wage" && (
+                      <div className="d-flex col-6 col-md-3 ">
+                        <div className=" col-6">
+                          <TextField
+                            className="form-control  mb-3"
+                            label={t("Driving License")}
+                            value={drivinglicense}
+                            onChange={(e) => {
+                              setdrivinglicense(e.target.value);
+                            }}
+                            size="small"
+                          />
+                        </div>
+                        <div className="ps-3 col-6">
+                          <TextField
+                            type="Date"
+                            className="form-control  mb-3"
+                            label={t("Expiry")}
+                            InputLabelProps={{ shrink: true }}
+                            value={drivinglicensedate}
+                            onChange={(e) => {
+                              setdrivinglicensedate(e.target.value);
+                            }}
+                            size="small"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    <div className="d-flex col-6 col-md-3">
+                      <div className=" col--6">
+                        <TextField
+                          className="form-control   mb-3"
+                          label={t("ID No.")}
+                          value={workpermit}
+                          onChange={(e) => {
+                            setworkpermit(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                      <div className="ps-3 col-6 ">
+                        <TextField
+                          type="Date"
+                          className="form-control  mb-3"
+                          label={t("Expiry")}
+                          InputLabelProps={{ shrink: true }}
+                          value={workpermitdate}
+                          onChange={(e) => {
+                            setworkpermitdate(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-6 col-md-3">
                       <TextField
                         type="Date"
                         className="form-control  mb-3"
-                        label={t("Expiry")}
+                        label={t("Hiring Date")}
                         InputLabelProps={{ shrink: true }}
-                        value={municipaldate}
+                        value={hiredate}
                         onChange={(e) => {
-                          setmunicipaldate(e.target.value);
+                          sethiredate(e.target.value);
                         }}
                         size="small"
                       />
                     </div>
-                  </div>
-                )}
 
-                {type?.value !== "Monthly Wage" && (
-                  <div className="d-flex col-6 col-md-3 ">
-                    <div className=" col-6">
-                      <TextField
-                        className="form-control  mb-3"
-                        label={t("Driving License")}
-                        value={drivinglicense}
-                        onChange={(e) => {
-                          setdrivinglicense(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    </div>
-                    <div className="ps-3 col-6">
-                      <TextField
-                        type="Date"
-                        className="form-control  mb-3"
-                        label={t("Expiry")}
-                        InputLabelProps={{ shrink: true }}
-                        value={drivinglicensedate}
-                        onChange={(e) => {
-                          setdrivinglicensedate(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    </div>
+                    {type?.value !== "Monthly Wage" && (
+                      <div className="col-6 col-md-3">
+                        <TextField
+                          type="Date"
+                          className="form-control  mb-3"
+                          label={t("Firing Date")}
+                          InputLabelProps={{ shrink: true }}
+                          value={firedate}
+                          onChange={(e) => {
+                            setfiredate(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              <div className="row">
-                {type?.value === "Monthly Wage" && (
-                  <div className="d-flex col-6 col-md-3 ">
-                    <div className="col-6">
-                      <TextField
-                        className="form-control  mb-3"
-                        label={t("Muncipilaty Card")}
-                        value={municipalno}
-                        onChange={(e) => {
-                          setmunicipalno(e.target.value);
-                        }}
-                        size="small"
-                      />
+                  {type?.value === "Monthly Wage" && (
+                    <div className="row">
+                      <div className="col-6 col-md-3">
+                        <TextField
+                          type="Date"
+                          className="form-control  mb-3"
+                          label={t("Firing Date")}
+                          InputLabelProps={{ shrink: true }}
+                          value={firedate}
+                          onChange={(e) => {
+                            setfiredate(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
                     </div>
-                    <div className="ps-3 col-6 ">
-                      <TextField
-                        type="Date"
-                        className="form-control  mb-3"
-                        label={t("Expiry")}
-                        InputLabelProps={{ shrink: true }}
-                        value={municipaldate}
-                        onChange={(e) => {
-                          setmunicipaldate(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    </div>
-                  </div>
-                )}
-                {type?.value === "Monthly Wage" && (
-                  <div className="d-flex col-6 col-md-3 ">
-                    <div className=" col-6">
-                      <TextField
-                        className="form-control  mb-3"
-                        label={t("Driving License")}
-                        value={drivinglicense}
-                        onChange={(e) => {
-                          setdrivinglicense(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    </div>
-                    <div className="ps-3 col-6">
-                      <TextField
-                        type="Date"
-                        className="form-control  mb-3"
-                        label={t("Expiry")}
-                        InputLabelProps={{ shrink: true }}
-                        value={drivinglicensedate}
-                        onChange={(e) => {
-                          setdrivinglicensedate(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    </div>
-                  </div>
-                )}
-                <div className="d-flex col-6 col-md-3">
-                  <div className=" col--6">
-                    <TextField
-                      className="form-control   mb-3"
-                      label={t("ID No.")}
-                      value={workpermit}
-                      onChange={(e) => {
-                        setworkpermit(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-                  <div className="ps-3 col-6 ">
-                    <TextField
-                      type="Date"
-                      className="form-control  mb-3"
-                      label={t("Expiry")}
-                      InputLabelProps={{ shrink: true }}
-                      value={workpermitdate}
-                      onChange={(e) => {
-                        setworkpermitdate(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
+                  )}
                 </div>
-                <div className="col-6 col-md-3">
-                  <TextField
-                    type="Date"
-                    className="form-control  mb-3"
-                    label={t("Hiring Date")}
-                    InputLabelProps={{ shrink: true }}
-                    value={hiredate}
-                    onChange={(e) => {
-                      sethiredate(e.target.value);
-                    }}
-                    size="small"
+              </Tab>
+              <Tab eventKey="documents" title="Documents">
+                <div>
+                  <input
+                    onChange={handlepictureselection}
+                    id="select-file"
+                    type="file"
+                    accept=".docx,.pdf,.txt,.png,.jpg,.jpeg"
+                    ref={inputFile}
+                    style={{ display: "none" }}
                   />
+                  <Button
+                    onClick={onButtonClick}
+                    variant="outline-primary"
+                    shadow
+                  >
+                    Choose file
+                  </Button>
                 </div>
-
-                {type?.value !== "Monthly Wage" && (
-                  <div className="col-6 col-md-3">
-                    <TextField
-                      type="Date"
-                      className="form-control  mb-3"
-                      label={t("Firing Date")}
-                      InputLabelProps={{ shrink: true }}
-                      value={firedate}
-                      onChange={(e) => {
-                        setfiredate(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-                )}
-              </div>
-
-              {type?.value === "Monthly Wage" && (
-                <div className="row">
-                  <div className="col-6 col-md-3">
-                    <TextField
-                      type="Date"
-                      className="form-control  mb-3"
-                      label={t("Firing Date")}
-                      InputLabelProps={{ shrink: true }}
-                      value={firedate}
-                      onChange={(e) => {
-                        setfiredate(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
+                <div className="row m-1">
+                  {all_files.map((item, index) => {
+                    return (
+                      <>
+                        {item.type !== "image" ? (
+                          <span
+                            className="col-1 mb-2 d-flex p-2 "
+                            style={{ width: "fit-content" }}
+                            onClick={() => {
+                              handleimageclick(item);
+                            }}
+                            key={index}
+                          >
+                            <span className="file p-2">
+                              {item.picture.name}
+                            </span>
+                            <Badge
+                              color="error"
+                              key={index}
+                              className="me-3 badgee pointer"
+                              overlap="circular"
+                              badgeContent="X"
+                              onClick={() => {
+                                handleClick(item);
+                              }}
+                            ></Badge>
+                          </span>
+                        ) : (
+                          <div
+                            className="col-1 mb-2 me-3 d-flex claas-images"
+                            key={index}
+                          >
+                            <Avatar
+                              src={item.url}
+                              className="avatar"
+                              style={{ width: "100px", height: "100px" }}
+                              alt="image"
+                              onClick={() => {
+                                handleimageclick(item);
+                              }}
+                            />
+                            <Badge
+                              color="error"
+                              overlap="circular"
+                              className="badgeepic me-3 badgee pointer"
+                              badgeContent="X"
+                              onClick={() => {
+                                handleClick(item);
+                              }}
+                            ></Badge>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })}
                 </div>
-              )}
-            </div>
+              </Tab>
+            </Tabs>
           </div>
         </form>
       </div>

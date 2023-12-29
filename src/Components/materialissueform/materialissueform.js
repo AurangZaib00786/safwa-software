@@ -449,6 +449,15 @@ export default function Materialissueform(props) {
     return (
       <span className="action d-flex">
         <IconButton
+          className="border border-primary rounded me-2"
+          onClick={() => {
+            localStorage.setItem("data", JSON.stringify(row));
+            window.open("/issueform", "_blank");
+          }}
+        >
+          <PrintRoundedIcon className="m-1" color="primary" fontSize="medium" />
+        </IconButton>
+        <IconButton
           className="border border-danger rounded me-2"
           onClick={() => {
             setrow_id(row.id);
