@@ -21,11 +21,10 @@ import ToolkitProvider, {
 } from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
-import PrintIcon from "@material-ui/icons/Print";
+
 import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
-import Save_button from "../buttons/save_button";
+
 import success_toast from "../alerts/success_toast";
 import SaveIcon from "@material-ui/icons/Save";
 
@@ -35,15 +34,10 @@ export default function Dish(props) {
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
-  const current_user = props.state.Setcurrentinfo.current_user;
+
   const all_products = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
-  const { SearchBar } = Search;
-  const settings = props.state.Setcurrentinfo.settings;
-  const { ExportCSVButton } = CSVExport;
-  const [showmodel, setshowmodel] = useState(false);
-  const [data, setdata] = useState("");
-  const [showmodelupdate, setshowmodelupdate] = useState(false);
+
   const inputFile = useRef(null);
   const [p_category, setp_category] = useState("");
   const [submenu, setsubmenu] = useState("");

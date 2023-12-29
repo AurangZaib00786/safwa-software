@@ -188,7 +188,7 @@ function Assignorderhistory(props) {
       headerFormatter: headerstyle,
     },
     {
-      dataField: "Customer_name",
+      dataField: "customer_name",
       text: "Customer",
       sort: true,
       headerFormatter: headerstyle,

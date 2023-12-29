@@ -306,7 +306,7 @@ export default function Schedule(props) {
     <div className="p-3 pt-2">
       <div className="card">
         <div className="card-header d-flex justify-content-between bg-white">
-          <h3 className="mt-2 me-2">Add Process</h3>
+          <h3 className="mt-2 me-2">Add Schedule</h3>
           <div className="mt-2 me-2 d-flex flex-row-reverse">
             <Button
               onClick={check_update ? handleupdate : handlesubmit}

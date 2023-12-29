@@ -1,51 +1,29 @@
 import React, { useState, useEffect, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import Select from "../alerts/select";
-import { IconButton } from "@material-ui/core";
-import InputGroup from "react-bootstrap/InputGroup";
-import AddIcon from "@material-ui/icons/Add";
 import Spinner from "react-bootstrap/Spinner";
 import Red_toast from "../alerts/red_toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotate } from "@fortawesome/free-solid-svg-icons";
-import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 import success_toast from "../alerts/success_toast";
-import ClearIcon from "@material-ui/icons/Clear";
-import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
 
 export default function AssignOrder(props) {
-  pdfMake.vfs = pdfFonts.pdfMake.vfs;
   const setActiveTab = props.setActiveTab;
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
-  const selected_branch = props.state.Setcurrentinfo.selected_branch;
-  const current_user = props.state.Setcurrentinfo.current_user;
-  const all_stock = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
-  var curr = new Date();
-  var curdate = curr.toISOString().substring(0, 10);
-  const [date, setdate] = useState(curdate);
-  const [data, setdata] = useState([]);
-  const [lunch, setlunch] = useState("");
-  const [dinner, setdinner] = useState("");
-  const [building, setbuilding] = useState("");
-  const [buildingoption, setbuildingoption] = useState([]);
   const [allprocess, setallprocess] = useState([]);
   const order = JSON.parse(localStorage.getItem("data"));
   const [allemployee, setallemployee] = useState([]);
-  const [employee, setemployee] = useState("");
-  const [type, settype] = useState("");
-  const [breakfast, setbreakfast] = useState("");
-  const [remarks, setremarks] = useState("");
+
   const [isloading, setisloading] = useState(false);
 
   useEffect(() => {
     setisloading(true);
     dispatch({ type: "Set_menuitem", data: "order" });
     const fetchWorkouts = async () => {
-      var url = `${route}/api/schedule/?buffet_time_id=1`;
+      var url = `${route}/api/schedule/?buffet_time_id=${order.timing_id}`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -54,7 +32,37 @@ export default function AssignOrder(props) {
 
       if (response.ok) {
         setisloading(false);
-        setallprocess(json.shift());
+        const optimize = json.shift()?.details?.map((item) => {
+          var item2 = order.assignment_details.filter((item_2) => {
+            return item_2.process === item.process;
+          });
+          if (item2.length > 0) {
+            item2 = item2.shift();
+            return {
+              ...item,
+              breakfast_employee: {
+                value: item2.breakfast_employee,
+                label: item2.breakfast_employee_name,
+              },
+              launch_employee: {
+                value: item2.launch_employee,
+                label: item2.launch_employee_name,
+              },
+              dinner_employee: {
+                value: item2.dinner_employee,
+                label: item2.dinner_employee_name,
+              },
+            };
+          } else {
+            return {
+              ...item,
+              breakfast_employee: "",
+              launch_employee: "",
+              dinner_employee: "",
+            };
+          }
+        });
+        setallprocess(optimize);
       }
       if (!response.ok) {
         var error = Object.keys(json);
@@ -95,147 +103,88 @@ export default function AssignOrder(props) {
 
   const handlesubmit = async (e) => {
     e.preventDefault();
-    if (employee) {
-      const optimizedata = data.map((item) => {
+    var flag = false;
+    const optimizedata = allprocess.map((item) => {
+      if (
+        item.breakfast_employee &&
+        item.launch_employee &&
+        item.dinner_employee
+      ) {
         return {
-          ...item,
-          building: item.building.value.id,
+          process: item.process,
+          breakfast_employee: item.breakfast_employee.value,
+          launch_employee: item.launch_employee.value,
+          dinner_employee: item.dinner_employee.value,
         };
-      });
-
-      const response = await fetch(`${route}/api/orders/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${user.access}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          details: optimizedata,
-          user: current_user.id,
-          customer: employee.value,
-          date: date,
-        }),
-      });
-      const json = await response.json();
-
-      if (!response.ok) {
-        setisloading(false);
-        var error = Object.keys(json);
-        if (error.length > 0) {
-          Red_toast(`${json[error[0]]}`);
-        }
-      }
-
-      if (response.ok) {
-        success_toast();
-        setdata([]);
-        setemployee("");
-        setdate(curdate);
-      }
-    } else {
-      Red_toast("Pleae Select Customer!");
-    }
-  };
-
-  const handleaddclick = (e) => {
-    e.preventDefault();
-
-    const optimize = data.filter((item) => {
-      return item.building.value.id === building.value.id;
-    });
-    if (optimize.length > 0) {
-      Red_toast("Building Already Selected!");
-    } else {
-      setdata([
-        ...data,
-        {
-          building: building,
-          breakfast: breakfast,
-          lunch: lunch,
-          dinner: dinner,
-          remarks: remarks,
-        },
-      ]);
-    }
-
-    setbuilding("");
-    setbreakfast("");
-    setlunch("");
-    setdinner("");
-    setremarks("");
-  };
-
-  const handlesavedchange = (value, field, row) => {
-    console.log(row);
-    if (field !== "remarks") {
-      if (value <= row.value.capacity) {
-        switch (field) {
-          case "breakfast":
-            var optimize = data.map((item) => {
-              if (item.building.value.id === row.value.id) {
-                item["breakfast"] = value;
-                return item;
-              }
-            });
-            return setdata(optimize);
-          case "lunch":
-            optimize = data.map((item) => {
-              if (item.building.value.id === row.value.id) {
-                item["lunch"] = value;
-                return item;
-              }
-            });
-            return setdata(optimize);
-          case "dinner":
-            optimize = data.map((item) => {
-              if (item.building.value.id === row.value.id) {
-                item["dinner"] = value;
-                return item;
-              }
-            });
-            return setdata(optimize);
-        }
       } else {
-        Red_toast(
-          `${field} value should be less than building capacity ${row.value.capacity}`
-        );
+        Red_toast(`Select all employees of ${item.process_name} process!`);
+        flag = true;
       }
-    } else {
-      const optimize = data.map((item) => {
-        if (item.building.value.id === row.value.id) {
-          item["remarks"] = value;
-          return item;
-        }
-      });
-      return setdata(optimize);
+    });
+    if (flag) {
+      return;
+    }
+
+    const response = await fetch(`${route}/api/orders/${order.id}/`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${user.access}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        assignment_details: optimizedata,
+      }),
+    });
+    const json = await response.json();
+    flag = false;
+    if (!response.ok) {
+      setisloading(false);
+      var error = Object.keys(json);
+      if (error.length > 0) {
+        Red_toast(`${json[error[0]]}`);
+      }
+    }
+
+    if (response.ok) {
+      success_toast();
+      setActiveTab("assignorderhistory");
     }
   };
 
-  const handledelete = (row) => {
-    const optimize = data.filter((item) => {
-      return item.building.value.id !== row.value.id;
-    });
-    setdata(optimize);
-  };
-
-  const handlequantityvhange = (value, field) => {
-    if (building) {
-      if (value <= building.value.capacity) {
-        switch (field) {
-          case "breakfast":
-            return setbreakfast(value);
-          case "lunch":
-            return setlunch(value);
-          case "dinner":
-            return setdinner(value);
-        }
-      } else {
-        Red_toast(
-          `${field} value should be less than building capacity ${building.value.capacity}`
+  const handleemployeechange = (e, row, time) => {
+    switch (time) {
+      case "breakfast":
+        return setallprocess(
+          allprocess.map((item) => {
+            if (item.process === row.process) {
+              item["breakfast_employee"] = e;
+              return item;
+            }
+            return item;
+          })
         );
-      }
-    } else {
-      Red_toast("Please select Building first!");
+
+      case "lunch":
+        return setallprocess(
+          allprocess.map((item) => {
+            if (item.process === row.process) {
+              item["launch_employee"] = e.value;
+              return item;
+            }
+            return item;
+          })
+        );
+
+      case "dinner":
+        return setallprocess(
+          allprocess.map((item) => {
+            if (item.process === row.process) {
+              item["dinner_employee"] = e.value;
+              return item;
+            }
+            return item;
+          })
+        );
     }
   };
 
@@ -245,11 +194,7 @@ export default function AssignOrder(props) {
         <div className="card-header d-flex justify-content-between bg-white">
           <h3 className="mt-2 me-2">Assign Order </h3>
           <div className="mt-2 me-2 d-flex flex-row-reverse">
-            <Button
-              variant="outline-primary"
-              onClick={handlesubmit}
-              disabled={!data.length > 0}
-            >
+            <Button variant="outline-primary" onClick={handlesubmit}>
               {isloading && (
                 <Spinner
                   as="span"
@@ -297,10 +242,10 @@ export default function AssignOrder(props) {
                     </tr>
                   </thead>
                   <tbody>
-                    {allprocess?.details?.map((item) => {
+                    {allprocess?.map((item) => {
                       return (
                         <tr key={item.id}>
-                          <td className="pt-0 pb-0 ">{item.name}</td>
+                          <td className="pt-0 pb-0 ">{item.process_name}</td>
 
                           <td className="text-center">
                             <TextField
@@ -369,6 +314,10 @@ export default function AssignOrder(props) {
                               <Select
                                 options={allemployee}
                                 placeholder={"Select"}
+                                value={item.breakfast_employee}
+                                funct={(e) => {
+                                  handleemployeechange(e, item, "breakfast");
+                                }}
                               />
                             </div>
                           </td>
@@ -377,6 +326,10 @@ export default function AssignOrder(props) {
                               <Select
                                 options={allemployee}
                                 placeholder={"Select"}
+                                value={item.launch_employee}
+                                funct={(e) => {
+                                  handleemployeechange(e, item, "lunch");
+                                }}
                               />
                             </div>
                           </td>
@@ -385,6 +338,10 @@ export default function AssignOrder(props) {
                               <Select
                                 options={allemployee}
                                 placeholder={"Select"}
+                                value={item.dinner_employee}
+                                funct={(e) => {
+                                  handleemployeechange(e, item, "dinner");
+                                }}
                               />
                             </div>
                           </td>
