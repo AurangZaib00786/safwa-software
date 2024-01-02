@@ -26,19 +26,9 @@
     
 }
 
-.payment::after{
-    content: 'Payment Type';
-    position: absolute;
-    top: -9px;
-    left: 9px;
-    background-color: white;
-    padding: 0 5px;
-    color: gray;
-    font-size: 12px;
-    }
 
-    .payment_ar::after{
-        content: 'نوع الدفع';
+    .type::after{
+        content: 'Type';
         position: absolute;
         top: -9px;
         left: 9px;
@@ -50,8 +40,8 @@
     
     
     
-.supplier::after{
-    content: 'Vendors';
+.customer::after{
+    content: 'Customers';
     position: absolute;
     top: -9px;
     left: 9px;

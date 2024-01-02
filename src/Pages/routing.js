@@ -152,6 +152,17 @@ function Routing(props) {
               }
             ></Route>
 
+<Route
+              path="/daily_meal"
+              element={
+                user ? (
+                  <Purchase_page current_user={current_user} />
+                ) : (
+                  <Navigate to={"/"} />
+                )
+              }
+            ></Route>
+
             {/* <Route
               path="/payments"
               element={
@@ -174,16 +185,7 @@ function Routing(props) {
               }
             ></Route>
 
-            <Route
-              path="/purchase_page"
-              element={
-                user ? (
-                  <Purchase_page current_user={current_user} />
-                ) : (
-                  <Navigate to={"/"} />
-                )
-              }
-            ></Route>
+            
 
             <Route
               path="/sale_page"

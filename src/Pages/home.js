@@ -157,7 +157,7 @@ function Layout(props) {
                 component={<Link to="/buffet&schedule" />}
                 rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
               >
-                Buffet & Schedule
+                Schedule
               </MenuItem>
             </SubMenu>
 
@@ -181,7 +181,7 @@ function Layout(props) {
                 component={<Link to="/store&stock" />}
                 rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
               >
-                Store & Stock
+                Stock
               </MenuItem>
             </SubMenu>
 
@@ -207,6 +207,17 @@ function Layout(props) {
                 Building
               </MenuItem>
             </SubMenu>
+
+            
+              <MenuItem
+                active={menu_status === "purchase"}
+                icon={<ShoppingBasketIcon />}
+                component={<Link to="/daily_meal" />}
+                rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+              >
+                Daily Meal
+              </MenuItem>
+            
 
             {/* {current_user?.permissions?.includes("view_payments") && (
               <MenuItem

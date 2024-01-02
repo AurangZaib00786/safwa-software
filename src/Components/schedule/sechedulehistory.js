@@ -147,6 +147,14 @@ export default function Sechule_History({
 
         <div className="card-body pt-0">
           <div className="row mt-3">
+          <div className="col-md-2 me-2">
+              <Select
+                options={[{value:'Breakfast',label:'Breakfast / إفطار'},{value:'Lunch',label:' Lunch / غداء'},{value:'Dinner',label:'Dinner / عشاء'}]}
+                placeholder="Type"
+                value={type}
+                funct={(e) => settype(e)}
+              />
+            </div>
             <div className="col-md-2 me-2">
               <Select
                 options={allmenu}
@@ -155,14 +163,7 @@ export default function Sechule_History({
                 funct={(e) => setmenu(e)}
               />
             </div>
-            <div className="col-md-2 me-2">
-              <Select
-                options={[{value:'Breakfast',label:'Breakfast / إفطار'},{value:'Lunch',label:' Lunch / غداء'},{value:'Dinner',label:'Dinner / عشاء'}]}
-                placeholder="Type"
-                value={type}
-                funct={(e) => settype(e)}
-              />
-            </div>
+            
           </div>
           <div className="d-sm-flex justify-content-between align-items-center mt-3">
             <div>
@@ -185,13 +186,20 @@ export default function Sechule_History({
           )}
 
           <div style={{ fontFamily: "Times New Roman" }} ref={componentRef}>
-            {print && 
+            {print && <>
+                <h4
+                style={{ fontWeight: "bolder" }}
+                className="text-center text-decoration-underline"
+              >
+                {menu?.label?.toUpperCase()} TIME
+              </h4>
+            
               <h4
                 style={{ fontWeight: "bolder" }}
                 className="text-center text-decoration-underline"
               >
                 {type.label}
-              </h4>}
+              </h4></>}
             
             <hr />
             <div style={{zoom:'0.8'}} className="table-responsive">
@@ -201,91 +209,91 @@ export default function Sechule_History({
               >
                 <thead>
                   <tr>
-                    <th colSpan={3} className="text-center">
+                    <th colSpan={3}  className=" text-center">
                      
-                        <h5 style={{ fontWeight: "bolder" }}>Cooking Operation</h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>Cooking Operation</h5>
                         
                       
                     </th>
-                    <th  colSpan={3} className="text-center">
+                    <th  colSpan={3} className="  text-center">
                      
-                        <h5 style={{ fontWeight: "bolder" }}>Delivery Operation</h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>Delivery Operation</h5>
                        
                     </th>
-                    <th  colSpan={3} className="text-center">
+                    <th  colSpan={3} className=" text-center">
                    
-                        <h5 style={{ fontWeight: "bolder" }}>Recovery Operation</h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>Recovery Operation</h5>
                         
                     </th>
                   </tr>
                   <tr>
                     <th colSpan={3} className="text-center">
                      
-                        <h5 style={{ fontWeight: "bolder" }}>توقيت الطبخ</h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>توقيت الطبخ</h5>
                         
                       
                     </th>
-                    <th  colSpan={3} className="text-center">
+                    <th   colSpan={3} className="text-center">
                      
-                        <h5 style={{ fontWeight: "bolder" }}>توقيت خروج الوجبات </h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>توقيت خروج الوجبات </h5>
                        
                     </th>
                     <th  colSpan={3} className="text-center">
                    
-                        <h5 style={{ fontWeight: "bolder" }}>توقيت إسترجاع السخانات</h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>توقيت إسترجاع السخانات</h5>
                         
                     </th>
                   </tr>
                   <tr>
                     <th  className="text-center">
                      
-                        <h5 style={{ fontWeight: "bolder" }}>Detail / تفاصيل </h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>Detail / تفاصيل </h5>
                         
                       
                     </th>
                     <th  className="text-center">
                      
-                        <h5 style={{ fontWeight: "bolder" }}>Start Time</h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>Start Time</h5>
                         
                       
                     </th>
                     <th  className="text-center">
                      
-                        <h5 style={{ fontWeight: "bolder" }}>End Time</h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>End Time</h5>
                         
                       
                     </th>
                     <th   className="text-center">
                      
-                        <h5 style={{ fontWeight: "bolder" }}>Detail / تفاصيل   </h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>Detail / تفاصيل   </h5>
                        
                     </th>
                     <th  className="text-center">
                      
-                        <h5 style={{ fontWeight: "bolder" }}>Start Time</h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>Start Time</h5>
                         
                       
                     </th>
                     <th  className="text-center">
                      
-                        <h5 style={{ fontWeight: "bolder" }}>End Time</h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>End Time</h5>
                         
                       
                     </th>
                     <th   className="text-center">
                    
-                        <h5 style={{ fontWeight: "bolder" }}> Detail / تفاصيل </h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}> Detail / تفاصيل </h5>
                         
                     </th>
                     <th  className="text-center">
                      
-                        <h5 style={{ fontWeight: "bolder" }}>Start Time</h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>Start Time</h5>
                         
                       
                     </th>
                     <th  className="text-center">
                      
-                        <h5 style={{ fontWeight: "bolder" }}>End Time</h5>
+                        <h5 className="m-0" style={{ fontWeight: "bolder" }}>End Time</h5>
                         
                       
                     </th>
@@ -297,37 +305,37 @@ export default function Sechule_History({
                       <tr key={item.day}>
                         
                         <td className=" pt-0 pb-0 text-center">
-                          <h5 style={{ fontWeight: "normal" }}>
+                          <h5 className="m-0 p-2" style={{ fontWeight: "normal" }}>
                             {item.cooking?.process_name}
                           </h5>
                         </td>
                         <td className="pt-0 pb-0  text-center">
-                          <h5 style={{ fontWeight: "normal" }}>{type.value==='Breakfast'? item.cooking?.break_fast_start: type.value==='Lunch' ?item.cooking?.lunch_start:item.cooking?.dinner_start}</h5>
+                          <h5 className="m-0 p-2" style={{ fontWeight: "normal" }}>{type.value==='Breakfast'? item.cooking?.break_fast_start: type.value==='Lunch' ?item.cooking?.lunch_start:item.cooking?.dinner_start}</h5>
                         </td>
                         <td className="pt-0 pb-0  text-center">
-                        <h5 style={{ fontWeight: "normal" }}>{type.value==='Breakfast'? item.cooking?.break_fast_end: type.value==='Lunch' ?item.cooking?.lunch_end:item.cooking?.dinner_end}</h5>
+                        <h5 className="m-0 p-2" style={{ fontWeight: "normal" }}>{type.value==='Breakfast'? item.cooking?.break_fast_end: type.value==='Lunch' ?item.cooking?.lunch_end:item.cooking?.dinner_end}</h5>
                         </td>
                         <td className=" pt-0 pb-0 text-center">
-                          <h5 style={{ fontWeight: "normal" }}>
+                          <h5 className="m-0 p-2" style={{ fontWeight: "normal" }}>
                             {item.delivery?.process_name}
                           </h5>
                         </td>
                         <td className="pt-0 pb-0  text-center">
-                          <h5 style={{ fontWeight: "normal" }}>{type.value==='Breakfast'? item.delivery?.break_fast_start: type.value==='Lunch' ?item.delivery?.lunch_start:item.delivery?.dinner_start}</h5>
+                          <h5 className="m-0 p-2" style={{ fontWeight: "normal" }}>{type.value==='Breakfast'? item.delivery?.break_fast_start: type.value==='Lunch' ?item.delivery?.lunch_start:item.delivery?.dinner_start}</h5>
                         </td>
                         <td className="pt-0 pb-0  text-center">
-                        <h5 style={{ fontWeight: "normal" }}>{type.value==='Breakfast'? item.delivery?.break_fast_end: type.value==='Lunch' ?item.delivery?.lunch_end:item.delivery?.dinner_end}</h5>
+                        <h5 className="m-0 p-2" style={{ fontWeight: "normal" }}>{type.value==='Breakfast'? item.delivery?.break_fast_end: type.value==='Lunch' ?item.delivery?.lunch_end:item.delivery?.dinner_end}</h5>
                         </td>
                         <td className=" pt-0 pb-0 text-center">
-                          <h5 style={{ fontWeight: "normal" }}>
+                          <h5 className="m-0 p-2" style={{ fontWeight: "normal" }}>
                             {item.recovery?.process_name}
                           </h5>
                         </td>
                         <td className="pt-0 pb-0  text-center">
-                          <h5 style={{ fontWeight: "normal" }}>{type.value==='Breakfast'? item.recovery?.break_fast_start: type.value==='Lunch' ?item.recovery?.lunch_start:item.recovery?.dinner_start}</h5>
+                          <h5 className="m-0 p-2" style={{ fontWeight: "normal" }}>{type.value==='Breakfast'? item.recovery?.break_fast_start: type.value==='Lunch' ?item.recovery?.lunch_start:item.recovery?.dinner_start}</h5>
                         </td>
                         <td className="pt-0 pb-0  text-center">
-                        <h5 style={{ fontWeight: "normal" }}>{type.value==='Breakfast'? item.recovery?.break_fast_end: type.value==='Lunch' ?item.recovery?.lunch_end:item.recovery?.dinner_end}</h5>
+                        <h5 className="m-0 p-2" style={{ fontWeight: "normal" }}>{type.value==='Breakfast'? item.recovery?.break_fast_end: type.value==='Lunch' ?item.recovery?.lunch_end:item.recovery?.dinner_end}</h5>
                         </td>
                       </tr>
                     );

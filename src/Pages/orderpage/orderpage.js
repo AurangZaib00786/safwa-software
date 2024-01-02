@@ -35,7 +35,7 @@ function Items_page({ current_user }) {
         <Tab eventKey="order" title="Order">
           {activeTab === "order" && <Order setActiveTab={setActiveTab} />}
         </Tab>
-        <Tab eventKey={"assignorderhistory"} title="Assign Order">
+        <Tab eventKey={"assignorderhistory"} title="Order History">
           {activeTab === "assignorderhistory" && (
             <Assignorderhistory setActiveTab={setActiveTab} />
           )}

@@ -178,12 +178,10 @@ export default function BuffetMenu(props) {
 
       if (response.ok) {
         setisloading(false);
-        dispatch({ type: "Create_table_history", data: [] });
-        setall_productscopy([]);
+        
+        
         success_toast();
 
-        settitle("");
-        setmenu("");
         setcheckall(false);
         setcheck_update(false);
       }
@@ -228,11 +226,10 @@ export default function BuffetMenu(props) {
 
       if (response.ok) {
         setisloading(false);
-        dispatch({ type: "Create_table_history", data: [] });
+        
         success_toast();
         setid(null);
-        settitle("");
-        setmenu("");
+        
         setcheckall(false);
         setcheck_update(false);
       }
@@ -369,7 +366,7 @@ export default function BuffetMenu(props) {
                       aria-hidden="true"
                     />
                   )}
-                  <SaveIcon /> {t("save")}
+                  <SaveIcon /> Update
                 </Button>
               </div>
             </div>
@@ -402,8 +399,8 @@ export default function BuffetMenu(props) {
           <div className="card mt-3">
             <div className="card-body pt-0">
               <div className="row mt-5">
-                <label className="d-flex justify-content-between align-items-end mb-2">
-                  <h5 className="m-0">Roles</h5>
+                <label className="d-flex justify-content-end align-items-end mb-2">
+                  
                   <TextField
                     label="Search"
                     variant="outlined"

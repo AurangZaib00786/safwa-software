@@ -67,7 +67,7 @@ export default function Stock_table({
         json.map((item) => {
           const day = item.title.split("_").shift();
           const time = item.title.split("_").pop();
-          console.log(day, time);
+          
           switch (day) {
             case "Saturday":
               if (time === "Breakfast") {
@@ -178,7 +178,7 @@ export default function Stock_table({
                 })}`;
                 return;
               } else if (time === "Dinner") {
-                buffetmenu[56]["dinner"] = `${item.buffet_dishes.map((dish) => {
+                buffetmenu[5]["dinner"] = `${item.buffet_dishes.map((dish) => {
                   return `${dish.dish_name}`;
                 })}`;
                 return;

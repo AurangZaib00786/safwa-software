@@ -45,13 +45,13 @@ function Purchase_page({ current_user }) {
         id="noanim-tab-example"
         className="mb-3"
       >
-        {current_user?.permissions?.includes("view_purchase") && (
-          <Tab eventKey="purchase" title="Purchase">
+        
+          <Tab eventKey="purchase" title="Daily Meal">
             {activeTab === "purchase" && <Purchase />}
           </Tab>
-        )}
-        {current_user?.permissions?.includes("view_purchase_history") && (
-          <Tab eventKey="purchase_history" title="Purchase History">
+        
+       
+          <Tab eventKey="purchase_history" title="Meal History">
             {activeTab === "purchase_history" ? (
               <Purchase_history setActiveTab={setActiveTab} />
             ) : (
@@ -60,7 +60,7 @@ function Purchase_page({ current_user }) {
               )
             )}
           </Tab>
-        )}
+        
 
         {current_user?.permissions?.includes("view_purchase_return") && (
           <Tab eventKey="purchasereturn" title="Purchase Return">

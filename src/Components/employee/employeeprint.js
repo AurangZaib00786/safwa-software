@@ -1,16 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
-import BootstrapTable from "react-bootstrap-table-next";
-import ToolkitProvider from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
-import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
-import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import { useReactToPrint } from "react-to-print";
-import QRCode from "react-qr-code";
-import numberToWords from "number-to-words";
 import "./employeeprint.css";
-import WhatsAppIcon from "@material-ui/icons/WhatsApp";
-import RoomIcon from "@material-ui/icons/Room";
-import DraftsIcon from "@material-ui/icons/Drafts";
+
 
 function EmployeePrint(props) {
   const company = JSON.parse(localStorage.getItem("selected_branch"));
@@ -21,7 +12,8 @@ function EmployeePrint(props) {
   const handleprint = useReactToPrint({
     content: () => componentRef.current,
     bodyClass: "printclass",
-    onAfterPrint: () => {
+    onAfterPrint: (e) => {
+      // console.log(e)
       window.close();
     },
   });
@@ -96,23 +88,23 @@ function EmployeePrint(props) {
             <div className="d-flex mt-3 ">
               <div className="col-6 me-2 ">
                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-4">Name : </div>
-                  <strong className="col-8">{data.name}</strong>
+                  <div className="col-6">Name : </div>
+                  <strong className="col-6">{data.name}</strong>
                 </p>
 
                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-4">Contact : </div>
-                  <strong className="col-8">{data.contact}</strong>
+                  <div className="col-6">Contact : </div>
+                  <strong className="col-6">{data.contact}</strong>
                 </p>
               </div>
               <div className="col-6 ">
                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-4">اسم : </div>
-                  <strong className="col-8">{data.arabic_name}</strong>
+                  <div className="col-6">اسم : </div>
+                  <strong className="col-6">{data.arabic_name}</strong>
                 </p>
                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-4">Nationality : </div>
-                  <strong className="col-8">{data.country}</strong>
+                  <div className="col-6">Nationality : </div>
+                  <strong className="col-6">{data.country}</strong>
                 </p>
               </div>
             </div>
@@ -125,7 +117,7 @@ function EmployeePrint(props) {
 
             
 
-            <div className="d-flex mt-3 ">
+            <div className="d-flex mt-3 mb-2">
               <div className="col-6 me-2 ">
                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
                   <div className="col-6">Category : </div>
@@ -134,6 +126,14 @@ function EmployeePrint(props) {
                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
                   <div className="col-6">Working Hours : </div>
                   <strong className="col-6">{data.working_hours}</strong>
+                </p>
+                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                  <div className="col-6">Wage Type: </div>
+                  <strong className="col-6">{data.type}</strong>
+                </p>
+                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                  <div className="col-6">Salary : </div>
+                  <strong className="col-6">{data.salary}</strong>
                 </p>
                 {data.type !== "Daily Wage" && (
                   <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
@@ -157,104 +157,70 @@ function EmployeePrint(props) {
                     <strong className="col-6">{data.extra_allowance}</strong>
                   </p>
                 )}
+                
+                {data.type !== "Daily Wage" && (
+                  <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                    <div className="col-6">Food Allowance : </div>
+                    <strong className="col-6">{data.food_allowance}</strong>
+                  </p>
+                )}
+                {data.type !== "Daily Wage" && (
+                  <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                    <div className="col-6">PR Allowance : </div>
+                    <strong className="col-6">{data.pr_allowance}</strong>
+                  </p>
+                )}
                  <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
                   <div className="col-6">Hire Date : </div>
                   <strong className="col-6">{data.hiring_date}</strong>
                 </p>
+                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                  <div className="col-6">Fire Date: </div>
+                  <strong className="col-6">{data.expelled_date}</strong>
+                </p>
               </div>
 
               <div className="col-6 ">
-                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-4">Wage Type: </div>
-                  <strong className="col-8">{data.type}</strong>
+              <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                  <div className="col-6">Passport No. : </div>
+                  <strong className="col-6">{data.passport_number}</strong>
                 </p>
                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-4">Salary : </div>
-                  <strong className="col-8">{data.salary}</strong>
+                  <div className="col-6">Passport Expire Date : </div>
+                  <strong className="col-6">{data.passport_expiry_date}</strong>
                 </p>
-                {data.type !== "Daily Wage" && (
-                  <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                    <div className="col-4">Food Allowance : </div>
-                    <strong className="col-8">{data.food_allowance}</strong>
-                  </p>
-                )}
-                {data.type !== "Daily Wage" && (
-                  <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                    <div className="col-4">PR Allowance : </div>
-                    <strong className="col-8">{data.pr_allowance}</strong>
-                  </p>
-                )}
-                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-4">Fire Date: </div>
-                  <strong className="col-8">{data.expelled_date}</strong>
-                </p>
-              </div>
-            </div>
 
-            
+                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                  <div className="col-6">Muncipilaty No : </div>
+                  <strong className="col-6">{data.identity_number}</strong>
+                </p>
+                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                  <div className="col-6">Muncipilaty Expire Date : </div>
+                  <strong className="col-6">{data.identity_expiry_date}</strong>
+                </p>
 
+                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                  <div className="col-6">Driving License : </div>
+                  <strong className="col-6">{data.driving_license_number}</strong>
+                </p>
+                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                  <div className="col-6">License Expire Date : </div>
+                  <strong className="col-6">{data.driving_license_date}</strong>
+                </p>
+
+                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                  <div className="col-6"> Work Permit No : </div>
+                  <strong className="col-6">{data.work_permit_number}</strong>
+                </p>
+                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                  <div className="col-6">Permit Expire Date : </div>
+                  <strong className="col-6">{data.work_permit_date}</strong>
+                </p>
               
-
-            <div className="d-flex justify-content-between  mt-2">
-              <p
-                className="d-flex justify-content-between col-6 m-0"
-                style={{ fontSize: "0.8rem" }}
-              >
-                <p className="col-7 m-0">
-                  Passport No. :
-                  <strong className="ms-2">{data.passport_number}</strong>
-                </p>
-                <p className="col-5 m-0">
-                  Expiry Date. :
-                  <strong className="ms-2">{data.passport_expiry_date}</strong>
-                </p>
-              </p>
-
-              <p
-                className="d-flex justify-content-between col-6 m-0"
-                style={{ fontSize: "0.8rem" }}
-              >
-                <p className="col-7 m-0">
-                  Muncipilaty No. :
-                  <strong className="ms-2">{data.identity_number}</strong>
-                </p>
-                <p className="col-5 m-0">
-                  Expiry Date. :
-                  <strong className="ms-2">{data.identity_expiry_date}</strong>
-                </p>
-              </p>
-            </div>
-            <div className="d-flex justify-content-between  mb-2">
-              <p
-                className="d-flex justify-content-between col-6 m-0"
-                style={{ fontSize: "0.8rem" }}
-              >
-                <p className="col-7 m-0">
-                  Driving License :
-                  <strong className="ms-2">
-                    {data.driving_license_number}
-                  </strong>
-                </p>
-                <p className="col-5 m-0">
-                  Expiry Date. :
-                  <strong className="ms-2">{data.driving_license_date}</strong>
-                </p>
-              </p>
-
-              <p
-                className="d-flex justify-content-between col-6 m-0"
-                style={{ fontSize: "0.8rem" }}
-              >
-                <p className="col-7 m-0">
-                  Work Permit No. :
-                  <strong className="ms-2">{data.work_permit_number}</strong>
-                </p>
-                <p className="col-5 m-0">
-                  Expiry Date. :
-                  <strong className="ms-2">{data.work_permit_date}</strong>
-                </p>
-              </p>
-            </div>
+                
+               
+              </div>
+            </div> 
           </div>
 
           
