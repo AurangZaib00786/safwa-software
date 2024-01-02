@@ -72,7 +72,16 @@ td {
     font-weight: bolder;
 }
 
-
+.printclass{
+        
+    height: 99%;
+    margin-top: 30px;
+    page-break-after: avoid;
+    page-break-before: avoid;
+    padding: 10px;
+    font-family: 'Times New Roman', Times, serif;
+    
+}
 
 
 
