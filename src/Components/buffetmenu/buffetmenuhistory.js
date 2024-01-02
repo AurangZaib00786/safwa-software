@@ -22,14 +22,23 @@ export default function Stock_table({
   const [menu, setmenu] = useState("");
 
   const [data, setdata] = useState([]);
+  const [print, setprint] = useState(false);
 
   const [isloading, setisloading] = useState(false);
   const componentRef = useRef();
+
+  useEffect(()=>{
+    if (print){
+      handleprint()
+    }
+  },[print])
+
   const handleprint = useReactToPrint({
     content: () => componentRef.current,
     bodyClass: "printclass",
     onAfterPrint: () => {
       window.close();
+      setprint(false)
     },
   });
 
@@ -270,7 +279,9 @@ export default function Stock_table({
                 type="button"
                 className="p-1 ps-3 pe-3 mb-2"
                 variant="outline-success"
-                onClick={handleprint}
+                onClick={()=>{
+                  setprint(true)
+                 }}
               >
                 <PrintIcon /> Print
               </Button>
@@ -283,22 +294,23 @@ export default function Stock_table({
           )}
 
           <div style={{ fontFamily: "Times New Roman" }} ref={componentRef}>
-            <h4
+            {print &&<> <h4
               style={{ fontWeight: "bolder" }}
               className="text-center text-decoration-underline"
             >
               PROPOSED TWO DISHES Buffet MENU{" "}
             </h4>
-            {menu && (
+            
               <h4
                 style={{ fontWeight: "bolder" }}
                 className="text-center text-decoration-underline"
               >
-                {menu.label?.toUpperCase()} Menu
+                {menu.label?.toUpperCase()} MENU
               </h4>
-            )}
+              </>
+            }
             <hr />
-            <div className="table-responsive">
+            <div style={{zoom:'0.8'}} className="table-responsive">
               <table
                 className="table table-striped table-bordered "
                 style={{ width: "100%" }}
@@ -334,7 +346,7 @@ export default function Stock_table({
                   {data.map((item) => {
                     return (
                       <tr key={item.day}>
-                        <td className="pt-0 pb-0 ">
+                        <td style={{width:'10%'}} className="pt-0 pb-0 ">
                           <h5
                             className="d-flex align-items-center "
                             style={{ height: "0.7in", fontWeight: "normal" }}
@@ -342,15 +354,15 @@ export default function Stock_table({
                             {item.day}
                           </h5>
                         </td>
-                        <td className=" pt-0 pb-0 text-center">
+                        <td style={{width:'30%'}} className=" pt-0 pb-0 text-center">
                           <h5 style={{ fontWeight: "normal" }}>
                             {item.breakfast}
                           </h5>
                         </td>
-                        <td className="pt-0 pb-0  text-center">
+                        <td style={{width:'30%'}} className="pt-0 pb-0  text-center">
                           <h5 style={{ fontWeight: "normal" }}>{item.lunch}</h5>
                         </td>
-                        <td className="pt-0 pb-0  text-center">
+                        <td style={{width:'30%'}} className="pt-0 pb-0  text-center">
                           <h5 style={{ fontWeight: "normal" }}>
                             {item.dinner}
                           </h5>
@@ -362,7 +374,7 @@ export default function Stock_table({
               </table>
             </div>
 
-            <div className="ps-3">
+            {print && <div className="ps-3">
               <h5>
                 <strong className="text-decoration-underline">
                   IMPORTANT NOTES
@@ -381,7 +393,7 @@ export default function Stock_table({
               <p className="m-0">
                 5. Use of dry milk for morning tea is not allowed.
               </p>
-            </div>
+            </div>}
           </div>
         </div>
       </div>

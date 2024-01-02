@@ -85,17 +85,13 @@ function EmployeePrint(props) {
           </div>
 
           <h4 className=" mb-4 text-center">
-            <strong className="ps-3 pe-3 border-bottom border-dark ">
+            <strong >
               Employee Form
             </strong>
           </h4>
 
           <div className="border border-dark pe-2 ps-2 ">
-            <h4 className="text-center">
-              <strong className="ps-3 pe-3 border-bottom border-dark ">
-                Employee Data
-              </strong>
-            </h4>
+            
 
             <div className="d-flex mt-3 ">
               <div className="col-6 me-2 ">
@@ -111,7 +107,7 @@ function EmployeePrint(props) {
               </div>
               <div className="col-6 ">
                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-4">Arabic Name : </div>
+                  <div className="col-4">اسم : </div>
                   <strong className="col-8">{data.arabic_name}</strong>
                 </p>
                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
@@ -121,72 +117,13 @@ function EmployeePrint(props) {
               </div>
             </div>
 
-            <div className=" mt-2 ">
+            <div className=" ">
               <p className=" m-0" style={{ fontSize: "0.8rem" }}>
                 Address :<strong className="ms-2">{data.address}</strong>
               </p>
             </div>
 
-            <div className="d-flex justify-content-between  mt-2">
-              <p
-                className="d-flex justify-content-between col-6 m-0"
-                style={{ fontSize: "0.8rem" }}
-              >
-                <p className="col-6 m-0">
-                  Passport No. :
-                  <strong className="ms-2">{data.passport_number}</strong>
-                </p>
-                <p className="col-6 m-0">
-                  Expiry Date. :
-                  <strong className="ms-2">{data.passport_expiry_date}</strong>
-                </p>
-              </p>
-
-              <p
-                className="d-flex justify-content-between col-6 m-0"
-                style={{ fontSize: "0.8rem" }}
-              >
-                <p className="col-6 m-0">
-                  Muncipilaty No. :
-                  <strong className="ms-2">{data.identity_number}</strong>
-                </p>
-                <p className="col-6 m-0">
-                  Expiry Date. :
-                  <strong className="ms-2">{data.identity_expiry_date}</strong>
-                </p>
-              </p>
-            </div>
-            <div className="d-flex justify-content-between  mt-2">
-              <p
-                className="d-flex justify-content-between col-6 m-0"
-                style={{ fontSize: "0.8rem" }}
-              >
-                <p className="col-6 m-0">
-                  Driving License :
-                  <strong className="ms-2">
-                    {data.driving_license_number}
-                  </strong>
-                </p>
-                <p className="col-6 m-0">
-                  Expiry Date. :
-                  <strong className="ms-2">{data.driving_license_date}</strong>
-                </p>
-              </p>
-
-              <p
-                className="d-flex justify-content-between col-6 m-0"
-                style={{ fontSize: "0.8rem" }}
-              >
-                <p className="col-6 m-0">
-                  Work Permit No. :
-                  <strong className="ms-2">{data.work_permit_number}</strong>
-                </p>
-                <p className="col-6 m-0">
-                  Expiry Date. :
-                  <strong className="ms-2">{data.work_permit_date}</strong>
-                </p>
-              </p>
-            </div>
+            
 
             <div className="d-flex mt-3 ">
               <div className="col-6 me-2 ">
@@ -220,6 +157,10 @@ function EmployeePrint(props) {
                     <strong className="col-6">{data.extra_allowance}</strong>
                   </p>
                 )}
+                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                  <div className="col-6">Hire Date : </div>
+                  <strong className="col-6">{data.hiring_date}</strong>
+                </p>
               </div>
 
               <div className="col-6 ">
@@ -243,58 +184,88 @@ function EmployeePrint(props) {
                     <strong className="col-8">{data.pr_allowance}</strong>
                   </p>
                 )}
-              </div>
-            </div>
-
-            <div className="d-flex mt-3 ">
-              <div className="col-6 me-2 ">
-                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
-                  <div className="col-6">Hire Date : </div>
-                  <strong className="col-6">{data.hiring_date}</strong>
-                </p>
-              </div>
-
-              <div className="col-6 ">
                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
                   <div className="col-4">Fire Date: </div>
                   <strong className="col-8">{data.expelled_date}</strong>
                 </p>
               </div>
             </div>
+
+            
+
+              
+
+            <div className="d-flex justify-content-between  mt-2">
+              <p
+                className="d-flex justify-content-between col-6 m-0"
+                style={{ fontSize: "0.8rem" }}
+              >
+                <p className="col-7 m-0">
+                  Passport No. :
+                  <strong className="ms-2">{data.passport_number}</strong>
+                </p>
+                <p className="col-5 m-0">
+                  Expiry Date. :
+                  <strong className="ms-2">{data.passport_expiry_date}</strong>
+                </p>
+              </p>
+
+              <p
+                className="d-flex justify-content-between col-6 m-0"
+                style={{ fontSize: "0.8rem" }}
+              >
+                <p className="col-7 m-0">
+                  Muncipilaty No. :
+                  <strong className="ms-2">{data.identity_number}</strong>
+                </p>
+                <p className="col-5 m-0">
+                  Expiry Date. :
+                  <strong className="ms-2">{data.identity_expiry_date}</strong>
+                </p>
+              </p>
+            </div>
+            <div className="d-flex justify-content-between  mb-2">
+              <p
+                className="d-flex justify-content-between col-6 m-0"
+                style={{ fontSize: "0.8rem" }}
+              >
+                <p className="col-7 m-0">
+                  Driving License :
+                  <strong className="ms-2">
+                    {data.driving_license_number}
+                  </strong>
+                </p>
+                <p className="col-5 m-0">
+                  Expiry Date. :
+                  <strong className="ms-2">{data.driving_license_date}</strong>
+                </p>
+              </p>
+
+              <p
+                className="d-flex justify-content-between col-6 m-0"
+                style={{ fontSize: "0.8rem" }}
+              >
+                <p className="col-7 m-0">
+                  Work Permit No. :
+                  <strong className="ms-2">{data.work_permit_number}</strong>
+                </p>
+                <p className="col-5 m-0">
+                  Expiry Date. :
+                  <strong className="ms-2">{data.work_permit_date}</strong>
+                </p>
+              </p>
+            </div>
           </div>
 
-          <div className="d-flex border border-dark mb-3">
-            <div style={{ width: "20%" }} className="border-end border-dark">
-              <div className="border-bottom border-dark text-center">
-                Employee
-              </div>
-              <div style={{ height: "0.7in" }}></div>
-            </div>
-            <div style={{ width: "20%" }} className="border-end border-dark">
-              <div className="border-bottom border-dark text-center">
-                Manager
-              </div>
-              <div style={{ height: "0.7in" }}></div>
-            </div>
-            <div style={{ width: "20%" }} className="border-end border-dark">
-              <div className="border-bottom border-dark text-center">
-                Accountant
-              </div>
-              <div style={{ height: "0.7in" }}></div>
-            </div>
-            <div style={{ width: "20%" }} className="border-end border-dark">
-              <div className="border-bottom border-dark text-center">
-                HR Dept.
-              </div>
-              <div style={{ height: "0.7in" }}></div>
-            </div>
-            <div style={{ width: "20%" }} className="border-end border-dark">
-              <div className="border-bottom border-dark text-center">
-                Dept.Head
-              </div>
-              <div style={{ height: "0.7in" }}></div>
-            </div>
+          
+          <div className="d-flex justify-content-between  mt-5 ">
+              <p className="border-top border-dark ps-3 pe-3 me-2 text-center">Employee </p>
+              <p className="border-top border-dark ps-3 pe-3 me-2 text-center">Manager </p>
+              <p className="border-top border-dark ps-3 pe-3 me-2 text-center">Accountant </p>
+              <p className="border-top border-dark ps-3 pe-3 me-2 text-center">HR Dept. </p>
+              <p className="border-top border-dark ps-3 pe-3 me-2 text-center">Dept.Head </p>
           </div>
+
         </>
       )}
     </div>

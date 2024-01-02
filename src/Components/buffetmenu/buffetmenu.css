@@ -75,10 +75,11 @@ td {
 .printclass{
         
     height: 99%;
-    margin-top: 30px;
+    margin-top: 50px;
     page-break-after: avoid;
     page-break-before: avoid;
-    padding: 10px;
+    padding: 30px;
+    zoom: 0.8;
     font-family: 'Times New Roman', Times, serif;
     
 }

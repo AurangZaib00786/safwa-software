@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
 import success_toast from "../alerts/success_toast";
 import Red_toast from "../alerts/red_toast";
+import Sechule_History from './sechedulehistory'
+import VisibilityIcon from "@material-ui/icons/Visibility";
 
 export default function Schedule(props) {
   const { t } = useTranslation();
@@ -23,7 +25,7 @@ export default function Schedule(props) {
   const [alltiming, setalltiming] = useState([]);
   const [isloading, setisloading] = useState(false);
   const [check_update, setcheck_update] = useState(false);
-
+  const [view_stock, setview_stock] = useState(false);
   const [id, setid] = useState(null);
 
   const [search, setsearch] = useState("");
@@ -303,11 +305,35 @@ export default function Schedule(props) {
   };
 
   return (
+    <>
+      {!view_stock ? (
+        <Sechule_History
+          user={user}
+          route={route}
+          selected_branch={selected_branch}
+          current_user={current_user}
+          setview_stock={() => {
+            setview_stock(!view_stock);
+          }}
+        />
+      ) : (
     <div className="p-3 pt-2">
       <div className="card">
         <div className="card-header d-flex justify-content-between bg-white">
           <h3 className="mt-2 me-2">Add Schedule</h3>
-          <div className="mt-2 me-2 d-flex flex-row-reverse">
+          <div className="mt-2 me-2 d-flex ">
+          <Button
+                  type="button"
+                  className=" me-3"
+                  variant="outline-success"
+                  size="sm"
+                  onClick={(e) => {
+                    setview_stock(!view_stock);
+                  }}
+                >
+                  <VisibilityIcon className="me-2" />
+                  View
+                </Button>
             <Button
               onClick={check_update ? handleupdate : handlesubmit}
               variant="outline-primary"
@@ -470,6 +496,6 @@ export default function Schedule(props) {
           </div>
         </div>
       </div>
-    </div>
+    </div>)}</>
   );
 }

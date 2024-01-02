@@ -193,6 +193,7 @@ export default function CustomerType(props) {
             setid(row.id);
             setcheck_update(true);
             setname(row.name);
+            setarabicname(row.arabic_name)
             setworkinghours(row.working_hours);
             setcontact(row.contact);
             setcategory({ value: row.category, label: row.category_name });
@@ -417,6 +418,7 @@ export default function CustomerType(props) {
       const formData = new FormData();
 
       formData.append("name", name);
+      formData.append("arabic_name", arabicname);
       formData.append("contact", contact);
       formData.append("country", nationality?.value);
       formData.append("address", address);
@@ -511,7 +513,7 @@ export default function CustomerType(props) {
       formData.append("country", nationality?.value);
       formData.append("address", address);
       formData.append("working_hours", workinghours);
-
+      formData.append("arabic_name", arabicname);
       formData.append("type", type.value);
       formData.append("salary", salary);
       formData.append("transport_allowance", transportallowance);
