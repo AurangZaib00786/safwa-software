@@ -2,23 +2,15 @@ import React, { useState, useEffect, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import Red_toast from "../alerts/red_toast";
 import Select from "../alerts/select";
-import BootstrapTable from "react-bootstrap-table-next";
-import paginationFactory from "react-bootstrap-table2-paginator";
-import ToolkitProvider, {
-  Search,
-  CSVExport,
-} from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
-import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
+import "./buffetmenu.css";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import went_wrong_toast from "../alerts/went_wrong_toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotate } from "@fortawesome/free-solid-svg-icons";
 import Spinner from "react-bootstrap/Spinner";
-import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
-import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
-import PrintIcon from "@material-ui/icons/Print";
 
+import PrintIcon from "@material-ui/icons/Print";
+import { useReactToPrint } from "react-to-print";
 export default function Stock_table({
   user,
   route,
@@ -26,16 +18,20 @@ export default function Stock_table({
   current_user,
   setview_stock,
 }) {
-  pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
-  const { SearchBar } = Search;
-  const { ExportCSVButton } = CSVExport;
   const [allmenu, setallmenu] = useState([]);
   const [menu, setmenu] = useState("");
 
   const [data, setdata] = useState([]);
 
   const [isloading, setisloading] = useState(false);
+  const componentRef = useRef();
+  const handleprint = useReactToPrint({
+    content: () => componentRef.current,
+    bodyClass: "printclass",
+    onAfterPrint: () => {
+      window.close();
+    },
+  });
 
   useEffect(() => {
     const fetchWorkouts = async () => {
@@ -49,8 +45,158 @@ export default function Stock_table({
 
       if (response.ok) {
         setisloading(false);
+        const buffetmenu = [
+          { day: "Saturday", breakfast: "", lunch: "", dinner: "" },
+          { day: "Sunday", breakfast: "", lunch: "", dinner: "" },
+          { day: "Monday", breakfast: "", lunch: "", dinner: "" },
+          { day: "Tuesday", breakfast: "", lunch: "", dinner: "" },
+          { day: "Wednesday", breakfast: "", lunch: "", dinner: "" },
+          { day: "Thursday", breakfast: "", lunch: "", dinner: "" },
+          { day: "Friday", breakfast: "", lunch: "", dinner: "" },
+        ];
 
-        setdata(json);
+        json.map((item) => {
+          const day = item.title.split("_").shift();
+          const time = item.title.split("_").pop();
+          console.log(day, time);
+          switch (day) {
+            case "Saturday":
+              if (time === "Breakfast") {
+                buffetmenu[0]["breakfast"] = `${item.buffet_dishes.map(
+                  (dish) => {
+                    return `${dish.dish_name}`;
+                  }
+                )}`;
+                return;
+              } else if (time === "Lunch") {
+                buffetmenu[0]["lunch"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              } else if (time === "Dinner") {
+                buffetmenu[0]["dinner"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              }
+            case "Sunday":
+              if (time === "Breakfast") {
+                buffetmenu[1]["breakfast"] = `${item.buffet_dishes.map(
+                  (dish) => {
+                    return `${dish.dish_name}`;
+                  }
+                )}`;
+                return;
+              } else if (time === "Lunch") {
+                buffetmenu[1]["lunch"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              } else if (time === "Dinner") {
+                buffetmenu[1]["dinner"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              }
+            case "Monday":
+              if (time === "Breakfast") {
+                buffetmenu[2]["breakfast"] = `${item.buffet_dishes.map(
+                  (dish) => {
+                    return `${dish.dish_name}`;
+                  }
+                )}`;
+                return;
+              } else if (time === "Lunch") {
+                buffetmenu[2]["lunch"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              } else if (time === "Dinner") {
+                buffetmenu[2]["dinner"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              }
+            case "Tuesday":
+              if (time === "Breakfast") {
+                buffetmenu[3]["breakfast"] = `${item.buffet_dishes.map(
+                  (dish) => {
+                    return `${dish.dish_name}`;
+                  }
+                )}`;
+                return;
+              } else if (time === "Lunch") {
+                buffetmenu[3]["lunch"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              } else if (time === "Dinner") {
+                buffetmenu[3]["dinner"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              }
+            case "Wednesday":
+              if (time === "Breakfast") {
+                buffetmenu[4]["breakfast"] = `${item.buffet_dishes.map(
+                  (dish) => {
+                    return `${dish.dish_name}`;
+                  }
+                )}`;
+                return;
+              } else if (time === "Lunch") {
+                buffetmenu[4]["lunch"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              } else if (time === "Dinner") {
+                buffetmenu[4]["dinner"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              }
+            case "Thursday":
+              if (time === "Breakfast") {
+                buffetmenu[5]["breakfast"] = `${item.buffet_dishes.map(
+                  (dish) => {
+                    return `${dish.dish_name}`;
+                  }
+                )}`;
+                return;
+              } else if (time === "Lunch") {
+                buffetmenu[5]["lunch"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              } else if (time === "Dinner") {
+                buffetmenu[56]["dinner"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              }
+            case "Friday":
+              if (time === "Breakfast") {
+                buffetmenu[6]["breakfast"] = `${item.buffet_dishes.map(
+                  (dish) => {
+                    return `${dish.dish_name}`;
+                  }
+                )}`;
+                return;
+              } else if (time === "Lunch") {
+                buffetmenu[6]["lunch"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              } else if (time === "Dinner") {
+                buffetmenu[6]["dinner"] = `${item.buffet_dishes.map((dish) => {
+                  return `${dish.dish_name}`;
+                })}`;
+                return;
+              }
+          }
+        });
+
+        setdata(buffetmenu);
       }
       if (!response.ok) {
         went_wrong_toast();
@@ -86,212 +232,6 @@ export default function Stock_table({
     }
   }, []);
 
-  const headerstyle = (column, colIndex, { sortElement }) => {
-    return (
-      <div
-        className="d-flex justify-content-between align-items-center"
-        style={{ minHeight: "2.5rem" }}
-      >
-        {column.text}
-        {sortElement}
-      </div>
-    );
-  };
-
-  const fix_formatter = (cell, row) => {
-    return <div>{parseFloat(cell).toFixed(2)}</div>;
-  };
-
-  const columns = [
-    { dataField: "id", text: "Id", hidden: true, headerFormatter: headerstyle },
-    {
-      dataField: "product_code",
-      text: "Code",
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "product_name",
-      text: "Product",
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "product_barcode",
-      text: "Barcode",
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "quantity",
-      text: "Qty",
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "purchase_rate",
-      text: "Purchase Rate",
-      sort: true,
-      formatter: fix_formatter,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "offer_rate",
-      text: "Offer Rate",
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-    },
-    {
-      dataField: "sale_rate",
-      text: "Sale Rate",
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-    },
-    {
-      dataField: "offer",
-      text: "Offer",
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "scheme",
-      text: "Scheme",
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-    },
-    {
-      dataField: "percentage",
-      text: "%",
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-    },
-  ];
-
-  const customTotal = (from, to, size) => (
-    <span className="react-bootstrap-table-pagination-total ms-2">
-      Showing {from} to {to} of {size} Results
-    </span>
-  );
-
-  const options = {
-    paginationSize: 4,
-    pageStartIndex: 1,
-    firstPageText: "First",
-    showTotal: true,
-    paginationTotalRenderer: customTotal,
-    disablePageTitle: true,
-    sizePerPageList: [
-      {
-        text: "10",
-        value: 10,
-      },
-      {
-        text: "20",
-        value: 20,
-      },
-      {
-        text: "All",
-        value: data.length,
-      },
-    ], // A numeric array is also available. the purpose of above example is custom the text
-  };
-
-  const makepdf = () => {
-    var body = data.map((item, index) => {
-      return [
-        index + 1,
-        item.product_code,
-        item.product_name,
-        item.product_barcode,
-        item.quantity,
-        item.purchase_rate,
-        item.offer_rate,
-        item.sale_rate,
-        item.offer,
-        item.scheme,
-        item.percentage,
-      ];
-    });
-
-    body.splice(0, 0, [
-      "#",
-      "Code",
-      "Product",
-      "Barcode",
-      "Qty",
-      "Purchase Rate",
-      "Offer Rate",
-      "Sale Rate",
-      "Offer",
-      "Scheme",
-      "%",
-    ]);
-
-    const documentDefinition = {
-      content: [
-        { text: "Stock", style: "header" },
-        { text: `Project Name: ${selected_branch.name}`, style: "body" },
-        {
-          canvas: [
-            { type: "line", x1: 0, y1: 10, x2: 510, y2: 10, lineWidth: 1 },
-          ],
-        },
-
-        {
-          table: {
-            // headers are automatically repeated if the table spans over multiple pages
-            // you can declare how many rows should be treated as headers
-            headerRows: 1,
-            widths: [50, "*", "*", "*", "*", "*", "*", "*", "*", "*", "*"],
-            body: body,
-          },
-          style: "tableStyle",
-        },
-      ],
-      defaultStyle: {
-        font: "ArabicFont",
-      },
-      styles: {
-        tableStyle: {
-          width: "100%", // Set the width of the table to 100%
-          marginTop: 20,
-          font: "ArabicFont",
-          fontSize: 7,
-        },
-
-        header: {
-          fontSize: 22,
-          bold: true,
-          alignment: "center",
-        },
-        body: {
-          fontSize: 12,
-          bold: true,
-          alignment: "center",
-          marginBottom: 10,
-        },
-      },
-      pageOrientation: "landscape",
-    };
-    return documentDefinition;
-  };
-
-  const download = () => {
-    const documentDefinition = makepdf();
-    pdfMake.createPdf(documentDefinition).download("Stock.pdf");
-  };
-
-  const print = () => {
-    const documentDefinition = makepdf();
-    pdfMake.createPdf(documentDefinition).print();
-  };
-
-  const rowstyle = { height: "10px", paddingLeft: "30px" };
-
   return (
     <div className="p-3">
       <div className="card">
@@ -300,7 +240,7 @@ export default function Stock_table({
             className="mb-3"
             style={{ fontSize: "1.3rem", fontWeight: "normal" }}
           >
-            Stock
+            Buffet Menu
           </h1>
           <Button
             type="button"
@@ -314,73 +254,135 @@ export default function Stock_table({
         </div>
 
         <div className="card-body pt-0">
-          <ToolkitProvider
-            keyField="id"
-            data={data}
-            columns={columns}
-            search
-            exportCSV
-          >
-            {(props) => (
-              <div>
-                <div className="row mt-3">
-                  <div className="col-md-2 me-2">
-                    <Select
-                      options={allmenu}
-                      placeholder="Menu"
-                      value={menu}
-                      funct={(e) => setmenu(e)}
-                    />
-                  </div>
-                </div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
-                    <ExportCSVButton
-                      {...props.csvProps}
-                      className="csvbutton  border bg-secondary text-light me-2 mb-2"
-                    >
-                      Export CSV
-                    </ExportCSVButton>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 me-2 mb-2"
-                      variant="outline-primary"
-                      onClick={download}
-                    >
-                      <PictureAsPdfIcon /> PDF
-                    </Button>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 mb-2"
-                      variant="outline-success"
-                      onClick={print}
-                    >
-                      <PrintIcon /> Print
-                    </Button>
-                  </div>
-                  <SearchBar {...props.searchProps} />
-                </div>
-                {isloading && (
-                  <div className="text-center">
-                    <Spinner animation="border" variant="primary" />
-                  </div>
-                )}
+          <div className="row mt-3">
+            <div className="col-md-2 me-2">
+              <Select
+                options={allmenu}
+                placeholder="Menu"
+                value={menu}
+                funct={(e) => setmenu(e)}
+              />
+            </div>
+          </div>
+          <div className="d-sm-flex justify-content-between align-items-center mt-3">
+            <div>
+              <Button
+                type="button"
+                className="p-1 ps-3 pe-3 mb-2"
+                variant="outline-success"
+                onClick={handleprint}
+              >
+                <PrintIcon /> Print
+              </Button>
+            </div>
+          </div>
+          {isloading && (
+            <div className="text-center">
+              <Spinner animation="border" variant="primary" />
+            </div>
+          )}
 
-                <hr />
-                <div style={{ zoom: ".9" }}>
-                  <BootstrapTable
-                    {...props.baseProps}
-                    pagination={paginationFactory(options)}
-                    rowStyle={rowstyle}
-                    striped
-                    bootstrap4
-                    condensed
-                    wrapperClasses="table-responsive"
-                  />
-                </div>
-              </div>
+          <div style={{ fontFamily: "Times New Roman" }} ref={componentRef}>
+            <h4
+              style={{ fontWeight: "bolder" }}
+              className="text-center text-decoration-underline"
+            >
+              PROPOSED TWO DISHES Buffet MENU{" "}
+            </h4>
+            {menu && (
+              <h4
+                style={{ fontWeight: "bolder" }}
+                className="text-center text-decoration-underline"
+              >
+                {menu.label?.toUpperCase()} Menu
+              </h4>
             )}
-          </ToolkitProvider>
+            <hr />
+            <div className="table-responsive">
+              <table
+                className="table table-striped table-bordered "
+                style={{ width: "100%" }}
+              >
+                <thead>
+                  <tr>
+                    <th className="text-center">
+                      <h5 style={{ fontWeight: "bolder" }}>Day</h5>
+                    </th>
+                    <th className="text-center">
+                      <div className="d-flex flex-column">
+                        <h5 style={{ fontWeight: "bolder" }}>Breakfast</h5>
+                        <h5 style={{ fontWeight: "bolder" }}>0600 to 0900</h5>
+                      </div>
+                    </th>
+                    <th className="text-center">
+                      <div className="d-flex flex-column">
+                        <h5 style={{ fontWeight: "bolder" }}>Lunch</h5>
+                        <h5 style={{ fontWeight: "bolder" }}>
+                          1300:00 to 1500:00
+                        </h5>
+                      </div>
+                    </th>
+                    <th className="text-center">
+                      <div className="d-flex flex-column">
+                        <h5 style={{ fontWeight: "bolder" }}>Dinner</h5>
+                        <h5 style={{ fontWeight: "bolder" }}>2100 to 2330</h5>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((item) => {
+                    return (
+                      <tr key={item.day}>
+                        <td className="pt-0 pb-0 ">
+                          <h5
+                            className="d-flex align-items-center "
+                            style={{ height: "0.7in", fontWeight: "normal" }}
+                          >
+                            {item.day}
+                          </h5>
+                        </td>
+                        <td className=" pt-0 pb-0 text-center">
+                          <h5 style={{ fontWeight: "normal" }}>
+                            {item.breakfast}
+                          </h5>
+                        </td>
+                        <td className="pt-0 pb-0  text-center">
+                          <h5 style={{ fontWeight: "normal" }}>{item.lunch}</h5>
+                        </td>
+                        <td className="pt-0 pb-0  text-center">
+                          <h5 style={{ fontWeight: "normal" }}>
+                            {item.dinner}
+                          </h5>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="ps-3">
+              <h5>
+                <strong className="text-decoration-underline">
+                  IMPORTANT NOTES
+                </strong>
+              </h5>
+              <p className="m-0">
+                1. Water two (2) bottles of 300 ml with each meal.
+              </p>
+              <p className="m-0">2. Skinless chicken in all curries.</p>{" "}
+              <p className="m-0"> 3. Goat meat only.</p>
+              <p className="m-0">
+                {" "}
+                4. 70% Roti (Maida:Bur 70:30) and 30 % Khubz will be provided in
+                each building.{" "}
+              </p>
+              <p className="m-0">
+                5. Use of dry milk for morning tea is not allowed.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
