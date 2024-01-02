@@ -7,8 +7,10 @@ import Spinner from "react-bootstrap/Spinner";
 import TextField from "@mui/material/TextField";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 import success_toast from "../alerts/success_toast";
 import Red_toast from "../alerts/red_toast";
+import Stock_table from "./buffetmenuhistory";
 
 export default function BuffetMenu(props) {
   const { t } = useTranslation();
@@ -28,7 +30,7 @@ export default function BuffetMenu(props) {
 
   const [id, setid] = useState(null);
   const [checkall, setcheckall] = useState(false);
-
+  const [view_stock, setview_stock] = useState(false);
   const [search, setsearch] = useState("");
   const [callagain, setcallagain] = useState(false);
 
@@ -325,119 +327,147 @@ export default function BuffetMenu(props) {
   };
 
   return (
-    <div className="p-3 pt-2">
-      <div className="card">
-        <div className="card-header d-flex justify-content-between bg-white">
-          <h3 className="mt-2 me-2">Add Buffet Menu</h3>
-          <div className="mt-2 me-2 d-flex flex-row-reverse">
-            <Button
-              onClick={check_update ? handleupdate : handlesubmit}
-              variant="outline-primary"
-            >
-              {isloading && (
-                <Spinner
-                  as="span"
-                  animation="border"
+    <>
+      {!view_stock ? (
+        <Stock_table
+          user={user}
+          route={route}
+          selected_branch={selected_branch}
+          current_user={current_user}
+          setview_stock={() => {
+            setview_stock(!view_stock);
+          }}
+        />
+      ) : (
+        <div className="p-3 pt-2">
+          <div className="card">
+            <div className="card-header d-flex justify-content-between bg-white">
+              <h3 className="mt-2 me-2">Add Buffet Menu</h3>
+              <div className="mt-2 me-2 d-flex ">
+                <Button
+                  type="button"
+                  className=" me-3"
+                  variant="outline-success"
                   size="sm"
-                  role="status"
-                  aria-hidden="true"
-                />
-              )}
-              <SaveIcon /> {t("save")}
-            </Button>
-          </div>
-        </div>
-
-        <div className="card-body pt-0">
-          <div className="row mt-4">
-            <div className="col-md-3">
-              <Select
-                options={allmenu}
-                placeholder={"Menu"}
-                value={menu}
-                funct={(e) => setmenu(e)}
-                required={true}
-              />
+                  onClick={(e) => {
+                    setview_stock(!view_stock);
+                  }}
+                >
+                  <VisibilityIcon className="me-2" />
+                  View
+                </Button>
+                <Button
+                  onClick={check_update ? handleupdate : handlesubmit}
+                  variant="outline-primary"
+                >
+                  {isloading && (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <SaveIcon /> {t("save")}
+                </Button>
+              </div>
             </div>
 
-            <div className="col-md-3">
-              <Select
-                options={alltitle}
-                placeholder={"Buffet Title"}
-                value={title}
-                funct={(e) => settitle(e)}
-                required={true}
-              />
+            <div className="card-body pt-0">
+              <div className="row mt-4">
+                <div className="col-md-3">
+                  <Select
+                    options={allmenu}
+                    placeholder={"Menu"}
+                    value={menu}
+                    funct={(e) => setmenu(e)}
+                    required={true}
+                  />
+                </div>
+
+                <div className="col-md-3">
+                  <Select
+                    options={alltitle}
+                    placeholder={"Buffet Title"}
+                    value={title}
+                    funct={(e) => settitle(e)}
+                    required={true}
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="card mt-3">
-        <div className="card-body pt-0">
-          <div className="row mt-5">
-            <label className="d-flex justify-content-between align-items-end mb-2">
-              <h5 className="m-0">Roles</h5>
-              <TextField
-                label="Search"
-                variant="outlined"
-                value={search}
-                onChange={handlesearch}
-                size="small"
-              />
-            </label>
+          <div className="card mt-3">
+            <div className="card-body pt-0">
+              <div className="row mt-5">
+                <label className="d-flex justify-content-between align-items-end mb-2">
+                  <h5 className="m-0">Roles</h5>
+                  <TextField
+                    label="Search"
+                    variant="outlined"
+                    value={search}
+                    onChange={handlesearch}
+                    size="small"
+                  />
+                </label>
 
-            <div className="table-responsive">
-              <table
-                className="table table-striped table-bordered "
-                style={{ width: "100%" }}
-              >
-                <thead>
-                  <tr>
-                    <th className="border-0" style={{ width: "5%" }}>
-                      <input
-                        className="form-check-input m-0 me-2"
-                        type="checkbox"
-                        checked={checkall}
-                        onChange={handleallchange}
-                      />
-                    </th>
-                    <th className="text-center">Name</th>
-                    <th className="text-center">اسم الطبق</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {all_products.map((item) => {
-                    return (
-                      <tr key={item.id}>
-                        <td className="pt-0 pb-0 ">
-                          {item && (
-                            <div
-                              className="d-flex align-items-center "
-                              style={{ height: "40px" }}
-                            >
-                              <input
-                                className="form-check-input m-0 me-2"
-                                type="checkbox"
-                                checked={item.value}
-                                onChange={() => handlecheckboxchange(item)}
-                              />
-                            </div>
-                          )}
-                        </td>
-                        <td className=" pt-0 pb-0 text-center">{item.name}</td>
-                        <td className="pt-0 pb-0  text-center">
-                          {item.arabic_name}
-                        </td>
+                <div className="table-responsive">
+                  <table
+                    className="table table-striped table-bordered "
+                    style={{ width: "100%" }}
+                  >
+                    <thead>
+                      <tr>
+                        <th className="border-0" style={{ width: "5%" }}>
+                          <input
+                            className="form-check-input m-0 me-2"
+                            type="checkbox"
+                            checked={checkall}
+                            onChange={handleallchange}
+                          />
+                        </th>
+                        <th className="text-center">Name</th>
+                        <th className="text-center">اسم الطبق</th>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody>
+                      {all_products.map((item) => {
+                        return (
+                          <tr key={item.id}>
+                            <td className="pt-0 pb-0 ">
+                              {item && (
+                                <div
+                                  className="d-flex align-items-center "
+                                  style={{ height: "40px" }}
+                                >
+                                  <input
+                                    className="form-check-input m-0 me-2"
+                                    type="checkbox"
+                                    checked={item.value}
+                                    onChange={() => handlecheckboxchange(item)}
+                                  />
+                                </div>
+                              )}
+                            </td>
+                            <td className=" pt-0 pb-0 text-center">
+                              {item.name}
+                            </td>
+                            <td className="pt-0 pb-0  text-center">
+                              {item.arabic_name}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
