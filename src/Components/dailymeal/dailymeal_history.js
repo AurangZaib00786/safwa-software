@@ -32,6 +32,7 @@ import {
   addYears,
   isSameDay,
 } from "date-fns";
+import "./dailymealhistory.css";
 import PrintRoundedIcon from "@material-ui/icons/PrintRounded";
 import { useTranslation } from "react-i18next";
 import pdfMake from "pdfmake/build/pdfmake";
@@ -39,7 +40,7 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
 
-function Purchase_return_history(props) {
+function Dailymeal_history(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
   const { t } = useTranslation();
   const user = props.state.setuser.user;
@@ -59,6 +60,15 @@ function Purchase_return_history(props) {
   const [row_id, setrow_id] = useState("");
   const [isloading, setisloading] = useState(false);
 
+  const [payment_type, setpayment_type] = useState({
+    value: "all",
+    label: "All",
+  });
+  const [allpayment_type, setallpayment_type] = useState([
+    { value: "all", label: "All" },
+    { value: "credit", label: "Credit" },
+    { value: "cash", label: "Cash" },
+  ]);
   const [supplier, setsupplier] = useState({ value: "all", label: "All" });
   const [allsupplier, setallsupplier] = useState([]);
 
@@ -110,6 +120,7 @@ function Purchase_return_history(props) {
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
       });
+
       const json = await response.json();
 
       if (response.ok) {
@@ -128,15 +139,17 @@ function Purchase_return_history(props) {
     setisloading(true);
     dispatch({ type: "Set_table_history", data: [] });
     const fetchProducts = async () => {
-      var url = `${route}/api/purchase-return/?account_head=${selected_branch.id}&user_id=${current_user.id}&user_type=${current_user?.profile?.user_type}&start_date=${start_date}&end_date=${end_date}`;
+      var url = `${route}/api/purchases/?account_head=${selected_branch.id}&user_id=${current_user.id}&user_type=${current_user?.profile?.user_type}&start_date=${start_date}&end_date=${end_date}`;
       if (
         date_range[0].endDate.getFullYear() -
           date_range[0].startDate.getFullYear() ===
         10
       ) {
-        url = `${route}/api/purchases/?account_head=${selected_branch.id}&user_id=${current_user.id}&user_type=${current_user?.profile?.user_type}`;
+        url = `${route}/api/purchases/?branch_id=${selected_branch.id}&user_id=${current_user.id}&user_type=${current_user?.profile?.user_type}`;
       }
-
+      if (payment_type.value != "all") {
+        url = `${url}&payment_type=${payment_type.label}`;
+      }
       if (supplier.value != "all") {
         url = `${url}&supplier_id=${supplier.value}`;
       }
@@ -174,9 +187,9 @@ function Purchase_return_history(props) {
             localStorage.setItem("data", JSON.stringify(row));
 
             if (formatExtraData.code === "A4") {
-              window.open("/invoice/purchases_return", "_blank");
+              window.open("/invoice/purchases", "_blank");
             } else if (formatExtraData.code === "80mm") {
-              window.open("/invoice_80/purchases_return", "_blank");
+              window.open("/invoice_80/purchases", "_blank");
             }
           }}
         >
@@ -186,7 +199,7 @@ function Purchase_return_history(props) {
           className="border border-danger rounded me-2"
           onClick={() => {
             setrow_id(row.id);
-            seturl_to_delete(`${route}/api/purchase-return/${row.id}/`);
+            seturl_to_delete(`${route}/api/purchases/${row.id}/`);
             setdelete_user(true);
           }}
         >
@@ -202,9 +215,9 @@ function Purchase_return_history(props) {
             });
             settable_data({
               type: "Set_save_data",
-              data: data[0],
+              data: [{ data: data[0] }],
             });
-            setActiveTab("purchasereturn_Edit");
+            setActiveTab("purchase_Edit");
           }}
         >
           <EditOutlinedIcon
@@ -232,6 +245,7 @@ function Purchase_return_history(props) {
   const fix_formatter = (cell, row) => {
     return <div>{parseFloat(cell).toFixed(2)}</div>;
   };
+
   const footerFormatter = (column, colIndex, { text }) => {
     if (colIndex > 3) {
       return (
@@ -354,7 +368,11 @@ function Purchase_return_history(props) {
 
   useEffect(() => {
     setcallagain(!callagain);
-  }, [supplier, date_range]);
+  }, [payment_type, supplier, date_range]);
+
+  const handlecategory = (e) => {
+    setpayment_type(e);
+  };
 
   const handlesubcategory = (e) => {
     setsupplier(e);
@@ -395,7 +413,8 @@ function Purchase_return_history(props) {
 
     const documentDefinition = {
       content: [
-        { text: "Purchase Return History", style: "header" },
+        { text: "Purchase History", style: "header" },
+
         {
           layout: "noBorders",
           table: {
@@ -403,14 +422,18 @@ function Purchase_return_history(props) {
             widths: ["*", "*"],
             body: [
               [
-                `Account Head : ${selected_branch.name}`,
-                `Date : ${start_date} - ${end_date}`,
+                `Account Head: ${selected_branch.name}`,
+                `Date: ${start_date} - ${end_date}`,
               ],
-              [`Supplier : ${supplier.label}`, ""],
+              [
+                `Payment Type: ${payment_type.label}`,
+                `Supplier: ${supplier.label}`,
+              ],
             ],
           },
           style: "body",
         },
+
         {
           canvas: [
             { type: "line", x1: 0, y1: 10, x2: 510, y2: 10, lineWidth: 1 },
@@ -450,6 +473,7 @@ function Purchase_return_history(props) {
           bold: true,
           alignment: "left",
           marginBottom: 10,
+          border: false,
         },
       },
     };
@@ -458,7 +482,7 @@ function Purchase_return_history(props) {
 
   const download = () => {
     const documentDefinition = makepdf();
-    pdfMake.createPdf(documentDefinition).download("Purchasereturnhistory.pdf");
+    pdfMake.createPdf(documentDefinition).download("Purchasehistory.pdf");
   };
 
   const print = () => {
@@ -598,8 +622,16 @@ function Purchase_return_history(props) {
                   funct={handlesubcategory}
                 ></Select>
               </div>
+              <div className="col-sm-4 ms-3  me-3  selector mb-2">
+                <Select
+                  options={allpayment_type}
+                  placeholder={t("side_bar_paymnettype")}
+                  value={payment_type}
+                  funct={handlecategory}
+                ></Select>
+              </div>
             </div>
-            <div className="d-sm-flex justify-content-between align-items-center mt-3 ">
+            <div className="d-sm-flex justify-content-between align-items-center mt-3  ">
               <div>
                 <ExportCSVButton
                   {...props.csvProps}
@@ -633,7 +665,7 @@ function Purchase_return_history(props) {
               </div>
             )}
             <hr />
-            <div style={{ minHeight: "70vh", zoom: "0.8" }}>
+            <div style={{ minHeight: "100vh", zoom: "0.8" }}>
               <BootstrapTable
                 {...props.baseProps}
                 bordered={false}
@@ -641,6 +673,7 @@ function Purchase_return_history(props) {
                 condensed
                 striped
                 wrapperClasses="table-responsive"
+                classes="purchasehistorytable"
               />
             </div>
           </div>
@@ -661,4 +694,4 @@ function Purchase_return_history(props) {
   );
 }
 
-export default Purchase_return_history;
+export default Dailymeal_history;

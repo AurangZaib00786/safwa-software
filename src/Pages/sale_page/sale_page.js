@@ -6,23 +6,8 @@ import Sale from "../../Container/saleContainer";
 import Sale_history from "../../Container/salehistoryContainer";
 import Sale_Edit from "../../Container/saleeditContainer";
 
-import Sale_Return from "../../Container/salereturnContainer";
-import Sale_Return_edit from "../../Container/salereturneditContainer";
-import Sale_Return_history from "../../Container/salereturnhistory";
-
-import Sale_Quotation from "../../Container/salequotationContainer";
-import Sale_Quotation_edit from "../../Container/salequotationeditContainer";
-import Sale_Quotation_history from "../../Container/salequotationhistoryContainer";
-
 function Sale_page({ current_user }) {
-  const tabs = [
-    "sale",
-    "sale_history",
-    "salereturn",
-    "salereturn_history",
-    "salequotation",
-    "salequotation_history",
-  ];
+  const tabs = ["sale", "sale_history"];
   var current_tab = localStorage.getItem("activeTab");
   if (!tabs.includes(current_tab)) {
     current_tab = "sale";
@@ -58,40 +43,6 @@ function Sale_page({ current_user }) {
             ) : (
               activeTab === "sale_Edit" && (
                 <Sale_Edit setActiveTab={setActiveTab} />
-              )
-            )}
-          </Tab>
-        )}
-
-        {current_user?.permissions?.includes("view_sale_return") && (
-          <Tab eventKey="salereturn" title="Sale Return">
-            {activeTab === "salereturn" && <Sale_Return />}
-          </Tab>
-        )}
-        {current_user?.permissions?.includes("view_sale_return_history") && (
-          <Tab eventKey="salereturn_history" title="Return History">
-            {activeTab === "salereturn_history" ? (
-              <Sale_Return_history setActiveTab={setActiveTab} />
-            ) : (
-              activeTab === "salereturn_Edit" && (
-                <Sale_Return_edit setActiveTab={setActiveTab} />
-              )
-            )}
-          </Tab>
-        )}
-
-        {current_user?.permissions?.includes("view_sale_quotation") && (
-          <Tab eventKey="salequotation" title="Sale Quotation">
-            {activeTab === "salequotation" && <Sale_Quotation />}
-          </Tab>
-        )}
-        {current_user?.permissions?.includes("view_sale_quotation_history") && (
-          <Tab eventKey="salequotation_history" title="Quotation History">
-            {activeTab === "salequotation_history" ? (
-              <Sale_Quotation_history setActiveTab={setActiveTab} />
-            ) : (
-              activeTab === "salequotation_Edit" && (
-                <Sale_Quotation_edit setActiveTab={setActiveTab} />
               )
             )}
           </Tab>

@@ -27,18 +27,18 @@ export default function Stock_table({
   const [isloading, setisloading] = useState(false);
   const componentRef = useRef();
 
-  useEffect(()=>{
-    if (print){
-      handleprint()
+  useEffect(() => {
+    if (print) {
+      handleprint();
     }
-  },[print])
+  }, [print]);
 
   const handleprint = useReactToPrint({
     content: () => componentRef.current,
     bodyClass: "printclass",
     onAfterPrint: () => {
       window.close();
-      setprint(false)
+      setprint(false);
     },
   });
 
@@ -67,7 +67,7 @@ export default function Stock_table({
         json.map((item) => {
           const day = item.title.split("_").shift();
           const time = item.title.split("_").pop();
-          
+
           switch (day) {
             case "Saturday":
               if (time === "Breakfast") {
@@ -279,9 +279,9 @@ export default function Stock_table({
                 type="button"
                 className="p-1 ps-3 pe-3 mb-2"
                 variant="outline-success"
-                onClick={()=>{
-                  setprint(true)
-                 }}
+                onClick={() => {
+                  setprint(true);
+                }}
               >
                 <PrintIcon /> Print
               </Button>
@@ -294,23 +294,72 @@ export default function Stock_table({
           )}
 
           <div style={{ fontFamily: "Times New Roman" }} ref={componentRef}>
-            {print &&<> <h4
-              style={{ fontWeight: "bolder" }}
-              className="text-center text-decoration-underline"
-            >
-              PROPOSED TWO DISHES Buffet MENU{" "}
-            </h4>
-            
-              <h4
-                style={{ fontWeight: "bolder" }}
-                className="text-center text-decoration-underline"
-              >
-                {menu.label?.toUpperCase()} MENU
-              </h4>
+            {print && (
+              <>
+                <div className="d-flex mb-3">
+                  {selected_branch?.logo && (
+                    <div className="col-4 text-start">
+                      <img
+                        src={selected_branch?.logo}
+                        alt="logo"
+                        width={"200"}
+                        height={"100"}
+                      ></img>
+                    </div>
+                  )}
+
+                  <div className="col-4 text-center">
+                    <h5 className="mb-2 text-center">
+                      <strong>{selected_branch?.name}</strong>
+                    </h5>
+                    <h5 className="mb-2 text-center">
+                      <strong>{selected_branch?.arabic_name}</strong>
+                    </h5>
+                  </div>
+
+                  <div className="col-4  text-end">
+                    {selected_branch?.contact && (
+                      <p className="m-0 " style={{ fontSize: "0.8rem" }}>
+                        <strong>Contact : </strong>
+                        {selected_branch?.contact}
+                      </p>
+                    )}
+                    {selected_branch?.email && (
+                      <p className=" m-0 " style={{ fontSize: "0.8rem" }}>
+                        <strong>Email : </strong>
+                        {selected_branch?.email}
+                      </p>
+                    )}
+                    {selected_branch?.vat_number && (
+                      <p className=" m-0 " style={{ fontSize: "0.8rem" }}>
+                        <strong>VAT No. : </strong>
+                        {selected_branch?.vat_number}
+                      </p>
+                    )}
+                    {selected_branch?.address && (
+                      <p className=" m-0 " style={{ fontSize: "0.8rem" }}>
+                        <strong>Address :</strong> {selected_branch?.address}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <h4
+                  style={{ fontWeight: "bolder" }}
+                  className="text-center text-decoration-underline"
+                >
+                  PROPOSED TWO DISHES Buffet MENU{" "}
+                </h4>
+
+                <h4
+                  style={{ fontWeight: "bolder" }}
+                  className="text-center text-decoration-underline"
+                >
+                  {menu.label?.toUpperCase()} MENU
+                </h4>
               </>
-            }
+            )}
             <hr />
-            <div style={{zoom:'0.8'}} className="table-responsive">
+            <div style={{ zoom: "0.8" }} className="table-responsive">
               <table
                 className="table table-striped table-bordered "
                 style={{ width: "100%" }}
@@ -346,7 +395,7 @@ export default function Stock_table({
                   {data.map((item) => {
                     return (
                       <tr key={item.day}>
-                        <td style={{width:'10%'}} className="pt-0 pb-0 ">
+                        <td style={{ width: "10%" }} className="pt-0 pb-0 ">
                           <h5
                             className="d-flex align-items-center "
                             style={{ height: "0.7in", fontWeight: "normal" }}
@@ -354,15 +403,24 @@ export default function Stock_table({
                             {item.day}
                           </h5>
                         </td>
-                        <td style={{width:'30%'}} className=" pt-0 pb-0 text-center">
+                        <td
+                          style={{ width: "30%" }}
+                          className=" pt-0 pb-0 text-center"
+                        >
                           <h5 style={{ fontWeight: "normal" }}>
                             {item.breakfast}
                           </h5>
                         </td>
-                        <td style={{width:'30%'}} className="pt-0 pb-0  text-center">
+                        <td
+                          style={{ width: "30%" }}
+                          className="pt-0 pb-0  text-center"
+                        >
                           <h5 style={{ fontWeight: "normal" }}>{item.lunch}</h5>
                         </td>
-                        <td style={{width:'30%'}} className="pt-0 pb-0  text-center">
+                        <td
+                          style={{ width: "30%" }}
+                          className="pt-0 pb-0  text-center"
+                        >
                           <h5 style={{ fontWeight: "normal" }}>
                             {item.dinner}
                           </h5>
@@ -374,26 +432,28 @@ export default function Stock_table({
               </table>
             </div>
 
-            {print && <div className="ps-3">
-              <h5>
-                <strong className="text-decoration-underline">
-                  IMPORTANT NOTES
-                </strong>
-              </h5>
-              <p className="m-0">
-                1. Water two (2) bottles of 300 ml with each meal.
-              </p>
-              <p className="m-0">2. Skinless chicken in all curries.</p>{" "}
-              <p className="m-0"> 3. Goat meat only.</p>
-              <p className="m-0">
-                {" "}
-                4. 70% Roti (Maida:Bur 70:30) and 30 % Khubz will be provided in
-                each building.{" "}
-              </p>
-              <p className="m-0">
-                5. Use of dry milk for morning tea is not allowed.
-              </p>
-            </div>}
+            {print && (
+              <div className="ps-3">
+                <h5>
+                  <strong className="text-decoration-underline">
+                    IMPORTANT NOTES
+                  </strong>
+                </h5>
+                <p className="m-0">
+                  1. Water two (2) bottles of 300 ml with each meal.
+                </p>
+                <p className="m-0">2. Skinless chicken in all curries.</p>{" "}
+                <p className="m-0"> 3. Goat meat only.</p>
+                <p className="m-0">
+                  {" "}
+                  4. 70% Roti (Maida:Bur 70:30) and 30 % Khubz will be provided
+                  in each building.{" "}
+                </p>
+                <p className="m-0">
+                  5. Use of dry milk for morning tea is not allowed.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

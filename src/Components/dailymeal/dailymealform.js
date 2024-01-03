@@ -1,23 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import BootstrapTable from "react-bootstrap-table-next";
-import paginationFactory from "react-bootstrap-table2-paginator";
-import ToolkitProvider, {
-  Search,
-  CSVExport,
-} from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
+import ToolkitProvider from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import { Avatar } from "@material-ui/core";
-import "./Purchase.css";
-import { ToastContainer } from "react-toastify";
+import "./dailymeal.css";
 import custom_toast from "../alerts/custom_toast";
-import went_wrong_toast from "../alerts/went_wrong_toast";
 import Spinner from "react-bootstrap/Spinner";
-import Select from "react-select";
-import { useTranslation } from "react-i18next";
 
-function Purchaseform({
+function Dailymealform({
   show,
   onHide,
   callback,
@@ -25,12 +16,9 @@ function Purchaseform({
   data_,
   column,
   setcolumn,
-  table_data
+  table_data,
 }) {
-  
   const [isloading, setisloading] = useState(false);
- 
-  
 
   const headerstyle = (column, colIndex, { sortElement }) => {
     return (
@@ -45,61 +33,47 @@ function Purchaseform({
   };
 
   const addproduct = (row, num) => {
+    setcolumn([...column, { id: row.id, name: row.name }]);
+    const optimize = table_data.map((item) => {
+      item[row.name] = "";
+      return item;
+    });
 
-      setcolumn([...column,{id:row.id,name:row.name}])
-      const optimize=table_data.map(item=>{
-        item[row.name]=''
-        return item
-      })
-
-      callback({ type: "Set_product_history", data: optimize });
-    
+    callback({ type: "Set_product_history", data: optimize });
   };
 
-  
-    const columns = [
-      {
-        dataField: "id",
-        text: "Id",
-        hidden: true,
-        headerFormatter: headerstyle,
-      },
-      {
-        dataField: "name",
-        text: "Name",
-        sort: true,
-        headerFormatter: headerstyle,
-      },
-      
-    
-    ];
+  const columns = [
+    {
+      dataField: "id",
+      text: "Id",
+      hidden: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "name",
+      text: "Name",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+  ];
 
-    const selectRow = {
-      mode: "checkbox",
-      clickToSelect: true,
-      onSelect: (row, isSelect, rowIndex, e) => {
-         addproduct(row);
-        custom_toast("Pot added");
-        
-      },
-      onSelectAll: (isSelect, rows, e) => {
-        if (isSelect) {
-         
+  const selectRow = {
+    mode: "checkbox",
+    clickToSelect: true,
+    onSelect: (row, isSelect, rowIndex, e) => {
+      addproduct(row);
+      custom_toast("Pot added");
+    },
+    onSelectAll: (isSelect, rows, e) => {
+      if (isSelect) {
+        rows.forEach((row) => {
+          addproduct(row);
+        });
 
-          rows.forEach((row) => {
-             addproduct(row);
-            
-          });
-          
-          custom_toast("Pots added");
-        }
-      },
-    };
-  
-
- 
-
-  
+        custom_toast("Pots added");
+      }
+    },
+  };
 
   const rowstyle = { height: "10px" };
 
@@ -139,11 +113,9 @@ function Purchaseform({
                 </div>
               )}
 
-             
               <div>
                 <BootstrapTable
                   {...props.baseProps}
-                 
                   rowStyle={rowstyle}
                   striped
                   bootstrap4
@@ -160,4 +132,4 @@ function Purchaseform({
   );
 }
 
-export default Purchaseform;
+export default Dailymealform;

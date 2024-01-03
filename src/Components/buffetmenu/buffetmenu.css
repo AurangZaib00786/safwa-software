@@ -78,7 +78,8 @@ td {
     margin-top: 50px;
     page-break-after: avoid;
     page-break-before: avoid;
-    padding: 30px;
+    padding: 70px;
+    padding-top: 30px;
     zoom: 0.8;
     font-family: 'Times New Roman', Times, serif;
     

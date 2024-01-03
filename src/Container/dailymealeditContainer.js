@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import Purchase_return_Edit from "../Components/purchase_return/purchase_returneidt";
+import Dailymeal_Edit from "../Components/dailymeal/dailymealeidt";
 import {
   Settablehistory,
   Setproducthistory,
@@ -16,4 +16,4 @@ const getpart = (state) => ({
   state,
 });
 
-export default connect(getpart, dispatchpart)(Purchase_return_Edit);
+export default connect(getpart, dispatchpart)(Dailymeal_Edit);

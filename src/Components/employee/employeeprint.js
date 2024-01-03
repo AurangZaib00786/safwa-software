@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import "./employeeprint.css";
 
-
 function EmployeePrint(props) {
   const company = JSON.parse(localStorage.getItem("selected_branch"));
 
@@ -58,7 +57,7 @@ function EmployeePrint(props) {
               )}
               {company?.email && (
                 <p className=" m-0 " style={{ fontSize: "0.8rem" }}>
-                  <strong>Mail : </strong>
+                  <strong>Email : </strong>
                   {company?.email}
                 </p>
               )}
@@ -77,14 +76,10 @@ function EmployeePrint(props) {
           </div>
 
           <h4 className=" mb-4 text-center">
-            <strong >
-              Employee Form
-            </strong>
+            <strong>Employee Form</strong>
           </h4>
 
           <div className="border border-dark pe-2 ps-2 ">
-            
-
             <div className="d-flex mt-3 ">
               <div className="col-6 me-2 ">
                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
@@ -114,8 +109,6 @@ function EmployeePrint(props) {
                 Address :<strong className="ms-2">{data.address}</strong>
               </p>
             </div>
-
-            
 
             <div className="d-flex mt-3 mb-2">
               <div className="col-6 me-2 ">
@@ -157,7 +150,7 @@ function EmployeePrint(props) {
                     <strong className="col-6">{data.extra_allowance}</strong>
                   </p>
                 )}
-                
+
                 {data.type !== "Daily Wage" && (
                   <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
                     <div className="col-6">Food Allowance : </div>
@@ -170,7 +163,7 @@ function EmployeePrint(props) {
                     <strong className="col-6">{data.pr_allowance}</strong>
                   </p>
                 )}
-                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
                   <div className="col-6">Hire Date : </div>
                   <strong className="col-6">{data.hiring_date}</strong>
                 </p>
@@ -181,7 +174,7 @@ function EmployeePrint(props) {
               </div>
 
               <div className="col-6 ">
-              <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
+                <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
                   <div className="col-6">Passport No. : </div>
                   <strong className="col-6">{data.passport_number}</strong>
                 </p>
@@ -201,7 +194,9 @@ function EmployeePrint(props) {
 
                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
                   <div className="col-6">Driving License : </div>
-                  <strong className="col-6">{data.driving_license_number}</strong>
+                  <strong className="col-6">
+                    {data.driving_license_number}
+                  </strong>
                 </p>
                 <p className="d-flex m-0" style={{ fontSize: "0.8rem" }}>
                   <div className="col-6">License Expire Date : </div>
@@ -216,22 +211,27 @@ function EmployeePrint(props) {
                   <div className="col-6">Permit Expire Date : </div>
                   <strong className="col-6">{data.work_permit_date}</strong>
                 </p>
-              
-                
-               
               </div>
-            </div> 
+            </div>
           </div>
 
-          
           <div className="d-flex justify-content-between  mt-5 ">
-              <p className="border-top border-dark ps-3 pe-3 me-2 text-center">Employee </p>
-              <p className="border-top border-dark ps-3 pe-3 me-2 text-center">Manager </p>
-              <p className="border-top border-dark ps-3 pe-3 me-2 text-center">Accountant </p>
-              <p className="border-top border-dark ps-3 pe-3 me-2 text-center">HR Dept. </p>
-              <p className="border-top border-dark ps-3 pe-3 me-2 text-center">Dept.Head </p>
+            <p className="border-top border-dark ps-3 pe-3 me-2 text-center">
+              Employee{" "}
+            </p>
+            <p className="border-top border-dark ps-3 pe-3 me-2 text-center">
+              Manager{" "}
+            </p>
+            <p className="border-top border-dark ps-3 pe-3 me-2 text-center">
+              Accountant{" "}
+            </p>
+            <p className="border-top border-dark ps-3 pe-3 me-2 text-center">
+              HR Dept.{" "}
+            </p>
+            <p className="border-top border-dark ps-3 pe-3 me-2 text-center">
+              Dept.Head{" "}
+            </p>
           </div>
-
         </>
       )}
     </div>

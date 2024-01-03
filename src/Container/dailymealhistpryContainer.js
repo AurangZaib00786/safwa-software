@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import sale_quotationedit from "../Components/sale quotation/sale_quotationedit";
+import Dailymeal_history from "../Components/dailymeal/dailymeal_history";
 import {
   Settablehistory,
   Setproducthistory,
@@ -16,4 +16,4 @@ const getpart = (state) => ({
   state,
 });
 
-export default connect(getpart, dispatchpart)(sale_quotationedit);
+export default connect(getpart, dispatchpart)(Dailymeal_history);
