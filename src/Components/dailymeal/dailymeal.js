@@ -31,6 +31,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Dailymealform from "./dailymealform";
 import { useTranslation } from "react-i18next";
 import Red_toast from "../alerts/red_toast";
+import custom_toast from "../alerts/custom_toast";
 
 function Dailymeal(props) {
   const user = props.state.setuser.user;
@@ -65,12 +66,9 @@ function Dailymeal(props) {
   const [order, setorder] = useState(null);
   const [dishes, setdishes] = useState(null);
 
-  useEffect(() => {
+  
     const fetchorder = async () => {
-      if (!type) {
-        Red_toast("Select Type First !");
-        return;
-      }
+      
       const response = await fetch(
         `${route}/api/orders/?customer_id=${customer.value}&start_date=${date}&end_date=${date}`,
         {
@@ -100,7 +98,7 @@ function Dailymeal(props) {
 
     const fetchdish = async () => {
       if (!type) {
-        Red_toast("Select Type First !");
+        
         return;
       }
       const weekday = [
@@ -134,11 +132,7 @@ function Dailymeal(props) {
       }
     };
 
-    if (customer) {
-      fetchorder();
-      fetchdish();
-    }
-  }, [customer, type]);
+    
 
   useEffect(() => {
     dispatch({ type: "Set_menuitem", data: "purchase" });
@@ -225,6 +219,77 @@ function Dailymeal(props) {
     });
     settable_data({ type: "Set_product_history", data: newdata });
   };
+
+  const handlegenerate =(e)=>{
+    e.preventDefault()
+    if (!type) {
+      Red_toast("Select Type First !");
+      return;
+    }
+    fetchorder()
+    fetchdish()
+
+  }
+
+
+  const handlesubmit=async(e)=>{
+        e.preventDefault()
+
+        const buildingdetail=table_data.map(item=>{
+          return {
+            building:item.building,
+            hujaj:type.value === "Breakfast"
+            ? item.breakfast
+            : type.value === "Lunch"
+            ? item.lunch
+            : item.dinner,
+            pot_details:item.pot_details
+          }
+        })
+
+        const dishdetail=dishes?.buffet_dishes?.map(item=>{
+          return {
+            dish:item.dish,
+            
+          }
+        })
+
+        
+
+        const response = await fetch(`${route}/api/daily-meals/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.access}`,
+            
+          },
+          body: JSON.stringify({
+            "order": order.id,
+            "meal_type": type.value,
+            "dish_details": dishdetail,
+            "building_details": buildingdetail
+          }),
+        });
+        const json = await response.json();
+        setisloading(false);
+        if (!response.ok) {
+         
+          var error = Object.keys(json);
+          if (error.length > 0) {
+            Red_toast(`${json[error[0]]}`);
+          }
+        }
+
+        if (response.ok) {
+          settable_data({ type: "Set_product_history", data: null });
+          setorder(null)
+          setdishes(null)
+          setcolumn([])
+        
+        }
+      }
+
+  
   return (
     <div className="p-3">
       <div className="card">
@@ -233,7 +298,7 @@ function Dailymeal(props) {
             <AddIcon /> {t("new")}
           </Button>
 
-          <Button variant="outline-primary">
+          <Button onClick={handlesubmit} variant="outline-primary">
             {isloading && (
               <Spinner
                 as="span"
@@ -250,9 +315,9 @@ function Dailymeal(props) {
           </Button>
         </div>
 
-        <div className="card-body  ">
+        <div className="card-body">
           <div className="row  d-sm-flex align-items-start mt-1">
-            <div className="col-6 col-md-3 mb-2">
+            <div className="col-6 col-md-2 mb-2">
               <TextField
                 type="date"
                 className="form-control   mb-3"
@@ -267,7 +332,24 @@ function Dailymeal(props) {
                 size="small"
               />
             </div>
-            <div className="col-6 col-md-3 mb-2">
+            <div className="col-6 col-md-2 mb-2">
+              <Select
+                className={
+                  customer !== ""
+                    ? "form-control selector customer"
+                    : "form-control selector"
+                }
+                styles={selectStyles}
+                options={all_customers}
+                placeholder={"Customers"}
+                value={customer}
+                onChange={(e) => {
+                  setcustomer(e);
+                }}
+                required
+              ></Select>
+            </div>
+            <div className="col-6 col-md-2 mb-2">
               <Select
                 className={
                   type !== ""
@@ -288,36 +370,32 @@ function Dailymeal(props) {
                 required
               ></Select>
             </div>
-            <div className="col-6 col-md-3 mb-2">
-              <Select
-                className={
-                  customer !== ""
-                    ? "form-control selector customer"
-                    : "form-control selector"
-                }
-                styles={selectStyles}
-                options={all_customers}
-                placeholder={"Customers"}
-                value={customer}
-                onChange={(e) => {
-                  setcustomer(e);
-                }}
-                required
-              ></Select>
-            </div>
-
-            <div className="col-6 col-md-3 mb-2">
+            <div className="col-6 col-md-2 mb-2">
               <Button
                 className="ms-2"
                 variant="outline-success"
+                onClick={handlegenerate}
+              >
+               Generate..
+              </Button>
+            </div>
+            <div className="col-6 col-md-2 mb-2">
+              <Button
+                className="ms-2"
+                variant="outline-primary"
+                
                 onClick={() => {
-                  settext("POTS");
-
-                  setshowmodel(!showmodel);
-                  setdata(potsdata);
+                  if (table_data){
+                    settext("POTS");
+                    setshowmodel(!showmodel);
+                    setdata(potsdata);
+                  }else{
+                    Red_toast('Generate order first!')
+                  }
+                  
                 }}
               >
-                <VisibilityIcon /> Pots
+                <VisibilityIcon />Add Pots
               </Button>
             </div>
           </div>
@@ -334,18 +412,19 @@ function Dailymeal(props) {
                       <h5 style={{ fontWeight: "bolder" }}>فندق</h5>
                     </th>
                     <th colSpan={column.length + 1} className="text-center">
-                      <h5 className="d-flex" style={{ fontWeight: "bolder" }}>
+                      <h5 className="d-flex justify-content-around align-items-center" style={{ fontWeight: "bolder" }}>
                         <span className="me-2">{type.label}</span>
-                        {dishes?.buffet_dishes?.map((dish) => {
+                        <span className="d-flex">
+                        {dishes?.buffet_dishes?.map((dish,index) => {
                           return (
                             <h5
                               key={dish.dish}
                               style={{ fontWeight: "normal" }}
                             >
-                              {dish.dish_name}
+                              {dish.dish_name}{index<dishes?.buffet_dishes?.length-1?' + ':''}  
                             </h5>
                           );
-                        })}
+                        })}</span>
                       </h5>
                     </th>
                   </tr>
