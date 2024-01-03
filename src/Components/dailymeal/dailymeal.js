@@ -63,9 +63,10 @@ function Dailymeal(props) {
   const [data, setdata] = useState("");
   const [column, setcolumn] = useState([]);
   const [order, setorder] = useState(null);
+  const [dishes, setdishes] = useState(null);
 
   useEffect(() => {
-    const fetchinvoice = async () => {
+    const fetchorder = async () => {
       if (!type) {
         Red_toast("Select Type First !");
         return;
@@ -81,7 +82,49 @@ function Dailymeal(props) {
       if (response.ok) {
         const order = json.shift();
         setorder(order);
-        settable_data({ type: "Set_product_history", data: order?.details });
+        const optimize = order?.details?.map((item) => {
+          return {
+            ...item,
+            pot_details: [],
+          };
+        });
+        settable_data({ type: "Set_product_history", data: optimize });
+      }
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${json[error[0]]}`);
+        }
+      }
+    };
+
+    const fetchdish = async () => {
+      if (!type) {
+        Red_toast("Select Type First !");
+        return;
+      }
+      const weekday = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+      const d = new Date();
+      const day = d.getDay();
+
+      const response = await fetch(
+        `${route}/api/buffet-menus/?customer_id=${customer.value}&title=${weekday[day]}_${type.value}`,
+        {
+          headers: { Authorization: `Bearer ${user.access}` },
+        }
+      );
+      const json = await response.json();
+
+      if (response.ok) {
+        setdishes(json.shift());
       }
       if (!response.ok) {
         var error = Object.keys(json);
@@ -92,18 +135,16 @@ function Dailymeal(props) {
     };
 
     if (customer) {
-      fetchinvoice();
+      fetchorder();
+      fetchdish();
     }
-  }, [customer]);
+  }, [customer, type]);
 
   useEffect(() => {
     dispatch({ type: "Set_menuitem", data: "purchase" });
     settable_data({ type: "Set_product_history", data: null });
   }, []);
 
-  useEffect(() => {
-    console.log(table_data);
-  }, [table_data]);
   useEffect(() => {
     const fetchProducts = async () => {
       var url = `${route}/api/pots/`;
@@ -167,6 +208,23 @@ function Dailymeal(props) {
     }),
   };
 
+  const handlepotqtychange = (row, pot, value) => {
+    const newdata = table_data.map((item) => {
+      if (item.id === row.id) {
+        const changepot = item.pot_details.map((item2) => {
+          if (item2.id === pot.id) {
+            item2["qty"] = value;
+            return item2;
+          }
+          return item2;
+        });
+        item["pot_details"] = changepot;
+        return item;
+      }
+      return item;
+    });
+    settable_data({ type: "Set_product_history", data: newdata });
+  };
   return (
     <div className="p-3">
       <div className="card">
@@ -218,9 +276,9 @@ function Dailymeal(props) {
                 }
                 styles={selectStyles}
                 options={[
-                  { value: "Breakfast", label: "Breakfast" },
-                  { value: "Lunch", label: "Lunch" },
-                  { value: "Dinner", label: "Dinner" },
+                  { value: "Breakfast", label: "Breakfast / إفطار" },
+                  { value: "Lunch", label: " Lunch / غداء" },
+                  { value: "Dinner", label: "Dinner / عشاء" },
                 ]}
                 placeholder={"Type"}
                 value={type}
@@ -265,18 +323,56 @@ function Dailymeal(props) {
           </div>
 
           <div style={{ zoom: "0.8" }} className="table-responsive">
-            <table
-              className="table table-striped table-bordered "
-              style={{ width: "100%" }}
-            >
+            <table className="table  table-bordered " style={{ width: "100%" }}>
               <thead>
+                {dishes && (
+                  <tr>
+                    <th className="text-center">
+                      <h5 style={{ fontWeight: "bolder" }}>م</h5>
+                    </th>
+                    <th className="text-center">
+                      <h5 style={{ fontWeight: "bolder" }}>فندق</h5>
+                    </th>
+                    <th colSpan={column.length + 1} className="text-center">
+                      <h5 className="d-flex" style={{ fontWeight: "bolder" }}>
+                        <span className="me-2">{type.label}</span>
+                        {dishes?.buffet_dishes?.map((dish) => {
+                          return (
+                            <h5
+                              key={dish.dish}
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {dish.dish_name}
+                            </h5>
+                          );
+                        })}
+                      </h5>
+                    </th>
+                  </tr>
+                )}
+
                 <tr>
-                  <th className="text-center">
+                  <th rowSpan={2} className="text-center">
                     <h5 style={{ fontWeight: "bolder" }}>Sr. No</h5>
                   </th>
-                  <th className="text-center">
+                  <th rowSpan={2} className="text-center">
                     <h5 style={{ fontWeight: "bolder" }}>Build No.</h5>
                   </th>
+                  <th className="text-center">
+                    <h5 style={{ fontWeight: "bolder" }}>حجاج</h5>
+                  </th>
+                  {column?.map((item) => {
+                    return (
+                      <th key={item.id} className="text-center">
+                        <h5 style={{ fontWeight: "bolder" }}>
+                          {item.arabic_name}
+                        </h5>
+                      </th>
+                    );
+                  })}
+                </tr>
+
+                <tr>
                   <th className="text-center">
                     <h5 style={{ fontWeight: "bolder" }}>Haji</h5>
                   </th>
@@ -310,6 +406,25 @@ function Dailymeal(props) {
                             : item.dinner}
                         </h5>
                       </td>
+
+                      {item?.pot_details?.map((pot) => {
+                        return (
+                          <td
+                            style={{ width: "1.4in" }}
+                            key={pot.id}
+                            className="text-center"
+                          >
+                            <input
+                              type="number"
+                              value={pot.qty}
+                              className="form-control border-0"
+                              onChange={(e) => {
+                                handlepotqtychange(item, pot, e.target.value);
+                              }}
+                            ></input>
+                          </td>
+                        );
+                      })}
                     </tr>
                   );
                 })}

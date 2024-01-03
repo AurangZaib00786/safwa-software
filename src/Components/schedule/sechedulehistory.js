@@ -20,7 +20,7 @@ export default function Sechule_History({
 }) {
   const [allmenu, setallmenu] = useState([]);
   const [menu, setmenu] = useState("");
-  const [type, settype] = useState("");
+  const [type, settype] = useState({ value: "all", label: "All" });
 
   const [data, setdata] = useState([]);
   const [print, setprint] = useState(false);
@@ -148,7 +148,16 @@ export default function Sechule_History({
           <div className="row mt-3">
             <div className="col-md-2 me-2">
               <Select
+                options={allmenu}
+                placeholder="Times"
+                value={menu}
+                funct={(e) => setmenu(e)}
+              />
+            </div>
+            <div className="col-md-2 me-2">
+              <Select
                 options={[
+                  { value: "all", label: "All" },
                   { value: "Breakfast", label: "Breakfast / إفطار" },
                   { value: "Lunch", label: " Lunch / غداء" },
                   { value: "Dinner", label: "Dinner / عشاء" },
@@ -156,14 +165,6 @@ export default function Sechule_History({
                 placeholder="Type"
                 value={type}
                 funct={(e) => settype(e)}
-              />
-            </div>
-            <div className="col-md-2 me-2">
-              <Select
-                options={allmenu}
-                placeholder="Times"
-                value={menu}
-                funct={(e) => setmenu(e)}
               />
             </div>
           </div>
@@ -343,110 +344,375 @@ export default function Sechule_History({
                     </th>
                   </tr>
                 </thead>
-                <tbody>
-                  {data.map((item) => {
-                    return (
-                      <tr key={item.day}>
-                        <td className=" pt-0 pb-0 text-center">
-                          <h5
-                            className="m-0 p-2"
-                            style={{ fontWeight: "normal" }}
-                          >
-                            {item.cooking?.process_name}
-                          </h5>
-                        </td>
-                        <td className="pt-0 pb-0  text-center">
-                          <h5
-                            className="m-0 p-2"
-                            style={{ fontWeight: "normal" }}
-                          >
-                            {type.value === "Breakfast"
-                              ? item.cooking?.break_fast_start
-                              : type.value === "Lunch"
-                              ? item.cooking?.lunch_start
-                              : item.cooking?.dinner_start}
-                          </h5>
-                        </td>
-                        <td className="pt-0 pb-0  text-center">
-                          <h5
-                            className="m-0 p-2"
-                            style={{ fontWeight: "normal" }}
-                          >
-                            {type.value === "Breakfast"
-                              ? item.cooking?.break_fast_end
-                              : type.value === "Lunch"
-                              ? item.cooking?.lunch_end
-                              : item.cooking?.dinner_end}
-                          </h5>
-                        </td>
-                        <td className=" pt-0 pb-0 text-center">
-                          <h5
-                            className="m-0 p-2"
-                            style={{ fontWeight: "normal" }}
-                          >
-                            {item.delivery?.process_name}
-                          </h5>
-                        </td>
-                        <td className="pt-0 pb-0  text-center">
-                          <h5
-                            className="m-0 p-2"
-                            style={{ fontWeight: "normal" }}
-                          >
-                            {type.value === "Breakfast"
-                              ? item.delivery?.break_fast_start
-                              : type.value === "Lunch"
-                              ? item.delivery?.lunch_start
-                              : item.delivery?.dinner_start}
-                          </h5>
-                        </td>
-                        <td className="pt-0 pb-0  text-center">
-                          <h5
-                            className="m-0 p-2"
-                            style={{ fontWeight: "normal" }}
-                          >
-                            {type.value === "Breakfast"
-                              ? item.delivery?.break_fast_end
-                              : type.value === "Lunch"
-                              ? item.delivery?.lunch_end
-                              : item.delivery?.dinner_end}
-                          </h5>
-                        </td>
-                        <td className=" pt-0 pb-0 text-center">
-                          <h5
-                            className="m-0 p-2"
-                            style={{ fontWeight: "normal" }}
-                          >
-                            {item.recovery?.process_name}
-                          </h5>
-                        </td>
-                        <td className="pt-0 pb-0  text-center">
-                          <h5
-                            className="m-0 p-2"
-                            style={{ fontWeight: "normal" }}
-                          >
-                            {type.value === "Breakfast"
-                              ? item.recovery?.break_fast_start
-                              : type.value === "Lunch"
-                              ? item.recovery?.lunch_start
-                              : item.recovery?.dinner_start}
-                          </h5>
-                        </td>
-                        <td className="pt-0 pb-0  text-center">
-                          <h5
-                            className="m-0 p-2"
-                            style={{ fontWeight: "normal" }}
-                          >
-                            {type.value === "Breakfast"
-                              ? item.recovery?.break_fast_end
-                              : type.value === "Lunch"
-                              ? item.recovery?.lunch_end
-                              : item.recovery?.dinner_end}
-                          </h5>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
+                {type.value !== "all" ? (
+                  <tbody>
+                    {data.map((item) => {
+                      return (
+                        <tr key={item.day}>
+                          <td className=" pt-0 pb-0 text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.cooking?.process_name}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {type.value === "Breakfast"
+                                ? item.cooking?.break_fast_start
+                                : type.value === "Lunch"
+                                ? item.cooking?.lunch_start
+                                : item.cooking?.dinner_start}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {type.value === "Breakfast"
+                                ? item.cooking?.break_fast_end
+                                : type.value === "Lunch"
+                                ? item.cooking?.lunch_end
+                                : item.cooking?.dinner_end}
+                            </h5>
+                          </td>
+                          <td className=" pt-0 pb-0 text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.delivery?.process_name}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {type.value === "Breakfast"
+                                ? item.delivery?.break_fast_start
+                                : type.value === "Lunch"
+                                ? item.delivery?.lunch_start
+                                : item.delivery?.dinner_start}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {type.value === "Breakfast"
+                                ? item.delivery?.break_fast_end
+                                : type.value === "Lunch"
+                                ? item.delivery?.lunch_end
+                                : item.delivery?.dinner_end}
+                            </h5>
+                          </td>
+                          <td className=" pt-0 pb-0 text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.recovery?.process_name}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {type.value === "Breakfast"
+                                ? item.recovery?.break_fast_start
+                                : type.value === "Lunch"
+                                ? item.recovery?.lunch_start
+                                : item.recovery?.dinner_start}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {type.value === "Breakfast"
+                                ? item.recovery?.break_fast_end
+                                : type.value === "Lunch"
+                                ? item.recovery?.lunch_end
+                                : item.recovery?.dinner_end}
+                            </h5>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                ) : (
+                  <tbody>
+                    <tr>
+                      <td className="text-center" colSpan={9}>
+                        <h4 className="m-0 p-2" style={{ fontWeight: "bold" }}>
+                          {" "}
+                          Breakfast / إفطار
+                        </h4>
+                      </td>
+                    </tr>
+                    {data.map((item) => {
+                      return (
+                        <tr key={item.day}>
+                          <td className=" pt-0 pb-0 text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.cooking?.process_name}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.cooking?.break_fast_start}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.cooking?.break_fast_end}
+                            </h5>
+                          </td>
+                          <td className=" pt-0 pb-0 text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.delivery?.process_name}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.delivery?.break_fast_start}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.delivery?.break_fast_end}
+                            </h5>
+                          </td>
+                          <td className=" pt-0 pb-0 text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.recovery?.process_name}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.recovery?.break_fast_start}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.recovery?.break_fast_end}
+                            </h5>
+                          </td>
+                        </tr>
+                      );
+                    })}
+
+                    <tr>
+                      <td className="text-center" colSpan={9}>
+                        <h4 className="m-0 p-2" style={{ fontWeight: "bold" }}>
+                          {" "}
+                          Lunch / غداء
+                        </h4>
+                      </td>
+                    </tr>
+                    {data.map((item) => {
+                      return (
+                        <tr key={item.day}>
+                          <td className=" pt-0 pb-0 text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.cooking?.process_name}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.cooking?.lunch_start}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.cooking?.lunch_end}
+                            </h5>
+                          </td>
+                          <td className=" pt-0 pb-0 text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.delivery?.process_name}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.delivery?.lunch_start}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.delivery?.lunch_end}
+                            </h5>
+                          </td>
+                          <td className=" pt-0 pb-0 text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.recovery?.process_name}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.recovery?.lunch_start}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.recovery?.lunch_end}
+                            </h5>
+                          </td>
+                        </tr>
+                      );
+                    })}
+
+                    <tr>
+                      <td className="text-center" colSpan={9}>
+                        <h4 className="m-0 p-2" style={{ fontWeight: "bold" }}>
+                          {" "}
+                          Dinner / عشاء
+                        </h4>
+                      </td>
+                    </tr>
+                    {data.map((item) => {
+                      return (
+                        <tr key={item.day}>
+                          <td className=" pt-0 pb-0 text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.cooking?.process_name}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.cooking?.dinner_start}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.cooking?.dinner_end}
+                            </h5>
+                          </td>
+                          <td className=" pt-0 pb-0 text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.delivery?.process_name}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.delivery?.dinner_start}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.delivery?.dinner_end}
+                            </h5>
+                          </td>
+                          <td className=" pt-0 pb-0 text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.recovery?.process_name}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.recovery?.dinner_start}
+                            </h5>
+                          </td>
+                          <td className="pt-0 pb-0  text-center">
+                            <h5
+                              className="m-0 p-2"
+                              style={{ fontWeight: "normal" }}
+                            >
+                              {item.recovery?.dinner_end}
+                            </h5>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                )}
               </table>
             </div>
           </div>

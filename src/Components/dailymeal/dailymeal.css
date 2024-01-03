@@ -1,42 +1,24 @@
 
-
-
-
-.custom_row_class >td {
-    padding: 4px 0 4px 16px !important;
-}
-
-.user_main{
-    display: flex;
-    flex-direction: column;
-    margin-left:2%;
-    margin-right:2%;
-    margin-bottom: 2%;
-    
-
-}
-
-.form-control:focus{
-    border-color:slategray;
-    border-width: 2px;
-}
-
-.table_class:hover{
-    cursor: pointer;
-    
+.potclass{
+    border:0;
+   
+    outline: none;
 }
 
 
-    .type::after{
-        content: 'Type';
-        position: absolute;
-        top: -9px;
-        left: 9px;
-        background-color: white;
-        padding: 0 5px;
-        color: gray;
-        font-size: 12px;
-        }
+
+
+
+.type::after{
+    content: 'Type';
+    position: absolute;
+    top: -9px;
+    left: 9px;
+    background-color: white;
+    padding: 0 5px;
+    color: gray;
+    font-size: 12px;
+    }
     
     
     
@@ -53,32 +35,3 @@
 
 
 
-.company::after{
-    content: 'Company';
-    position: absolute;
-    top: -9px;
-    left: 9px;
-    background-color: white;
-    padding: 0 5px;
-    color: gray;
-    font-size: 12px;
-    }
-
-.purchasetable > tbody {
-    display:block;
-    max-height:50vh;
-    overflow-y:auto;
-}
-.purchasetable >thead , .purchasetable >tbody>tr  {
-    display:table;
-    width:100%;
-    table-layout:fixed;
-}
-
-.purchasetable tr td:first-child , .purchasetable tr th:first-child{
-    width: 50px;
-}
-
-.purchasetable tr td:nth-child(3) , .purchasetable tr th:nth-child(3){
-    width: 18vw !important;
-}

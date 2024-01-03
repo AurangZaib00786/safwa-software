@@ -12,8 +12,9 @@ import { useTranslation } from "react-i18next";
 
 function Areaformupdate({ show, onHide, data, user, route, fun, callback }) {
   const [isloading, setisloading] = useState(false);
-  const { t } = useTranslation();
+
   const [name, setname] = useState(data.name);
+  const [arabicname, setarabicname] = useState(data.arabic_name);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +23,7 @@ function Areaformupdate({ show, onHide, data, user, route, fun, callback }) {
     const formData = new FormData();
 
     formData.append("name", name);
-
+    formData.append("arabic_name", arabicname);
     const response = await fetch(`${route}/api/pots/${data.id}/`, {
       method: "PATCH",
       headers: {
@@ -76,6 +77,18 @@ function Areaformupdate({ show, onHide, data, user, route, fun, callback }) {
               size="small"
               autoFocus
               required
+            />
+          </div>
+          <div className="col-md-12">
+            <TextField
+              className="form-control   mb-3"
+              id="outlined-basic"
+              label="Arabic Name"
+              value={arabicname}
+              onChange={(e) => {
+                setarabicname(e.target.value);
+              }}
+              size="small"
             />
           </div>
 

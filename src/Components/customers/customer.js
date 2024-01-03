@@ -28,8 +28,6 @@ import PrintIcon from "@material-ui/icons/Print";
 import { useTranslation } from "react-i18next";
 import Red_toast from "../alerts/red_toast";
 
-
-
 export default function Customer(props) {
   const { t } = useTranslation();
   const user = props.state.setuser.user;
@@ -176,10 +174,10 @@ export default function Customer(props) {
 
             setaddress(row.address);
             settiming({
-              value: row.customer_type,
-              label: row.customer_type_name,
+              value: row.timing,
+              label: row.timing_name,
             });
-            setmenu({ value: row.area, label: row.area_name });
+            setmenu({ value: row.menu, label: row.menu_name });
 
             setbankdetails(row.bank);
             setid(row.id);
@@ -415,9 +413,9 @@ export default function Customer(props) {
         if (!response.ok) {
           setisloading(false);
           var error = Object.keys(json);
-        if (error.length > 0) {
-          Red_toast(`${json[error[0]]}`);
-        }
+          if (error.length > 0) {
+            Red_toast(`${json[error[0]]}`);
+          }
         }
 
         if (response.ok) {

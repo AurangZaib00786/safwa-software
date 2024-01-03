@@ -131,6 +131,12 @@ export default function Pots(props) {
       sort: true,
       headerFormatter: headerstyle,
     },
+    {
+      dataField: "arabic_name",
+      text: "Arabic Name",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
 
     {
       dataField: "action",
@@ -171,13 +177,13 @@ export default function Pots(props) {
 
   const makepdf = () => {
     const body = all_customers.map((item, index) => {
-      return [index + 1, item.name];
+      return [index + 1, item.name, item.arabic_name];
     });
-    body.splice(0, 0, ["#", "Name"]);
+    body.splice(0, 0, ["#", "Name", "Arabic Name"]);
 
     const documentDefinition = {
       content: [
-        { text: "Area", style: "header" },
+        { text: "POTS", style: "header" },
 
         {
           canvas: [
@@ -190,7 +196,7 @@ export default function Pots(props) {
             // headers are automatically repeated if the table spans over multiple pages
             // you can declare how many rows should be treated as headers
             headerRows: 1,
-            widths: [50, "*"],
+            widths: [50, "*", "*"],
             body: body,
           },
           style: "tableStyle",

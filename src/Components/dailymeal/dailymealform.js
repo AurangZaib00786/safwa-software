@@ -7,6 +7,7 @@ import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import "./dailymeal.css";
 import custom_toast from "../alerts/custom_toast";
 import Spinner from "react-bootstrap/Spinner";
+import Red_toast from "../alerts/red_toast";
 
 function Dailymealform({
   show,
@@ -32,14 +33,51 @@ function Dailymealform({
     );
   };
 
-  const addproduct = (row, num) => {
-    setcolumn([...column, { id: row.id, name: row.name }]);
-    const optimize = table_data.map((item) => {
-      item[row.name] = "";
-      return item;
+  const addproduct = (row) => {
+    const optimize = column?.filter((item) => {
+      return item.id === row.id;
     });
+    if (optimize.length > 0) {
+      Red_toast(`${row.name} pot already Added`);
+      return false;
+    } else {
+      setcolumn([...column, { ...row, qty: "" }]);
+      const optimizetable = table_data.map((item) => {
+        return {
+          ...item,
+          pot_details: [...item.pot_details, { ...row, qty: "" }],
+        };
+      });
+      callback({ type: "Set_product_history", data: optimizetable });
+      return true;
+    }
+  };
 
-    callback({ type: "Set_product_history", data: optimize });
+  const addallproduct = (rows) => {
+    var newcolumn = column;
+    var newtabeldata = table_data;
+    var flag = false;
+    rows.map((row) => {
+      const optimize = column?.filter((item) => {
+        return item.id === row.id;
+      });
+      if (optimize.length > 0) {
+        Red_toast(`${row.name} pot already Added`);
+        return false;
+      } else {
+        newcolumn = [...newcolumn, { ...row, qty: "" }];
+        newtabeldata = newtabeldata.map((item) => {
+          return {
+            ...item,
+            pot_details: [...item.pot_details, { ...row, qty: "" }],
+          };
+        });
+        flag = true;
+      }
+    });
+    setcolumn(newcolumn);
+    callback({ type: "Set_product_history", data: newtabeldata });
+    return flag;
   };
 
   const columns = [
@@ -61,16 +99,19 @@ function Dailymealform({
     mode: "checkbox",
     clickToSelect: true,
     onSelect: (row, isSelect, rowIndex, e) => {
-      addproduct(row);
-      custom_toast("Pot added");
+      if (isSelect) {
+        const response = addproduct(row);
+        if (response) {
+          custom_toast(`${row.name} pot added`);
+        }
+      }
     },
     onSelectAll: (isSelect, rows, e) => {
       if (isSelect) {
-        rows.forEach((row) => {
-          addproduct(row);
-        });
-
-        custom_toast("Pots added");
+        const response = addallproduct(rows);
+        if (response) {
+          custom_toast("Pots added");
+        }
       }
     },
   };

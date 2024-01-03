@@ -22,6 +22,7 @@ function Areaform({
 }) {
   const { t } = useTranslation();
   const [name, setname] = useState("");
+  const [arabicname, setarabicname] = useState("");
   const [isloading, setisloading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -31,6 +32,7 @@ function Areaform({
       const formData = new FormData();
 
       formData.append("name", name);
+      formData.append("arabic_name", arabicname);
 
       const response = await fetch(`${route}/api/pots/`, {
         method: "POST",
@@ -51,6 +53,7 @@ function Areaform({
         setisloading(false);
         success_toast();
         setname("");
+        setarabicname("");
       }
     }
   };
@@ -85,6 +88,18 @@ function Areaform({
               size="small"
               autoFocus
               required
+            />
+          </div>
+          <div className="col-md-12">
+            <TextField
+              className="form-control   mb-3"
+              id="outlined-basic"
+              label="Arabic Name"
+              value={arabicname}
+              onChange={(e) => {
+                setarabicname(e.target.value);
+              }}
+              size="small"
             />
           </div>
 
