@@ -5,8 +5,18 @@
     outline: none;
 }
 
+.dailymealtable>thead>tr>th{
+    background-color: rgb(223, 228, 228);
+    border: solid black 1px;
+}
 
-
+.dailymealtable>tbody>tr>td{
+    
+    border: solid black 1px;
+}
+.dailymealtable>thead{
+    border-bottom: solid black 2px;
+}
 
 
 .type::after{

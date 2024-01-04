@@ -105,14 +105,12 @@ function Dailymeal_history(props) {
     }
   };
 
-  
-
   useEffect(() => {
     setisloading(true);
     dispatch({ type: "Set_table_history", data: [] });
     const fetchProducts = async () => {
       var url = `${route}/api/daily-meals/`;
-      
+
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
       });
@@ -145,12 +143,7 @@ function Dailymeal_history(props) {
           className="border border-primary rounded me-2"
           onClick={() => {
             localStorage.setItem("data", JSON.stringify(row));
-
-            if (formatExtraData.code === "A4") {
-              window.open("/invoice/dailymeal", "_blank");
-            } else if (formatExtraData.code === "80mm") {
-              window.open("/invoice_80/dailymeal", "_blank");
-            }
+            window.open("/mealform", "_blank");
           }}
         >
           <PrintRoundedIcon className="m-1" color="primary" fontSize="medium" />
@@ -199,35 +192,34 @@ function Dailymeal_history(props) {
     );
   };
 
-  const fix_formatter = (cell, row) => {
-    return <div>{parseFloat(cell).toFixed(2)}</div>;
-  };
-
-
-
   const columns = [
     {
       dataField: "id",
       text: "#",
-      formatter:(cell, row, rowIndex, formatExtraData)=>{return rowIndex+1},
+      formatter: (cell, row, rowIndex, formatExtraData) => {
+        return rowIndex + 1;
+      },
       headerFormatter: headerstyle,
     },
-   
     {
-      dataField: "order",
-      text: 'Order No.',
+      dataField: "date",
+      text: "Date",
       sort: true,
       headerFormatter: headerstyle,
-      
+    },
+    {
+      dataField: "order",
+      text: "Order No.",
+      sort: true,
+      headerFormatter: headerstyle,
     },
     {
       dataField: "meal_type",
       text: "Meal Type",
       sort: true,
       headerFormatter: headerstyle,
-      
     },
- 
+
     {
       dataField: "Edit",
       text: t("action"),
@@ -243,7 +235,6 @@ function Dailymeal_history(props) {
     setTarget(e.target);
   };
 
- 
   const handlecategory = (e) => {
     setpayment_type(e);
   };
@@ -488,7 +479,6 @@ function Dailymeal_history(props) {
                   </Popover>
                 </Overlay>
               </div>
-              
             </div>
             <div className="d-sm-flex justify-content-between align-items-center mt-3  ">
               <div>

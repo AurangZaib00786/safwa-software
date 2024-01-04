@@ -56,7 +56,7 @@ export default function Order(props) {
               label: item.building_number,
             },
             breakfast: item.breakfast,
-            lunch: item.launch,
+            launch: item.launch,
             dinner: item.dinner,
             remarks: item.remarks,
           };
@@ -230,7 +230,7 @@ export default function Order(props) {
         {
           building: building,
           breakfast: breakfast,
-          lunch: lunch,
+          launch: lunch,
           dinner: dinner,
           remarks: remarks,
         },
@@ -260,7 +260,7 @@ export default function Order(props) {
           case "lunch":
             optimize = data.map((item) => {
               if (item.building.value.id === row.value.id) {
-                item["lunch"] = value;
+                item["launch"] = value;
                 return item;
               }
             });
@@ -429,7 +429,7 @@ export default function Order(props) {
                                 <TextField
                                   className="form-control"
                                   size="small"
-                                  value={item.lunch}
+                                  value={item.launch}
                                   onChange={(e) => {
                                     handlesavedchange(
                                       e.target.value,

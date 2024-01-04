@@ -179,7 +179,7 @@ function Assignorderhistory(props) {
   };
 
   const columns = [
-    { dataField: "id", text: "Id", hidden: true, headerFormatter: headerstyle },
+    { dataField: "id", text: "#",formatter:(cell, row, rowIndex, formatExtraData)=>{return rowIndex+1}, headerFormatter: headerstyle },
 
     {
       dataField: "date",

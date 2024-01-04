@@ -12,18 +12,19 @@ import Orderpage from "./orderpage/orderpage";
 import Customer from "../Container/customerContainer";
 import Supplier from "../Container/supplierContainer";
 import Dailymeal_page from "./dailymeal_page/dailymeal_page";
+import Mealform from "../Components/dailymeal/dailmealprint";
 import Sale_page from "./sale_page/sale_page";
 import Payment_page from "./payments/payment_page";
 import Sale_invoice from "../Container/invoiceContainer";
 import Dashboard from "../Container/dashboardContainer";
 import Report_page from "./report_page/report_page";
 import Login from "../Container/loginContainer";
-import Invoice_2 from "../Components/sale/invoice_2";
+
 import Invoice_3 from "../Components/sale/invoice_3";
 import Journal_page from "./journals/journals_page";
 import Expense_page from "./expenses_page/expense_page";
 import Invoice80mm from "../Components/sale/80mminvoice";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import Issueform from "../Components/materialissueform/formprint";
 import EmployeePrint from "../Components/employee/employeeprint";
 
@@ -221,18 +222,12 @@ function Routing(props) {
             ></Route> */}
           </Route>
           <Route path="/issueform" element={user && <Issueform />}></Route>
+          <Route path="/mealform" element={user && <Mealform />}></Route>
           <Route
             path="/employeeprint"
             element={user && <EmployeePrint />}
           ></Route>
-          {/* <Route
-            path="/invoice_80/:name"
-            element={user && <Invoice80mm />}
-          ></Route>
-          <Route
-            path="/invoice_3/:name"
-            element={user && <Invoice_3 />}
-          ></Route> */}
+         
         </Routes>
       </ProSidebarProvider>
     </BrowserRouter>

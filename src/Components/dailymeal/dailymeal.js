@@ -1,33 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./dailymeal.css";
 import Button from "react-bootstrap/Button";
-import { IconButton } from "@material-ui/core";
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import BootstrapTable from "react-bootstrap-table-next";
+
 import Spinner from "react-bootstrap/Spinner";
 import SaveIcon from "@material-ui/icons/Save";
-import ToolkitProvider, {
-  CSVExport,
-} from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
-import cellEditFactory from "react-bootstrap-table2-editor";
-import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
-import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import Select from "react-select";
 import PrintRoundedIcon from "@material-ui/icons/PrintRounded";
-
 import TextField from "@mui/material/TextField";
-
-import InputGroup from "react-bootstrap/InputGroup";
 import AddIcon from "@material-ui/icons/Add";
 import VisibilityIcon from "@material-ui/icons/Visibility";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBarcode } from "@fortawesome/free-solid-svg-icons";
-import { faTag } from "@fortawesome/free-solid-svg-icons";
-import { faListOl } from "@fortawesome/free-solid-svg-icons";
-import { ToastContainer } from "react-toastify";
-import success_toast from "../alerts/success_toast";
-import went_wrong_toast from "../alerts/went_wrong_toast";
-import Tooltip from "@material-ui/core/Tooltip";
 import Dailymealform from "./dailymealform";
 import { useTranslation } from "react-i18next";
 import Red_toast from "../alerts/red_toast";
@@ -280,6 +261,60 @@ function Dailymeal(props) {
     }
   };
 
+  const handleprint = async (e) => {
+    e.preventDefault();
+
+    const buildingdetail = table_data.map((item) => {
+      return {
+        building: item.building,
+        hujaj:
+          type.value === "Breakfast"
+            ? item.breakfast
+            : type.value === "Lunch"
+            ? item.lunch
+            : item.dinner,
+        pot_details: item.pot_details,
+      };
+    });
+
+    const dishdetail = dishes?.buffet_dishes?.map((item) => {
+      return {
+        dish: item.dish,
+      };
+    });
+
+    const response = await fetch(`${route}/api/daily-meals/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.access}`,
+      },
+      body: JSON.stringify({
+        order: order.id,
+        meal_type: type.value,
+        dish_details: dishdetail,
+        building_details: buildingdetail,
+      }),
+    });
+    const json = await response.json();
+    setisloading(false);
+    if (!response.ok) {
+      var error = Object.keys(json);
+      if (error.length > 0) {
+        Red_toast(`${json[error[0]]}`);
+      }
+    }
+
+    if (response.ok) {
+      settable_data({ type: "Set_product_history", data: null });
+      setorder(null);
+      setdishes(null);
+      setcolumn([]);
+      localStorage.setItem("data", JSON.stringify(json));
+        window.open("/mealform", "_blank");
+    }
+  };
+
   return (
     <div className="p-3">
       <div className="card">
@@ -300,7 +335,7 @@ function Dailymeal(props) {
             )}
             <SaveIcon /> {t("save")}
           </Button>
-          <Button className="ms-2" variant="outline-success">
+          <Button onClick={handleprint} className="ms-2" variant="outline-success">
             <PrintRoundedIcon /> {t("print")}
           </Button>
         </div>
@@ -390,10 +425,10 @@ function Dailymeal(props) {
           </div>
 
           <div style={{ zoom: "0.8" }} className="table-responsive">
-            <table className="table  table-bordered " style={{ width: "100%" }}>
+            <table className="table dailymealtable  table-bordered " style={{ width: "100%" }}>
               <thead>
                 {dishes && (
-                  <tr>
+                  <tr >
                     <th className="text-center">
                       <h5 style={{ fontWeight: "bolder" }}>م</h5>
                     </th>
@@ -426,7 +461,7 @@ function Dailymeal(props) {
                   </tr>
                 )}
 
-                <tr>
+                <tr >
                   <th rowSpan={2} className="text-center">
                     <h5 style={{ fontWeight: "bolder" }}>Sr. No</h5>
                   </th>
@@ -447,7 +482,7 @@ function Dailymeal(props) {
                   })}
                 </tr>
 
-                <tr>
+                <tr >
                   <th className="text-center">
                     <h5 style={{ fontWeight: "bolder" }}>Haji</h5>
                   </th>
@@ -464,15 +499,15 @@ function Dailymeal(props) {
                 {table_data?.map((item, index) => {
                   return (
                     <tr key={item.id}>
-                      <td style={{ width: "5%" }}>{index + 1}</td>
+                      <td style={{ width: "0.5in" }}>{index + 1}</td>
 
-                      <td className=" pt-0 pb-0 text-center">
+                      <td style={{ width: "3in" }} className=" pt-0 pb-0 text-center">
                         <h5 style={{ fontWeight: "normal" }}>
                           {item.building_number}
                         </h5>
                       </td>
 
-                      <td className="pt-0 pb-0  text-center">
+                      <td style={{ width: "2in" }} className="pt-0 pb-0  text-center">
                         <h5 style={{ fontWeight: "normal" }}>
                           {type.value === "Breakfast"
                             ? item.breakfast
