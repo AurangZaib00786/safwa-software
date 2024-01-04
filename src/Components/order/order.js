@@ -39,9 +39,9 @@ export default function Order(props) {
   const [update, setupdate] = useState(false);
   const order = JSON.parse(localStorage.getItem("data"));
   useEffect(() => {
-    if (order?.order) {
-      setupdate(true);
+    if (order?.order&&order.data) {
       let orderdata = order.data;
+      setupdate(true);
       setemployee({
         value: orderdata.customer,
         label: orderdata.customer_name,

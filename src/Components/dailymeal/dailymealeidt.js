@@ -21,13 +21,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import AddIcon from "@material-ui/icons/Add";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBarcode } from "@fortawesome/free-solid-svg-icons";
-import { faTag } from "@fortawesome/free-solid-svg-icons";
-import { faListOl } from "@fortawesome/free-solid-svg-icons";
-import { ToastContainer } from "react-toastify";
-import success_toast from "../alerts/success_toast";
-import went_wrong_toast from "../alerts/went_wrong_toast";
-import Tooltip from "@material-ui/core/Tooltip";
+import { faRotate } from "@fortawesome/free-solid-svg-icons";
 import Dailymealform from "./dailymealform";
 import { useTranslation } from "react-i18next";
 import Red_toast from "../alerts/red_toast";
@@ -159,10 +153,7 @@ function Dailymeal_edit(props) {
 
     if (response.ok) {
       custom_toast('Update')
-      settable_data({ type: "Set_product_history", data: null });
       
-      setdishes(null);
-      setcolumn([]);
     }
   };
 
@@ -212,8 +203,10 @@ function Dailymeal_edit(props) {
                 size="small"
               />
             </div>
+
+            <div className="d-flex col-md-3">
             
-            <div className="col-6 col-md-2 mb-2">
+            <div className="col-6 col-md-5 mb-2">
               <Button
                 className="ms-2"
                 variant="outline-primary"
@@ -230,6 +223,25 @@ function Dailymeal_edit(props) {
                 <VisibilityIcon  className="me-2"/>
                 Add Pots
               </Button>
+            </div>
+            <div className="col-6 col-md-6 mb-2">
+              <Button
+                className="ms-2"
+                variant="outline-secondary"
+                onClick={() => {
+                  if (table_data) {
+                    settext("POTS");
+                    setshowmodel(!showmodel);
+                    setdata(potsdata);
+                  } else {
+                    Red_toast("Generate order first!");
+                  }
+                }}
+              >
+                <FontAwesomeIcon icon={faRotate}  className="me-2"/>
+                Reload
+              </Button>
+            </div>
             </div>
           </div>
 
