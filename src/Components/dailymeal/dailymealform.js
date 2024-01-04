@@ -45,7 +45,15 @@ function Dailymealform({
       const optimizetable = table_data.map((item) => {
         return {
           ...item,
-          pot_details: [...item.pot_details, { ...row, qty: "" }],
+          pot_details: [
+            ...item.pot_details,
+            {
+              pot: row.id,
+              name: row.name,
+              arabic_name: row.arabic_name,
+              qty: "",
+            },
+          ],
         };
       });
       callback({ type: "Set_product_history", data: optimizetable });
@@ -69,7 +77,15 @@ function Dailymealform({
         newtabeldata = newtabeldata.map((item) => {
           return {
             ...item,
-            pot_details: [...item.pot_details, { ...row, qty: "" }],
+            pot_details: [
+              ...item.pot_details,
+              {
+                pot: row.id,
+                name: row.name,
+                arabic_name: row.arabic_name,
+                qty: "",
+              },
+            ],
           };
         });
         flag = true;

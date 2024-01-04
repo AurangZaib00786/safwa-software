@@ -66,73 +66,68 @@ function Dailymeal(props) {
   const [order, setorder] = useState(null);
   const [dishes, setdishes] = useState(null);
 
-  
-    const fetchorder = async () => {
-      
-      const response = await fetch(
-        `${route}/api/orders/?customer_id=${customer.value}&start_date=${date}&end_date=${date}`,
-        {
-          headers: { Authorization: `Bearer ${user.access}` },
-        }
-      );
-      const json = await response.json();
-
-      if (response.ok) {
-        const order = json.shift();
-        setorder(order);
-        const optimize = order?.details?.map((item) => {
-          return {
-            ...item,
-            pot_details: [],
-          };
-        });
-        settable_data({ type: "Set_product_history", data: optimize });
+  const fetchorder = async () => {
+    const response = await fetch(
+      `${route}/api/orders/?customer_id=${customer.value}&start_date=${date}&end_date=${date}`,
+      {
+        headers: { Authorization: `Bearer ${user.access}` },
       }
-      if (!response.ok) {
-        var error = Object.keys(json);
-        if (error.length > 0) {
-          Red_toast(`${json[error[0]]}`);
-        }
-      }
-    };
+    );
+    const json = await response.json();
 
-    const fetchdish = async () => {
-      if (!type) {
-        
-        return;
+    if (response.ok) {
+      const order = json.shift();
+      setorder(order);
+      const optimize = order?.details?.map((item) => {
+        return {
+          ...item,
+          pot_details: [],
+        };
+      });
+      settable_data({ type: "Set_product_history", data: optimize });
+    }
+    if (!response.ok) {
+      var error = Object.keys(json);
+      if (error.length > 0) {
+        Red_toast(`${json[error[0]]}`);
       }
-      const weekday = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ];
-      const d = new Date();
-      const day = d.getDay();
+    }
+  };
 
-      const response = await fetch(
-        `${route}/api/buffet-menus/?customer_id=${customer.value}&title=${weekday[day]}_${type.value}`,
-        {
-          headers: { Authorization: `Bearer ${user.access}` },
-        }
-      );
-      const json = await response.json();
+  const fetchdish = async () => {
+    if (!type) {
+      return;
+    }
+    const weekday = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const d = new Date();
+    const day = d.getDay();
 
-      if (response.ok) {
-        setdishes(json.shift());
+    const response = await fetch(
+      `${route}/api/buffet-menus/?customer_id=${customer.value}&title=${weekday[day]}_${type.value}`,
+      {
+        headers: { Authorization: `Bearer ${user.access}` },
       }
-      if (!response.ok) {
-        var error = Object.keys(json);
-        if (error.length > 0) {
-          Red_toast(`${json[error[0]]}`);
-        }
-      }
-    };
+    );
+    const json = await response.json();
 
-    
+    if (response.ok) {
+      setdishes(json.shift());
+    }
+    if (!response.ok) {
+      var error = Object.keys(json);
+      if (error.length > 0) {
+        Red_toast(`${json[error[0]]}`);
+      }
+    }
+  };
 
   useEffect(() => {
     dispatch({ type: "Set_menuitem", data: "purchase" });
@@ -206,7 +201,7 @@ function Dailymeal(props) {
     const newdata = table_data.map((item) => {
       if (item.id === row.id) {
         const changepot = item.pot_details.map((item2) => {
-          if (item2.id === pot.id) {
+          if (item2.pot === pot.pot) {
             item2["qty"] = value;
             return item2;
           }
@@ -220,76 +215,68 @@ function Dailymeal(props) {
     settable_data({ type: "Set_product_history", data: newdata });
   };
 
-  const handlegenerate =(e)=>{
-    e.preventDefault()
+  const handlegenerate = (e) => {
+    e.preventDefault();
     if (!type) {
       Red_toast("Select Type First !");
       return;
     }
-    fetchorder()
-    fetchdish()
+    fetchorder();
+    fetchdish();
+  };
 
-  }
+  const handlesubmit = async (e) => {
+    e.preventDefault();
 
-
-  const handlesubmit=async(e)=>{
-        e.preventDefault()
-
-        const buildingdetail=table_data.map(item=>{
-          return {
-            building:item.building,
-            hujaj:type.value === "Breakfast"
+    const buildingdetail = table_data.map((item) => {
+      return {
+        building: item.building,
+        hujaj:
+          type.value === "Breakfast"
             ? item.breakfast
             : type.value === "Lunch"
             ? item.lunch
             : item.dinner,
-            pot_details:item.pot_details
-          }
-        })
+        pot_details: item.pot_details,
+      };
+    });
 
-        const dishdetail=dishes?.buffet_dishes?.map(item=>{
-          return {
-            dish:item.dish,
-            
-          }
-        })
+    const dishdetail = dishes?.buffet_dishes?.map((item) => {
+      return {
+        dish: item.dish,
+      };
+    });
 
-        
-
-        const response = await fetch(`${route}/api/daily-meals/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.access}`,
-            
-          },
-          body: JSON.stringify({
-            "order": order.id,
-            "meal_type": type.value,
-            "dish_details": dishdetail,
-            "building_details": buildingdetail
-          }),
-        });
-        const json = await response.json();
-        setisloading(false);
-        if (!response.ok) {
-         
-          var error = Object.keys(json);
-          if (error.length > 0) {
-            Red_toast(`${json[error[0]]}`);
-          }
-        }
-
-        if (response.ok) {
-          settable_data({ type: "Set_product_history", data: null });
-          setorder(null)
-          setdishes(null)
-          setcolumn([])
-        
-        }
+    const response = await fetch(`${route}/api/daily-meals/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.access}`,
+      },
+      body: JSON.stringify({
+        order: order.id,
+        meal_type: type.value,
+        dish_details: dishdetail,
+        building_details: buildingdetail,
+      }),
+    });
+    const json = await response.json();
+    setisloading(false);
+    if (!response.ok) {
+      var error = Object.keys(json);
+      if (error.length > 0) {
+        Red_toast(`${json[error[0]]}`);
       }
+    }
 
-  
+    if (response.ok) {
+      settable_data({ type: "Set_product_history", data: null });
+      setorder(null);
+      setdishes(null);
+      setcolumn([]);
+    }
+  };
+
   return (
     <div className="p-3">
       <div className="card">
@@ -376,26 +363,25 @@ function Dailymeal(props) {
                 variant="outline-success"
                 onClick={handlegenerate}
               >
-               Generate..
+                Generate..
               </Button>
             </div>
             <div className="col-6 col-md-2 mb-2">
               <Button
                 className="ms-2"
                 variant="outline-primary"
-                
                 onClick={() => {
-                  if (table_data){
+                  if (table_data) {
                     settext("POTS");
                     setshowmodel(!showmodel);
                     setdata(potsdata);
-                  }else{
-                    Red_toast('Generate order first!')
+                  } else {
+                    Red_toast("Generate order first!");
                   }
-                  
                 }}
               >
-                <VisibilityIcon />Add Pots
+                <VisibilityIcon />
+                Add Pots
               </Button>
             </div>
           </div>
@@ -412,19 +398,26 @@ function Dailymeal(props) {
                       <h5 style={{ fontWeight: "bolder" }}>فندق</h5>
                     </th>
                     <th colSpan={column.length + 1} className="text-center">
-                      <h5 className="d-flex justify-content-around align-items-center" style={{ fontWeight: "bolder" }}>
+                      <h5
+                        className="d-flex justify-content-around align-items-center"
+                        style={{ fontWeight: "bolder" }}
+                      >
                         <span className="me-2">{type.label}</span>
                         <span className="d-flex">
-                        {dishes?.buffet_dishes?.map((dish,index) => {
-                          return (
-                            <h5
-                              key={dish.dish}
-                              style={{ fontWeight: "normal" }}
-                            >
-                              {dish.dish_name}{index<dishes?.buffet_dishes?.length-1?' + ':''}  
-                            </h5>
-                          );
-                        })}</span>
+                          {dishes?.buffet_dishes?.map((dish, index) => {
+                            return (
+                              <h5
+                                key={dish.dish}
+                                style={{ fontWeight: "normal" }}
+                              >
+                                {dish.dish_name}
+                                {index < dishes?.buffet_dishes?.length - 1
+                                  ? " + "
+                                  : ""}
+                              </h5>
+                            );
+                          })}
+                        </span>
                       </h5>
                     </th>
                   </tr>
@@ -490,7 +483,7 @@ function Dailymeal(props) {
                         return (
                           <td
                             style={{ width: "1.4in" }}
-                            key={pot.id}
+                            key={pot.pot}
                             className="text-center"
                           >
                             <input

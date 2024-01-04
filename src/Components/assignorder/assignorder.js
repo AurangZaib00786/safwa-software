@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Button from "react-bootstrap/Button";
-import Select from "../alerts/select";
+// import Select from "../alerts/select";
+import Select from "react-select";
 import Spinner from "react-bootstrap/Spinner";
 import Red_toast from "../alerts/red_toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -188,6 +189,17 @@ export default function AssignOrder(props) {
     }
   };
 
+  const selectStyles = {
+    menu: (base) => ({
+      ...base,
+      zIndex: 100,
+    }),
+    menuList: (base) => ({
+      ...base,
+      height: "200px", // your desired height
+    }),
+  };
+
   return (
     <div className="p-3 pt-2">
       <div className="card">
@@ -209,149 +221,143 @@ export default function AssignOrder(props) {
           </div>
         </div>
 
-        <div className="card-body pt-0">
-          <div>
-            <div className="mt-3">
-              {isloading && (
-                <div className="text-center">
-                  <Spinner animation="border" variant="primary" />
-                </div>
-              )}
-              <div className="table-responsive">
-                <table
-                  className="table  table-bordered border-secondary "
-                  style={{ width: "100%" }}
-                >
-                  <thead>
-                    <tr>
-                      <th className="text-center">Process</th>
-
-                      <th colSpan={2} className="text-center ">
-                        Breakfast
-                      </th>
-                      <th colSpan={2} className="text-center ">
-                        Lunch
-                      </th>
-                      <th colSpan={2} className="text-center ">
-                        Dinner
-                      </th>
-                      {/* <th className="text-center ">Category</th> */}
-                      <th className="text-center ">Breakfast Employee</th>
-                      <th className="text-center ">Lunch Employee</th>
-                      <th className="text-center ">Dinner Employee</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allprocess?.map((item) => {
-                      return (
-                        <tr key={item.id}>
-                          <td className="pt-0 pb-0 ">{item.process_name}</td>
-
-                          <td className="text-center">
-                            <TextField
-                              type="Time"
-                              InputLabelProps={{ shrink: true }}
-                              label="Start"
-                              value={item.break_fast_start}
-                              variant="outlined"
-                              size="small"
-                            />
-                          </td>
-                          <td className="text-center">
-                            <TextField
-                              type="Time"
-                              label="End"
-                              value={item.break_fast_end}
-                              InputLabelProps={{ shrink: true }}
-                              variant="outlined"
-                              size="small"
-                            />
-                          </td>
-
-                          <td className="  text-center">
-                            <TextField
-                              label="Start"
-                              InputLabelProps={{ shrink: true }}
-                              type="Time"
-                              value={item.lunch_start}
-                              variant="outlined"
-                              size="small"
-                            />
-                          </td>
-                          <td className="text-center">
-                            <TextField
-                              type="Time"
-                              InputLabelProps={{ shrink: true }}
-                              label="End"
-                              value={item.lunch_end}
-                              variant="outlined"
-                              size="small"
-                            />
-                          </td>
-
-                          <td className=" text-center">
-                            <TextField
-                              label="Start"
-                              InputLabelProps={{ shrink: true }}
-                              value={item.dinner_start}
-                              type="Time"
-                              variant="outlined"
-                              size="small"
-                            />
-                          </td>
-                          <td className=" text-center">
-                            <TextField
-                              type="Time"
-                              label="End"
-                              value={item.dinner_end}
-                              InputLabelProps={{ shrink: true }}
-                              variant="outlined"
-                              size="small"
-                            />
-                          </td>
-                          <td>
-                            <div>
-                              <Select
-                                options={allemployee}
-                                placeholder={""}
-                                value={item.breakfast_employee}
-                                funct={(e) => {
-                                  handleemployeechange(e, item, "breakfast");
-                                }}
-                              />
-                            </div>
-                          </td>
-                          <td>
-                            <div>
-                              <Select
-                                options={allemployee}
-                                placeholder={""}
-                                value={item.launch_employee}
-                                funct={(e) => {
-                                  handleemployeechange(e, item, "lunch");
-                                }}
-                              />
-                            </div>
-                          </td>
-                          <td>
-                            <div>
-                              <Select
-                                options={allemployee}
-                                placeholder={""}
-                                value={item.dinner_employee}
-                                funct={(e) => {
-                                  handleemployeechange(e, item, "dinner");
-                                }}
-                              />
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+        <div className="card-body pt-0 ">
+          {isloading && (
+            <div className="text-center">
+              <Spinner animation="border" variant="primary" />
             </div>
+          )}
+          <div className=" mt-3">
+            <table
+              className="table  table-bordered border-secondary"
+              style={{ width: "100%" }}
+            >
+              <thead>
+                <tr>
+                  <th className="text-center">Process</th>
+
+                  <th colSpan={2} className="text-center ">
+                    Breakfast
+                  </th>
+                  <th colSpan={2} className="text-center ">
+                    Lunch
+                  </th>
+                  <th colSpan={2} className="text-center ">
+                    Dinner
+                  </th>
+                  {/* <th className="text-center ">Category</th> */}
+                  <th className="text-center ">Breakfast Employee</th>
+                  <th className="text-center ">Lunch Employee</th>
+                  <th className="text-center ">Dinner Employee</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allprocess?.map((item) => {
+                  return (
+                    <tr key={item.id}>
+                      <td className="pt-0 pb-0 ">{item.process_name}</td>
+
+                      <td className="text-center">
+                        <TextField
+                          type="Time"
+                          InputLabelProps={{ shrink: true }}
+                          label="Start"
+                          value={item.break_fast_start}
+                          variant="outlined"
+                          size="small"
+                        />
+                      </td>
+                      <td className="text-center">
+                        <TextField
+                          type="Time"
+                          label="End"
+                          value={item.break_fast_end}
+                          InputLabelProps={{ shrink: true }}
+                          variant="outlined"
+                          size="small"
+                        />
+                      </td>
+
+                      <td className="  text-center">
+                        <TextField
+                          label="Start"
+                          InputLabelProps={{ shrink: true }}
+                          type="Time"
+                          value={item.lunch_start}
+                          variant="outlined"
+                          size="small"
+                        />
+                      </td>
+                      <td className="text-center">
+                        <TextField
+                          type="Time"
+                          InputLabelProps={{ shrink: true }}
+                          label="End"
+                          value={item.lunch_end}
+                          variant="outlined"
+                          size="small"
+                        />
+                      </td>
+
+                      <td className=" text-center">
+                        <TextField
+                          label="Start"
+                          InputLabelProps={{ shrink: true }}
+                          value={item.dinner_start}
+                          type="Time"
+                          variant="outlined"
+                          size="small"
+                        />
+                      </td>
+                      <td className=" text-center">
+                        <TextField
+                          type="Time"
+                          label="End"
+                          value={item.dinner_end}
+                          InputLabelProps={{ shrink: true }}
+                          variant="outlined"
+                          size="small"
+                        />
+                      </td>
+                      <td>
+                        <Select
+                          styles={selectStyles}
+                          options={allemployee}
+                          value={item.breakfast_employee}
+                          onChange={(e) => {
+                            handleemployeechange(e, item, "breakfast");
+                          }}
+                        />
+                      </td>
+                      <td>
+                        <div>
+                          <Select
+                            options={allemployee}
+                            value={item.launch_employee}
+                            styles={selectStyles}
+                            onChange={(e) => {
+                              handleemployeechange(e, item, "lunch");
+                            }}
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          <Select
+                            options={allemployee}
+                            styles={selectStyles}
+                            value={item.dinner_employee}
+                            onChange={(e) => {
+                              handleemployeechange(e, item, "dinner");
+                            }}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
