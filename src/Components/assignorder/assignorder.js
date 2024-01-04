@@ -168,7 +168,7 @@ export default function AssignOrder(props) {
         return setallprocess(
           allprocess.map((item) => {
             if (item.process === row.process) {
-              item["launch_employee"] = e.value;
+              item["launch_employee"] = e;
               return item;
             }
             return item;
@@ -179,7 +179,7 @@ export default function AssignOrder(props) {
         return setallprocess(
           allprocess.map((item) => {
             if (item.process === row.process) {
-              item["dinner_employee"] = e.value;
+              item["dinner_employee"] = e;
               return item;
             }
             return item;
@@ -313,7 +313,7 @@ export default function AssignOrder(props) {
                             <div>
                               <Select
                                 options={allemployee}
-                                placeholder={"Select"}
+                                placeholder={""}
                                 value={item.breakfast_employee}
                                 funct={(e) => {
                                   handleemployeechange(e, item, "breakfast");
@@ -325,7 +325,7 @@ export default function AssignOrder(props) {
                             <div>
                               <Select
                                 options={allemployee}
-                                placeholder={"Select"}
+                                placeholder={""}
                                 value={item.launch_employee}
                                 funct={(e) => {
                                   handleemployeechange(e, item, "lunch");
@@ -337,7 +337,7 @@ export default function AssignOrder(props) {
                             <div>
                               <Select
                                 options={allemployee}
-                                placeholder={"Select"}
+                                placeholder={""}
                                 value={item.dinner_employee}
                                 funct={(e) => {
                                   handleemployeechange(e, item, "dinner");
