@@ -180,7 +180,7 @@ function Dailymeal_edit(props) {
     
     
 
-    const response = await fetch(`${route}/api/daily-meals/${saved_data.id}/`, {
+    const response = await fetch(`${route}/api/update-pots-detail/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
