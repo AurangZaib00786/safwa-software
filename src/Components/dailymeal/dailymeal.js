@@ -477,7 +477,7 @@ function Dailymeal(props) {
                           {type.value === "Breakfast"
                             ? item.breakfast
                             : type.value === "Lunch"
-                            ? item.lunch
+                            ? item.launch
                             : item.dinner}
                         </h5>
                       </td>
