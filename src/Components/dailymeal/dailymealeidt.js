@@ -9,7 +9,7 @@ import AddIcon from "@material-ui/icons/Add";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotate } from "@fortawesome/free-solid-svg-icons";
-import Dailymealform from "./dailymealform";
+import Dailymealeditform from "./dailymealeditform";
 import { useTranslation } from "react-i18next";
 import Red_toast from "../alerts/red_toast";
 import custom_toast from "../alerts/custom_toast";
@@ -34,9 +34,11 @@ function Dailymeal_edit(props) {
   const [column, setcolumn] = useState([]);
   const [ids, setids] = useState(null);
   const [dishes, setdishes] = useState(null);
+  
 
 
-  useEffect(()=>{  
+  useEffect(()=>{
+    setdishes(saved_data?.dish_details)  
       settable_data({ type: "Set_product_history", data: saved_data?.building_details });
       const new_columns= saved_data?.building_details?.length>0 ?saved_data?.building_details[0]:null
       setcolumn(new_columns?.pot_details)
@@ -199,6 +201,7 @@ function Dailymeal_edit(props) {
                 onClick={() => {
                   if (table_data) {
                     settext("POTS");
+                    
                     setshowmodel(!showmodel);
                     setdata(potsdata);
                   } else {
@@ -247,16 +250,16 @@ function Dailymeal_edit(props) {
                         className="d-flex justify-content-around align-items-center"
                         style={{ fontWeight: "bolder" }}
                       >
-                        <span className="me-2">{type.label}</span>
+                        <span className="me-2">{type}</span>
                         <span className="d-flex">
-                          {dishes?.buffet_dishes?.map((dish, index) => {
+                          {dishes?.map((dish, index) => {
                             return (
                               <h5
                                 key={dish.dish}
                                 style={{ fontWeight: "normal" }}
                               >
                                 {dish.dish_name}
-                                {index < dishes?.buffet_dishes?.length - 1
+                                {index < dishes?.length - 1
                                   ? " + "
                                   : ""}
                               </h5>
@@ -348,7 +351,7 @@ function Dailymeal_edit(props) {
       </div>
 
       {showmodel && (
-        <Dailymealform
+        <Dailymealeditform
           show={showmodel}
           onHide={() => setshowmodel(false)}
           user={user}
