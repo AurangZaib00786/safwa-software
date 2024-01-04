@@ -188,7 +188,7 @@ function Dailymeal_edit(props) {
       },
       body: JSON.stringify({
         
-        pot_details: potdetails,
+        pots_details: potdetails,
        
       }),
     });
