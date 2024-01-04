@@ -36,14 +36,14 @@ function Dailymealform({
 
   const addproduct = (row,rowIndex) => {
     const optimize = column?.filter((item) => {
-      return item.id === row.id;
+      return item.pot === row.id;
     });
     setselected([...selected,rowIndex+1])
     if (optimize.length > 0) {
       Red_toast(`${row.name} pot already Added`);
       return false;
     } else {
-      setcolumn([...column, { ...row, qty: "" }]);
+      setcolumn([...column, { ...row,pot: row.id, }]);
       const optimizetable = table_data.map((item) => {
         return {
           ...item,
@@ -53,7 +53,7 @@ function Dailymealform({
               pot: row.id,
               name: row.name,
               arabic_name: row.arabic_name,
-              qty: "",
+              qty: 0,
             },
           ],
         };
@@ -69,13 +69,13 @@ function Dailymealform({
     var flag = false;
     rows.map((row) => {
       const optimize = column?.filter((item) => {
-        return item.id === row.id;
+        return item.pot === row.id;
       });
       if (optimize.length > 0) {
         Red_toast(`${row.name} pot already Added`);
         return false;
       } else {
-        newcolumn = [...newcolumn, { ...row, qty: "" }];
+        newcolumn = [...newcolumn, { ...row,pot: row.id,}];
         newtabeldata = newtabeldata.map((item) => {
           return {
             ...item,
@@ -85,7 +85,7 @@ function Dailymealform({
                 pot: row.id,
                 name: row.name,
                 arabic_name: row.arabic_name,
-                qty: "",
+                qty: 0,
               },
             ],
           };
@@ -103,7 +103,7 @@ function Dailymealform({
 
     setselected(selected.filter(item=>{return item!==rowIndex+1}))
     const optimize = column?.filter((item) => {
-      return item.id !== row.id;
+      return item.pot !== row.id;
     });
     const optimizetable = table_data?.map((item) => {
       const new_data=item.pot_details.filter(pot=>{

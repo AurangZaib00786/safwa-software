@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import Select from "../alerts/select";
+import Selectr from "react-select";
 import { IconButton } from "@material-ui/core";
 import InputGroup from "react-bootstrap/InputGroup";
 import AddIcon from "@material-ui/icons/Add";
@@ -82,10 +83,12 @@ export default function Materialissueform(props) {
   const [allstock, setallstock] = useState([]);
   const [stock, setstock] = useState("");
   const [quantity, setquantity] = useState("");
-  const [unit, setunit] = useState("");
+  
   const [notes, setnotes] = useState("");
 
   const [data, setdata] = useState([]);
+  const [store, setstore] = useState('');
+  const [allstore, setallstore] = useState([]);
 
   const [dish, setdish] = useState("");
   const [alldish, setalldish] = useState([]);
@@ -100,6 +103,7 @@ export default function Materialissueform(props) {
   const [show, setshow] = useState(false);
   const [target, setTarget] = useState(null);
   const ref = useRef(null);
+  const stockref = useRef(null);
   const [date_range, setdate_range] = useState([
     {
       startDate: addMonths(new Date(), -1),
@@ -187,16 +191,36 @@ export default function Materialissueform(props) {
       }
     };
 
+    const fetchstore = async () => {
+      var url = `${route}/api/stores/`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        const optimize = json.map((item) => {
+          return { value: item.id, label: item.name };
+        });
+        setstore(optimize.length>0 && optimize[0])
+        setallstore(optimize);
+      }
+      if (!response.ok) {
+      }
+    };
+
     if (user) {
       fetchemployee();
       fetchdishes();
+      fetchstore()
     }
   }, []);
 
   useEffect(() => {
     const fetchmaterial = async () => {
-      var url = `${route}/api/stock/?account_head=${selected_branch.id}`;
-
+      var url = `${route}/api/stock/?account_head=${selected_branch.id}&store_id=${store.value}`;
+    
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
       });
@@ -213,10 +237,10 @@ export default function Materialissueform(props) {
         setallstock(optimize);
       }
     };
-    if (user) {
+    if (store) {
       fetchmaterial();
     }
-  }, [selected_branch]);
+  }, [selected_branch,store]);
 
   const handlesubmit = async (e) => {
     const optimizedata = data.map((item) => {
@@ -383,6 +407,7 @@ export default function Materialissueform(props) {
       setdata([
         ...data,
         {
+          store:store.label,
           stock: stock.value,
           quantity: quantity,
           remarks: notes,
@@ -393,6 +418,7 @@ export default function Materialissueform(props) {
     setstock("");
     setquantity("");
     setnotes("");
+    stockref.current.focus()
   };
 
   const handleadddishclick = (e) => {
@@ -504,6 +530,7 @@ export default function Materialissueform(props) {
               row.product_details.map((item) => {
                 return {
                   ...item,
+                  store:item.store_name,
                   stock: {
                     id: item.stock,
                     product_name: item.stock_name,
@@ -715,12 +742,18 @@ export default function Materialissueform(props) {
   };
 
   const rowstyle = { height: "10px", paddingLeft: "30px" };
-
+  const selectStyles = {
+    menu: (base) => ({
+      ...base,
+      zIndex: 100,
+    }),
+   
+  };
   return (
     <div className="p-3 pt-2">
       <div className="card">
         <div className="card-header d-flex justify-content-between bg-white">
-          <h3 className="mt-2 me-2">Stock Adjustment</h3>
+          <h3 className="mt-2 me-2">Material Issue Form</h3>
           <div className="mt-2 me-2 d-flex flex-row-reverse">
             <Button
               variant="outline-primary"
@@ -799,7 +832,7 @@ export default function Materialissueform(props) {
                 </div>
               )}
 
-              <div className="row d-sm-flex  align-items-center mt-md-3">
+              <div className="row d-sm-flex  align-items-center ">
                 <div className="col-6 col-md-3 pe-3">
                   <TextField
                     type="date"
@@ -846,7 +879,7 @@ export default function Materialissueform(props) {
                 </div>
               </div>
 
-              <div className="row d-sm-flex  align-items-center mt-md-3">
+              <div className="row d-sm-flex  align-items-center ">
                 <div className="col-6 col-md-3 pe-3">
                   <TextField
                     type="number"
@@ -887,7 +920,7 @@ export default function Materialissueform(props) {
                 </div>
               </div>
 
-              <div className="row d-sm-flex  align-items-center mt-md-3">
+              <div className="row d-sm-flex  align-items-center ">
                 <div className="col-6 col-md-3 pe-3">
                   <Select
                     options={allemployee}
@@ -920,16 +953,17 @@ export default function Materialissueform(props) {
               </div>
 
               <div className=" d-sm-flex mb-4">
-                <div className="col-md-8 me-md-5">
+                <div className="col-md-9 ">
                   <table className="table">
                     <thead className="border-0">
                       <tr>
                         <th className="d-flex align-items-center border-0 p-0">
-                          <h6 className="col-3 p-2 ps-0 pb-0 m-0">Stock</h6>
+                        <h6 className="col-2 p-2 ps-0 pb-0 m-0">Stores</h6>
+                          <h6 className="col-2 p-2 ps-0 pb-0 m-0">Stock</h6>
 
                           <h6 className=" col-2  p-2 pb-0 m-0">Unit</h6>
 
-                          <h6 className="col-3 p-2 pb-0 m-0">Qty</h6>
+                          <h6 className="col-2 p-2 pb-0 m-0">Qty</h6>
                           <h6 className="col-4 p-2 pb-0 m-0">Remarks</h6>
                         </th>
                       </tr>
@@ -937,7 +971,14 @@ export default function Materialissueform(props) {
                         return (
                           <tr key={item.stock.id}>
                             <th className="d-flex align-items-center p-0 border-0">
-                              <div className="col-3">
+                            <div className="col-2">
+                                <TextField
+                                  className="form-control"
+                                  size="small"
+                                  value={item.store}
+                                />
+                              </div>
+                              <div className="col-2">
                                 <TextField
                                   className="form-control"
                                   size="small"
@@ -953,7 +994,7 @@ export default function Materialissueform(props) {
                                 />
                               </div>
 
-                              <div className="col-3">
+                              <div className="col-2">
                                 <TextField
                                   type="number"
                                   className="form-control"
@@ -1002,16 +1043,25 @@ export default function Materialissueform(props) {
                       <tr>
                         <td className=" p-0 border-0">
                           <form onSubmit={handleaddclick} className="d-flex ">
-                            <div className="col-3">
-                              <Select
-                                options={allstock}
-                                placeholder={""}
-                                value={stock}
-                                funct={(e) => setstock(e)}
-                                margin={true}
-                                required={true}
+                          <div className="col-2">
+                              <Selectr
+                                options={allstore}
+                                value={store}
+                                onChange={(e) => setstore(e)}
+                                styles={selectStyles}
                               />
                             </div>
+                            <div className="col-2">
+                              <Selectr
+                              ref={stockref}
+                                options={allstock}
+                                styles={selectStyles}
+                                value={stock}
+                                onChange={(e) => setstock(e)}
+                                autoFocus
+                              />
+                            </div>
+
 
                             <div className="col-2">
                               <TextField
@@ -1023,7 +1073,7 @@ export default function Materialissueform(props) {
                               />
                             </div>
 
-                            <div className="col-3">
+                            <div className="col-2">
                               <TextField
                                 type="number"
                                 placeholder={"Qty"}
@@ -1072,8 +1122,8 @@ export default function Materialissueform(props) {
                     </tbody>
                   </table>
                 </div>
-                <div className="col-md-3 ">
-                  <h6 className="col-6 p-2 ps-0 pb-0 m-0">Dishes</h6>
+                <div className="col-md-3 ps-md-5 ">
+                  <h6 className="col-10 p-2 ps-0 pb-0 m-0">Dishes</h6>
 
                   <div>
                     {dishdata?.map((item) => {

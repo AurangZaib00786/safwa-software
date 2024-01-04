@@ -105,54 +105,14 @@ function Dailymeal_history(props) {
     }
   };
 
-  useEffect(() => {
-    dispatch({ type: "Set_menuitem", data: "Purchase_history" });
-
-    const fetchSupplier = async () => {
-      var url = `${route}/api/parties/?account_head=${selected_branch.id}&type=supplier`;
-      if (!settings?.user_base?.account_base) {
-        if (current_user.profile.user_type === "user") {
-          url = `${route}/api/parties/?user_id=${current_user.profile.parent_user}&type=supplier`;
-        } else {
-          url = `${route}/api/parties/?user_id=${current_user.id}&type=supplier`;
-        }
-      }
-      const response = await fetch(`${url}`, {
-        headers: { Authorization: `Bearer ${user.access}` },
-      });
-
-      const json = await response.json();
-
-      if (response.ok) {
-        const optimize = json.map((item) => {
-          return { value: item.id, label: item.name };
-        });
-        optimize.splice(0, 0, { value: "all", label: "All" });
-        setallsupplier(optimize);
-      }
-    };
-
-    fetchSupplier();
-  }, [selected_branch]);
+  
 
   useEffect(() => {
     setisloading(true);
     dispatch({ type: "Set_table_history", data: [] });
     const fetchProducts = async () => {
-      var url = `${route}/api/purchases/?account_head=${selected_branch.id}&user_id=${current_user.id}&user_type=${current_user?.profile?.user_type}&start_date=${start_date}&end_date=${end_date}`;
-      if (
-        date_range[0].endDate.getFullYear() -
-          date_range[0].startDate.getFullYear() ===
-        10
-      ) {
-        url = `${route}/api/purchases/?branch_id=${selected_branch.id}&user_id=${current_user.id}&user_type=${current_user?.profile?.user_type}`;
-      }
-      if (payment_type.value != "all") {
-        url = `${url}&payment_type=${payment_type.label}`;
-      }
-      if (supplier.value != "all") {
-        url = `${url}&supplier_id=${supplier.value}`;
-      }
+      var url = `${route}/api/daily-meals/`;
+      
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
       });
@@ -171,7 +131,7 @@ function Dailymeal_history(props) {
     if (user) {
       fetchProducts();
     }
-  }, [callagain, selected_branch]);
+  }, []);
 
   const handleconfirm = (row) => {
     dispatch({ type: "Delete_table_history", data: { id: row } });
@@ -187,9 +147,9 @@ function Dailymeal_history(props) {
             localStorage.setItem("data", JSON.stringify(row));
 
             if (formatExtraData.code === "A4") {
-              window.open("/invoice/purchases", "_blank");
+              window.open("/invoice/dailymeal", "_blank");
             } else if (formatExtraData.code === "80mm") {
-              window.open("/invoice_80/purchases", "_blank");
+              window.open("/invoice_80/dailymeal", "_blank");
             }
           }}
         >
@@ -199,7 +159,7 @@ function Dailymeal_history(props) {
           className="border border-danger rounded me-2"
           onClick={() => {
             setrow_id(row.id);
-            seturl_to_delete(`${route}/api/purchases/${row.id}/`);
+            seturl_to_delete(`${route}/api/daily-meals/${row.id}/`);
             setdelete_user(true);
           }}
         >
@@ -213,11 +173,8 @@ function Dailymeal_history(props) {
             const data = history.filter((item) => {
               return item.id === row.id;
             });
-            settable_data({
-              type: "Set_save_data",
-              data: [{ data: data[0] }],
-            });
-            setActiveTab("purchase_Edit");
+            localStorage.setItem("data", JSON.stringify(row));
+            setActiveTab("dailymeal_Edit");
           }}
         >
           <EditOutlinedIcon
@@ -246,111 +203,31 @@ function Dailymeal_history(props) {
     return <div>{parseFloat(cell).toFixed(2)}</div>;
   };
 
-  const footerFormatter = (column, colIndex, { text }) => {
-    if (colIndex > 3) {
-      return (
-        <span style={{ fontSize: "large" }}>{Number(text).toFixed(2)}</span>
-      );
-    } else {
-      return <span style={{ fontSize: "large" }}>{text}</span>;
-    }
-  };
+
 
   const columns = [
     {
       dataField: "id",
-      text: "Id",
-      hidden: true,
+      text: "#",
+      formatter:(cell, row, rowIndex, formatExtraData)=>{return rowIndex+1},
       headerFormatter: headerstyle,
-      csvExport: false,
-      footer: "",
     },
+   
     {
-      dataField: "date",
-      text: t("date"),
+      dataField: "order",
+      text: 'Order No.',
       sort: true,
       headerFormatter: headerstyle,
-      footer: "",
+      
     },
     {
-      dataField: "invoice",
-      text: t("invoice"),
+      dataField: "meal_type",
+      text: "Meal Type",
       sort: true,
       headerFormatter: headerstyle,
-      footer: "",
+      
     },
-    {
-      dataField: "supplier_name",
-      text: "Vendors",
-      sort: true,
-      headerFormatter: headerstyle,
-      footer: "Total",
-      footerFormatter: footerFormatter,
-    },
-    {
-      dataField: "sub_total",
-      text: t("subtotal"),
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-      footer: (columnData) => columnData.reduce((acc, item) => acc + item, 0),
-      footerFormatter: footerFormatter,
-    },
-    {
-      dataField: "tax_percentage",
-      text: t("vat%"),
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-      footer: (columnData) => columnData.reduce((acc, item) => acc + item, 0),
-      footerFormatter: footerFormatter,
-    },
-    {
-      dataField: "tax_amount",
-      text: t("vat_amount"),
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-      footer: (columnData) => columnData.reduce((acc, item) => acc + item, 0),
-      footerFormatter: footerFormatter,
-    },
-    {
-      dataField: "discount",
-      text: t("discount"),
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-      footer: (columnData) => columnData.reduce((acc, item) => acc + item, 0),
-      footerFormatter: footerFormatter,
-    },
-
-    {
-      dataField: "total",
-      text: t("total"),
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-      footer: (columnData) => columnData.reduce((acc, item) => acc + item, 0),
-      footerFormatter: footerFormatter,
-    },
-    {
-      dataField: "payment_type",
-      text: t("side_bar_paymnettype"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "remarks",
-      text: "Remarks",
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "user_name",
-      text: "User",
-      sort: true,
-      headerFormatter: headerstyle,
-    },
+ 
     {
       dataField: "Edit",
       text: t("action"),
@@ -366,10 +243,7 @@ function Dailymeal_history(props) {
     setTarget(e.target);
   };
 
-  useEffect(() => {
-    setcallagain(!callagain);
-  }, [payment_type, supplier, date_range]);
-
+ 
   const handlecategory = (e) => {
     setpayment_type(e);
   };
@@ -482,7 +356,7 @@ function Dailymeal_history(props) {
 
   const download = () => {
     const documentDefinition = makepdf();
-    pdfMake.createPdf(documentDefinition).download("Purchasehistory.pdf");
+    pdfMake.createPdf(documentDefinition).download("Dailymealhistory.pdf");
   };
 
   const print = () => {
@@ -614,22 +488,7 @@ function Dailymeal_history(props) {
                   </Popover>
                 </Overlay>
               </div>
-              <div className="col-sm-4 ms-3  me-3 selector mb-2">
-                <Select
-                  options={allsupplier}
-                  placeholder={t("supplier")}
-                  value={supplier}
-                  funct={handlesubcategory}
-                ></Select>
-              </div>
-              <div className="col-sm-4 ms-3  me-3  selector mb-2">
-                <Select
-                  options={allpayment_type}
-                  placeholder={t("side_bar_paymnettype")}
-                  value={payment_type}
-                  funct={handlecategory}
-                ></Select>
-              </div>
+              
             </div>
             <div className="d-sm-flex justify-content-between align-items-center mt-3  ">
               <div>

@@ -11,7 +11,7 @@ import Building_page from "./buildingpage/buildingpage";
 import Orderpage from "./orderpage/orderpage";
 import Customer from "../Container/customerContainer";
 import Supplier from "../Container/supplierContainer";
-import Purchase_page from "./purchase_page/purchase_page";
+import Dailymeal_page from "./dailymeal_page/dailymeal_page";
 import Sale_page from "./sale_page/sale_page";
 import Payment_page from "./payments/payment_page";
 import Sale_invoice from "../Container/invoiceContainer";
@@ -156,7 +156,7 @@ function Routing(props) {
               path="/daily_meal"
               element={
                 user ? (
-                  <Purchase_page current_user={current_user} />
+                  <Dailymeal_page current_user={current_user} />
                 ) : (
                   <Navigate to={"/"} />
                 )

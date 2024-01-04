@@ -37,7 +37,7 @@ export default function Stock_table({
   const [allstore, setallstore] = useState([]);
 
   useEffect(() => {
-    setisloading(true);
+    
 
     const fetchstore = async () => {
       var url = `${route}/api/stores/`;

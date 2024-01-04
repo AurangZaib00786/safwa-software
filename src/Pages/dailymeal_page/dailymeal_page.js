@@ -6,7 +6,7 @@ import Dailymeal from "../../Container/dailymealContainer";
 import Dailymeal_history from "../../Container/dailymealhistpryContainer";
 import Dailymeal_Edit from "../../Container/dailymealeditContainer";
 
-function Purchase_page({ current_user }) {
+function Dailymeal_page({ current_user }) {
   const tabs = ["dailymeal", "dailymeal_history"];
   var current_tab = localStorage.getItem("activeTab");
   if (!tabs.includes(current_tab)) {
@@ -51,4 +51,4 @@ function Purchase_page({ current_user }) {
   );
 }
 
-export default Purchase_page;
+export default Dailymeal_page;

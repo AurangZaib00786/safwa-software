@@ -54,7 +54,7 @@ function Dailymeal(props) {
   var curdate = curr.toISOString().substring(0, 10);
 
   const [date, setdate] = useState(curdate);
-  const [counter, setcounter] = useState(1);
+  
   const [customer, setcustomer] = useState("");
 
   const [showmodel, setshowmodel] = useState(false);
@@ -132,12 +132,11 @@ function Dailymeal(props) {
     }
   };
 
+ 
+
   useEffect(() => {
     dispatch({ type: "Set_menuitem", data: "purchase" });
     settable_data({ type: "Set_product_history", data: null });
-  }, []);
-
-  useEffect(() => {
     const fetchProducts = async () => {
       var url = `${route}/api/pots/`;
 
@@ -273,6 +272,7 @@ function Dailymeal(props) {
     }
 
     if (response.ok) {
+      custom_toast('Save')
       settable_data({ type: "Set_product_history", data: null });
       setorder(null);
       setdishes(null);
@@ -383,7 +383,7 @@ function Dailymeal(props) {
                   }
                 }}
               >
-                <VisibilityIcon />
+                <VisibilityIcon className="me-2"/>
                 Add Pots
               </Button>
             </div>
