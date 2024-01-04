@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import Red_toast from "../alerts/red_toast";
 import custom_toast from "../alerts/custom_toast";
 
+
 function Dailymeal_edit(props) {
   const user = props.state.setuser.user;
   const { t } = useTranslation();
@@ -34,14 +35,18 @@ function Dailymeal_edit(props) {
   const [column, setcolumn] = useState([]);
   const [ids, setids] = useState(null);
   const [dishes, setdishes] = useState(null);
+  const [table_data_copy, settable_data_copy] = useState(saved_data?.building_details);
+  const [column_copy, setcolumn_copy] = useState([]);
   
 
 
   useEffect(()=>{
     setdishes(saved_data?.dish_details)  
       settable_data({ type: "Set_product_history", data: saved_data?.building_details });
+      
       const new_columns= saved_data?.building_details?.length>0 ?saved_data?.building_details[0]:null
       setcolumn(new_columns?.pot_details)
+      setcolumn_copy(new_columns?.pot_details)
       setcustomer(saved_data.customer_name)
       settype(saved_data.meal_type)
       setids(new_columns?.pot_details.map(item=> item.pot))
@@ -74,7 +79,7 @@ function Dailymeal_edit(props) {
   }, []);
 
   const handlepotqtychange = (row, pot, value) => {
-    const newdata = table_data.map((item) => {
+    const newdata = table_data_copy.map((item) => {
       if (item.id === row.id) {
         const changepot = item.pot_details.map((item2) => {
           if (item2.pot === pot.pot) {
@@ -91,9 +96,32 @@ function Dailymeal_edit(props) {
     settable_data({ type: "Set_product_history", data: newdata });
   };
 
-  
+  const fetchmeal = async (id) => {
+    var url = `${route}/api/daily-meals/${id}/`;
+    
+    const response = await fetch(`${url}`, {
+      headers: { Authorization: `Bearer ${user.access}` },
+    });
+    const json = await response.json();
 
-  const handlesubmit = async (e) => {
+    if (response.ok) {
+      setdishes(json?.dish_details)  
+      settable_data({ type: "Set_product_history", data: json?.building_details });
+      settable_data_copy(json?.building_details )
+      const new_columns= json?.building_details?.length>0 ?json?.building_details[0]:null
+      setcolumn(new_columns?.pot_details)
+      setcolumn_copy(new_columns?.pot_details)
+      setcustomer(json.customer_name)
+      settype(json.meal_type)
+      setids(new_columns?.pot_details.map(item=> item.pot))
+
+    }
+    if (!response.ok) {
+      Red_toast('Error');
+    }
+  };
+
+  const handlereload = async (e) => {
     e.preventDefault();
     const ids_to_add=[]
     const itemtomap=table_data.length>0?table_data[0]:null
@@ -112,10 +140,6 @@ function Dailymeal_edit(props) {
         return
       }
     });
-
-
-    
-    
 
     const response = await fetch(`${route}/api/update-pots/`, {
       method: "POST",
@@ -141,6 +165,45 @@ function Dailymeal_edit(props) {
 
     if (response.ok) {
       custom_toast('Update')
+      fetchmeal(saved_data.id)
+      
+    }
+  };
+
+  const handlesubmit = async (e) => {
+    e.preventDefault();
+    const potdetails= []
+    table_data_copy.map(item=>{
+      item.pot_details.map(pot=>potdetails.push(pot))
+    })
+
+    
+    
+
+    const response = await fetch(`${route}/api/daily-meals/${saved_data.id}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.access}`,
+      },
+      body: JSON.stringify({
+        
+        pot_details: potdetails,
+       
+      }),
+    });
+    const json = await response.json();
+    setisloading(false);
+    if (!response.ok) {
+      var error = Object.keys(json);
+      if (error.length > 0) {
+        Red_toast(`${json[error[0]]}`);
+      }
+    }
+
+    if (response.ok) {
+      custom_toast('Update')
+     
       
     }
   };
@@ -153,7 +216,7 @@ function Dailymeal_edit(props) {
             <AddIcon /> {t("new")}
           </Button>
 
-          <Button onClick={handlesubmit} variant="outline-primary">
+          <Button onClick={handlesubmit}  variant="outline-primary">
             {isloading && (
               <Spinner
                 as="span"
@@ -217,15 +280,7 @@ function Dailymeal_edit(props) {
               <Button
                 className="ms-2"
                 variant="outline-secondary"
-                onClick={() => {
-                  if (table_data) {
-                    settext("POTS");
-                    setshowmodel(!showmodel);
-                    setdata(potsdata);
-                  } else {
-                    Red_toast("Generate order first!");
-                  }
-                }}
+                onClick={handlereload}
               >
                 <FontAwesomeIcon icon={faRotate}  className="me-2"/>
                 Reload
@@ -245,7 +300,7 @@ function Dailymeal_edit(props) {
                     <th className="text-center">
                       <h5 style={{ fontWeight: "bolder" }}>فندق</h5>
                     </th>
-                    <th colSpan={column.length + 1} className="text-center">
+                    <th colSpan={column_copy.length + 1} className="text-center">
                       <h5
                         className="d-flex justify-content-around align-items-center"
                         style={{ fontWeight: "bolder" }}
@@ -281,7 +336,7 @@ function Dailymeal_edit(props) {
                   <th className="text-center">
                     <h5 style={{ fontWeight: "bolder" }}>حجاج</h5>
                   </th>
-                  {column?.map((item) => {
+                  {column_copy?.map((item) => {
                     return (
                       <th key={item.id} className="text-center">
                         <h5 style={{ fontWeight: "bolder" }}>
@@ -296,7 +351,7 @@ function Dailymeal_edit(props) {
                   <th className="text-center">
                     <h5 style={{ fontWeight: "bolder" }}>Haji</h5>
                   </th>
-                  {column?.map((item) => {
+                  {column_copy?.map((item) => {
                     return (
                       <th key={item.id} className="text-center">
                         <h5 style={{ fontWeight: "bolder" }}>{item.name}</h5>
@@ -306,7 +361,7 @@ function Dailymeal_edit(props) {
                 </tr>
               </thead>
               <tbody>
-                {table_data?.map((item, index) => {
+                {table_data_copy?.map((item, index) => {
                   return (
                     <tr key={item.id}>
                       <td style={{ width: "5%" }}>{index + 1}</td>

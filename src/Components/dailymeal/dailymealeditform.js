@@ -40,7 +40,7 @@ function Dailymealeditform({
     });
     setselected([...selected,rowIndex+1])
     if (optimize.length > 0) {
-      Red_toast(`${row.name} pot already Added`);
+      
       return false;
     } else {
       setcolumn([...column, { ...row,pot: row.id, }]);
@@ -72,7 +72,7 @@ function Dailymealeditform({
         return item.pot === row.id;
       });
       if (optimize.length > 0) {
-        Red_toast(`${row.name} pot already Added`);
+        
         return false;
       } else {
         newcolumn = [...newcolumn, { ...row,pot: row.id,}];
@@ -149,28 +149,20 @@ function Dailymealeditform({
     onSelect: (row, isSelect, rowIndex, e) => {
       if (isSelect) {
         const response = addproduct(row,rowIndex);
-        if (response) {
-          custom_toast(`${row.name} pot added`);
-        }
+        
       }else{
        
         const response = deleteproduct(row,rowIndex);
-        if (response) {
-          custom_toast(`${row.name} pot deleted`);
-        }
+        
       }
     },
     onSelectAll: (isSelect, rows, e) => {
       if (isSelect) {
         const response = addallproduct(rows);
-        if (response) {
-          custom_toast("Pots added");
-        }
+       
       }else{
         const response = deleteallproduct(rows);
-        if (response) {
-          custom_toast("Pots Deleted");
-        }
+       
       }
     },
   };
