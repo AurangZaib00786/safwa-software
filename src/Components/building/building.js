@@ -104,7 +104,7 @@ export default function Building(props) {
             setbuilding_number(row.building_number);
             setcapacity(row.capacity);
             setopening_date(row.opening_date);
-            setclosing_date(row.closing_date);
+            setclosing_date(row.closing_date? row.closing_date:'');
 
             setid(row.id);
             setcheck_update(true);

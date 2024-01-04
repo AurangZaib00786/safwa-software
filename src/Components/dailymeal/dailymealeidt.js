@@ -1,23 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./dailymeal.css";
 import Button from "react-bootstrap/Button";
-import { IconButton } from "@material-ui/core";
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import BootstrapTable from "react-bootstrap-table-next";
 import Spinner from "react-bootstrap/Spinner";
 import SaveIcon from "@material-ui/icons/Save";
-import ToolkitProvider, {
-  CSVExport,
-} from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
-import cellEditFactory from "react-bootstrap-table2-editor";
-import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
-import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import Select from "react-select";
 import PrintRoundedIcon from "@material-ui/icons/PrintRounded";
-
 import TextField from "@mui/material/TextField";
-
-import InputGroup from "react-bootstrap/InputGroup";
 import AddIcon from "@material-ui/icons/Add";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -107,7 +94,6 @@ function Dailymeal_edit(props) {
   const handlesubmit = async (e) => {
     e.preventDefault();
     const ids_to_add=[]
-   
     const itemtomap=table_data.length>0?table_data[0]:null
     itemtomap?.pot_details?.map((item) => {
      
