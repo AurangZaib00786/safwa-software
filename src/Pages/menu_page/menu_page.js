@@ -11,7 +11,7 @@ function Product_page({ current_user }) {
   const tabs = ["pots", "menu", "submenu", "dish"];
   var current_tab = localStorage.getItem("activeTab");
   if (!tabs.includes(current_tab)) {
-    current_tab = "pots";
+    current_tab = "dish";
   }
 
   const [activeTab, setActiveTab] = useState(current_tab);
@@ -32,8 +32,8 @@ function Product_page({ current_user }) {
         id="noanim-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="pots" title="Pots">
-          {activeTab === "pots" && <Pots />}
+        <Tab eventKey="dish" title="Dish">
+          {activeTab === "dish" && <Dish />}
         </Tab>
         <Tab eventKey="menu" title="Menu">
           {activeTab === "menu" && <Menu />}
@@ -43,8 +43,8 @@ function Product_page({ current_user }) {
           {activeTab === "submenu" && <Submenu />}
         </Tab>
 
-        <Tab eventKey="dish" title="Dish">
-          {activeTab === "dish" && <Dish />}
+        <Tab eventKey="pots" title="Pots">
+          {activeTab === "pots" && <Pots />}
         </Tab>
       </Tabs>
       <ToastContainer autoClose={2000} hideProgressBar={true} theme="dark" />

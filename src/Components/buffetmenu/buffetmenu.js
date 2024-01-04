@@ -124,7 +124,7 @@ export default function BuffetMenu(props) {
   }, [title, callagain]);
 
   useEffect(() => {
-    dispatch({ type: "Set_menuitem", data: "buffet" });
+    dispatch({ type: "Set_menuitem", data: "buffet menu" });
     const fetchmenu = async () => {
       var url = `${route}/api/menu/`;
 
@@ -178,8 +178,7 @@ export default function BuffetMenu(props) {
 
       if (response.ok) {
         setisloading(false);
-        
-        
+
         success_toast();
 
         setcheckall(false);
@@ -226,10 +225,10 @@ export default function BuffetMenu(props) {
 
       if (response.ok) {
         setisloading(false);
-        
+
         success_toast();
         setid(null);
-        
+
         setcheckall(false);
         setcheck_update(false);
       }
@@ -400,7 +399,6 @@ export default function BuffetMenu(props) {
             <div className="card-body pt-0">
               <div className="row mt-5">
                 <label className="d-flex justify-content-end align-items-end mb-2">
-                  
                   <TextField
                     label="Search"
                     variant="outlined"

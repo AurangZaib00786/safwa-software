@@ -138,7 +138,11 @@ function Layout(props) {
             </SubMenu>
 
             <SubMenu
-              active={menu_status === "dish" || menu_status === "buffet"}
+              active={
+                menu_status === "dish" ||
+                menu_status === "buffet" ||
+                menu_status === "buffet menu"
+              }
               icon={<TurnedInIcon />}
               label={"Menu Managment"}
             >
@@ -158,6 +162,14 @@ function Layout(props) {
                 rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
               >
                 Schedule
+              </MenuItem>
+              <MenuItem
+                active={menu_status === "buffet menu"}
+                icon={<TurnedInIcon />}
+                component={<Link to="/buffetmenu" />}
+                rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+              >
+                Buffet Menu
               </MenuItem>
             </SubMenu>
 
@@ -185,39 +197,32 @@ function Layout(props) {
               </MenuItem>
             </SubMenu>
 
-            <SubMenu
-              active={menu_status === "building" || menu_status === "order"}
-              icon={<BusinessIcon />}
-              label={"Building Managment"}
+            <MenuItem
+              active={menu_status === "building"}
+              icon={<StoreIcon />}
+              component={<Link to="/building_page" />}
+              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
             >
-              <MenuItem
-                active={menu_status === "order"}
-                icon={<StoreIcon />}
-                component={<Link to="/order" />}
-                rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
-              >
-                Order
-              </MenuItem>
-              <MenuItem
-                active={menu_status === "building"}
-                icon={<StoreIcon />}
-                component={<Link to="/building_page" />}
-                rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
-              >
-                Building
-              </MenuItem>
-            </SubMenu>
+              Building
+            </MenuItem>
 
-            
-              <MenuItem
-                active={menu_status === "purchase"}
-                icon={<ShoppingBasketIcon />}
-                component={<Link to="/daily_meal" />}
-                rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
-              >
-                Daily Meal
-              </MenuItem>
-            
+            <MenuItem
+              active={menu_status === "order"}
+              icon={<StoreIcon />}
+              component={<Link to="/order" />}
+              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+            >
+              Order
+            </MenuItem>
+
+            <MenuItem
+              active={menu_status === "purchase"}
+              icon={<ShoppingBasketIcon />}
+              component={<Link to="/daily_meal" />}
+              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+            >
+              Daily Meal
+            </MenuItem>
 
             {/* {current_user?.permissions?.includes("view_payments") && (
               <MenuItem

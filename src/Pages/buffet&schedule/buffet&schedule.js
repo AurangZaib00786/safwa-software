@@ -3,15 +3,15 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Timing from "../../Container/timingContainer";
 import Process from "../../Container/processContainer";
-import BuffetMenu from "../../Container/buffetmenuContainer";
+
 import Schedule from "../../Container/scheduleContainer";
 import { ToastContainer } from "react-toastify";
 
 function Buffet_page({ current_user }) {
-  const tabs = ["Buffet Menu", "Schedule", "Timing", "Process"];
+  const tabs = ["Schedule", "Timing", "Process"];
   var current_tab = localStorage.getItem("activeTab");
   if (!tabs.includes(current_tab)) {
-    current_tab = "Buffet Menu";
+    current_tab = "Schedule";
   }
 
   const [activeTab, setActiveTab] = useState(current_tab);
@@ -32,9 +32,6 @@ function Buffet_page({ current_user }) {
         id="noanim-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="Buffet Menu" title="Buffet Menu">
-          {activeTab === "Buffet Menu" && <BuffetMenu />}
-        </Tab>
         <Tab eventKey="Schedule" title="Schedule">
           {activeTab === "Schedule" && <Schedule />}
         </Tab>

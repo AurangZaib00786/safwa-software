@@ -240,7 +240,11 @@ function Dailymeal_edit(props) {
     <div className="p-3">
       <div className="card">
         <div className="card-header  d-flex justify-content-end">
-          <Button onClick={handlesubmit} variant="outline-primary">
+          <Button
+            disabled={!column.length > 0}
+            onClick={handlesubmit}
+            variant="outline-primary"
+          >
             {isloading && (
               <Spinner
                 as="span"
@@ -253,6 +257,7 @@ function Dailymeal_edit(props) {
             <SaveIcon /> Update
           </Button>
           <Button
+            disabled={!column.length > 0}
             onClick={handleprint}
             className="ms-2"
             variant="outline-success"

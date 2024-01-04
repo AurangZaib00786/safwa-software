@@ -13,6 +13,7 @@ import Customer from "../Container/customerContainer";
 import Supplier from "../Container/supplierContainer";
 import Dailymeal_page from "./dailymeal_page/dailymeal_page";
 import Mealform from "../Components/dailymeal/dailmealprint";
+import BuffetMenu from "../Container/buffetmenuContainer";
 import Sale_page from "./sale_page/sale_page";
 import Payment_page from "./payments/payment_page";
 import Sale_invoice from "../Container/invoiceContainer";
@@ -24,7 +25,7 @@ import Invoice_3 from "../Components/sale/invoice_3";
 import Journal_page from "./journals/journals_page";
 import Expense_page from "./expenses_page/expense_page";
 import Invoice80mm from "../Components/sale/80mminvoice";
-import {  useState } from "react";
+import { useState } from "react";
 import Issueform from "../Components/materialissueform/formprint";
 import EmployeePrint from "../Components/employee/employeeprint";
 
@@ -101,6 +102,10 @@ function Routing(props) {
               }
             ></Route>
             <Route
+              path="/buffetmenu"
+              element={user ? <BuffetMenu /> : <Navigate to={"/"} />}
+            ></Route>
+            <Route
               path="/buffet&schedule"
               element={
                 user ? (
@@ -153,7 +158,7 @@ function Routing(props) {
               }
             ></Route>
 
-<Route
+            <Route
               path="/daily_meal"
               element={
                 user ? (
@@ -227,7 +232,6 @@ function Routing(props) {
             path="/employeeprint"
             element={user && <EmployeePrint />}
           ></Route>
-         
         </Routes>
       </ProSidebarProvider>
     </BrowserRouter>

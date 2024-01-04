@@ -17,13 +17,12 @@ import custom_toast from "../alerts/custom_toast";
 function Dailymeal(props) {
   const user = props.state.setuser.user;
   const { t } = useTranslation();
-  const product_selection = useRef(null);
+
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
-  const current_user = props.state.Setcurrentinfo.current_user;
-  const invoice_type = props.state.Setcurrentinfo.invoice_type;
+
   const dispatch = props.Settable_history;
-  const settings = props.state.Setcurrentinfo.settings;
+
   const table_data = props.state.Setproducthistory.product_history;
   const settable_data = props.Setproduct_history;
 
@@ -35,7 +34,7 @@ function Dailymeal(props) {
   var curdate = curr.toISOString().substring(0, 10);
 
   const [date, setdate] = useState(curdate);
-  
+
   const [customer, setcustomer] = useState("");
 
   const [showmodel, setshowmodel] = useState(false);
@@ -66,8 +65,8 @@ function Dailymeal(props) {
         };
       });
       settable_data({ type: "Set_product_history", data: optimize });
-      if (!order){
-        Red_toast('The Customer has no order for this Date !')
+      if (!order) {
+        Red_toast("The Customer has no order for this Date !");
       }
     }
     if (!response.ok) {
@@ -112,8 +111,6 @@ function Dailymeal(props) {
       }
     }
   };
-
- 
 
   useEffect(() => {
     dispatch({ type: "Set_menuitem", data: "purchase" });
@@ -253,7 +250,7 @@ function Dailymeal(props) {
     }
 
     if (response.ok) {
-      custom_toast('Save')
+      custom_toast("Save");
       settable_data({ type: "Set_product_history", data: null });
       setorder(null);
       setdishes(null);
@@ -311,19 +308,34 @@ function Dailymeal(props) {
       setdishes(null);
       setcolumn([]);
       localStorage.setItem("data", JSON.stringify(json));
-        window.open("/mealform", "_blank");
+      window.open("/mealform", "_blank");
     }
   };
 
+  const handlenew = () => {
+    settable_data({ type: "Set_product_history", data: null });
+    setorder(null);
+    setdishes(null);
+    setcolumn([]);
+  };
   return (
     <div className="p-3">
       <div className="card">
         <div className="card-header  d-flex justify-content-end">
-          <Button className="me-2" type="button" variant="outline-dark">
+          <Button
+            onClick={handlenew}
+            className="me-2"
+            type="button"
+            variant="outline-dark"
+          >
             <AddIcon /> {t("new")}
           </Button>
 
-          <Button onClick={handlesubmit} variant="outline-primary">
+          <Button
+            disabled={!column.length > 0}
+            onClick={handlesubmit}
+            variant="outline-primary"
+          >
             {isloading && (
               <Spinner
                 as="span"
@@ -335,7 +347,12 @@ function Dailymeal(props) {
             )}
             <SaveIcon /> {t("save")}
           </Button>
-          <Button onClick={handleprint} className="ms-2" variant="outline-success">
+          <Button
+            disabled={!column.length > 0}
+            onClick={handleprint}
+            className="ms-2"
+            variant="outline-success"
+          >
             <PrintRoundedIcon /> {t("print")}
           </Button>
         </div>
@@ -418,17 +435,20 @@ function Dailymeal(props) {
                   }
                 }}
               >
-                <VisibilityIcon className="me-2"/>
+                <VisibilityIcon className="me-2" />
                 Add Pots
               </Button>
             </div>
           </div>
 
           <div style={{ zoom: "0.8" }} className="table-responsive">
-            <table className="table dailymealtable  table-bordered " style={{ width: "100%" }}>
+            <table
+              className="table dailymealtable  table-bordered "
+              style={{ width: "100%" }}
+            >
               <thead>
                 {dishes && (
-                  <tr >
+                  <tr>
                     <th className="text-center">
                       <h5 style={{ fontWeight: "bolder" }}>م</h5>
                     </th>
@@ -461,7 +481,7 @@ function Dailymeal(props) {
                   </tr>
                 )}
 
-                <tr >
+                <tr>
                   <th rowSpan={2} className="text-center">
                     <h5 style={{ fontWeight: "bolder" }}>Sr. No</h5>
                   </th>
@@ -482,7 +502,7 @@ function Dailymeal(props) {
                   })}
                 </tr>
 
-                <tr >
+                <tr>
                   <th className="text-center">
                     <h5 style={{ fontWeight: "bolder" }}>Haji</h5>
                   </th>
@@ -501,13 +521,19 @@ function Dailymeal(props) {
                     <tr key={item.id}>
                       <td style={{ width: "0.5in" }}>{index + 1}</td>
 
-                      <td style={{ width: "3in" }} className=" pt-0 pb-0 text-center">
+                      <td
+                        style={{ width: "3in" }}
+                        className=" pt-0 pb-0 text-center"
+                      >
                         <h5 style={{ fontWeight: "normal" }}>
                           {item.building_number}
                         </h5>
                       </td>
 
-                      <td style={{ width: "2in" }} className="pt-0 pb-0  text-center">
+                      <td
+                        style={{ width: "2in" }}
+                        className="pt-0 pb-0  text-center"
+                      >
                         <h5 style={{ fontWeight: "normal" }}>
                           {type.value === "Breakfast"
                             ? item.breakfast

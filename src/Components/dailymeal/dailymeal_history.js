@@ -39,6 +39,7 @@ import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
+import Red_toast from "../alerts/red_toast";
 
 function Dailymeal_history(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -46,33 +47,21 @@ function Dailymeal_history(props) {
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
-  const current_user = props.state.Setcurrentinfo.current_user;
   const history = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
   const { ExportCSVButton } = CSVExport;
   const invoice_type = props.state.Setcurrentinfo.invoice_type;
   const setActiveTab = props.setActiveTab;
-  const settable_data = props.Setsavedata;
-  const settings = props.state.Setcurrentinfo.settings;
+
   const [delete_user, setdelete_user] = useState(false);
   const [url_to_delete, seturl_to_delete] = useState("");
   const [row_id, setrow_id] = useState("");
   const [isloading, setisloading] = useState(false);
 
-  const [payment_type, setpayment_type] = useState({
-    value: "all",
-    label: "All",
-  });
-  const [allpayment_type, setallpayment_type] = useState([
-    { value: "all", label: "All" },
-    { value: "credit", label: "Credit" },
-    { value: "cash", label: "Cash" },
-  ]);
-  const [supplier, setsupplier] = useState({ value: "all", label: "All" });
-  const [allsupplier, setallsupplier] = useState([]);
-
-  const [callagain, setcallagain] = useState(false);
+  const [type, settype] = useState({ value: "all", label: "All" });
+  const [customer, setcustomer] = useState({ value: "all", label: "All" });
+  const [allcustomers, setallcustomers] = useState([]);
 
   const [start_date, setstart_date] = useState(
     addMonths(new Date(), -1).toISOString().substring(0, 10)
@@ -92,6 +81,37 @@ function Dailymeal_history(props) {
     },
   ]);
 
+  useEffect(() => {
+    const fetchcustomers = async () => {
+      var url = `${route}/api/parties/?account_head=${selected_branch.id}&type=customer`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        const supp = json.map((item) => {
+          return {
+            value: item.id,
+            label: item.name,
+          };
+        });
+        setallcustomers(supp);
+      }
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${json[error[0]]}`);
+        }
+      }
+    };
+
+    if (user) {
+      fetchcustomers();
+    }
+  }, [selected_branch]);
+
   const handleSelect = (item) => {
     const get_date = item.selection;
     setdate_range([item.selection]);
@@ -109,7 +129,13 @@ function Dailymeal_history(props) {
     setisloading(true);
     dispatch({ type: "Set_table_history", data: [] });
     const fetchProducts = async () => {
-      var url = `${route}/api/daily-meals/`;
+      var url = `${route}/api/daily-meals/?start_date=${start_date}&end_date=${end_date}`;
+      if (customer.value !== "all") {
+        url = `${url}&customer_id=${customer.value}`;
+      }
+      if (type.value !== "all") {
+        url = `${url}&meal_type=${type.value}`;
+      }
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -129,7 +155,7 @@ function Dailymeal_history(props) {
     if (user) {
       fetchProducts();
     }
-  }, []);
+  }, [date_range, type, customer]);
 
   const handleconfirm = (row) => {
     dispatch({ type: "Delete_table_history", data: { id: row } });
@@ -214,6 +240,12 @@ function Dailymeal_history(props) {
       headerFormatter: headerstyle,
     },
     {
+      dataField: "customer_name",
+      text: "Customer",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
       dataField: "meal_type",
       text: "Meal Type",
       sort: true,
@@ -235,69 +267,21 @@ function Dailymeal_history(props) {
     setTarget(e.target);
   };
 
-  const handlecategory = (e) => {
-    setpayment_type(e);
-  };
-
-  const handlesubcategory = (e) => {
-    setsupplier(e);
-  };
-
   const makepdf = () => {
     const body = history.map((item, index) => {
       return [
         index + 1,
         item.date,
-        item.invoice,
-        item.supplier_name,
-        item.sub_total,
-        item.tax_percentage,
-
-        item.tax_amount,
-        item.discount,
-        item.total,
-        item.payment_type,
-        item.remarks,
-        item.user_name,
+        item.order,
+        item.customer_name,
+        item.meal_type,
       ];
     });
-    body.splice(0, 0, [
-      "#",
-      "Date",
-      "Invoice No",
-      "Vendor",
-      "Subtotal",
-      "Tax",
-      "Tax Amount",
-      "Discount",
-      "Total",
-      "Payment Type",
-      "Remarks",
-      "User",
-    ]);
+    body.splice(0, 0, ["#", "Date", "Order No", "Customer", "Meal Type"]);
 
     const documentDefinition = {
       content: [
-        { text: "Purchase History", style: "header" },
-
-        {
-          layout: "noBorders",
-          table: {
-            headerRows: 1,
-            widths: ["*", "*"],
-            body: [
-              [
-                `Account Head: ${selected_branch.name}`,
-                `Date: ${start_date} - ${end_date}`,
-              ],
-              [
-                `Payment Type: ${payment_type.label}`,
-                `Supplier: ${supplier.label}`,
-              ],
-            ],
-          },
-          style: "body",
-        },
+        { text: "Daily Meal History", style: "header" },
 
         {
           canvas: [
@@ -310,7 +294,7 @@ function Dailymeal_history(props) {
             // headers are automatically repeated if the table spans over multiple pages
             // you can declare how many rows should be treated as headers
             headerRows: 1,
-            widths: [30, "*", "*", "*", "*", "*", "*", "*", "*", "*", "*", "*"],
+            widths: [30, "*", "*", "*", "*"],
             body: body,
           },
           style: "tableStyle",
@@ -366,8 +350,8 @@ function Dailymeal_history(props) {
       >
         {(props) => (
           <div className="card p-3">
-            <div className="col-sm-6 d-sm-flex align-items-start mt-3">
-              <div className="col-sm-4  me-3">
+            <div className=" d-sm-flex align-items-start mt-3">
+              <div className="col-6 col-sm-2  me-3">
                 {date_range[0].endDate.getFullYear() -
                   date_range[0].startDate.getFullYear() ===
                 10 ? (
@@ -478,6 +462,31 @@ function Dailymeal_history(props) {
                     </Popover.Body>
                   </Popover>
                 </Overlay>
+              </div>
+              <div className="col-6 col-md-2 mb-2 me-md-3">
+                <Select
+                  options={[
+                    { value: "all", label: "All" },
+                    { value: "Breakfast", label: "Breakfast / إفطار" },
+                    { value: "Lunch", label: " Lunch / غداء" },
+                    { value: "Dinner", label: "Dinner / عشاء" },
+                  ]}
+                  placeholder={"Type"}
+                  value={type}
+                  funct={(e) => {
+                    settype(e);
+                  }}
+                ></Select>
+              </div>
+              <div className="col-6 col-md-2 mb-2 ">
+                <Select
+                  options={[{ value: "all", label: "All" }, ...allcustomers]}
+                  placeholder={"Type"}
+                  value={customer}
+                  funct={(e) => {
+                    setcustomer(e);
+                  }}
+                ></Select>
               </div>
             </div>
             <div className="d-sm-flex justify-content-between align-items-center mt-3  ">
