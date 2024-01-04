@@ -6,7 +6,7 @@ import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import "./dailymeal.css";
 import custom_toast from "../alerts/custom_toast";
-import Spinner from "react-bootstrap/Spinner";
+
 import Red_toast from "../alerts/red_toast";
 
 function Dailymealform({
@@ -19,7 +19,8 @@ function Dailymealform({
   setcolumn,
   table_data,
 }) {
-  const [isloading, setisloading] = useState(false);
+  
+  const [selected, setselected] = useState(column?.map((item,index)=>{return index+1}));
 
   const headerstyle = (column, colIndex, { sortElement }) => {
     return (
@@ -33,10 +34,11 @@ function Dailymealform({
     );
   };
 
-  const addproduct = (row) => {
+  const addproduct = (row,rowIndex) => {
     const optimize = column?.filter((item) => {
       return item.id === row.id;
     });
+    setselected([...selected,rowIndex+1])
     if (optimize.length > 0) {
       Red_toast(`${row.name} pot already Added`);
       return false;
@@ -91,9 +93,38 @@ function Dailymealform({
         flag = true;
       }
     });
+    setselected(rows.map((item,index)=> index+1))
     setcolumn(newcolumn);
     callback({ type: "Set_product_history", data: newtabeldata });
     return flag;
+  };
+
+  const deleteproduct = (row,rowIndex) => {
+
+    setselected(selected.filter(item=>{return item!==rowIndex+1}))
+    const optimize = column?.filter((item) => {
+      return item.id !== row.id;
+    });
+    const optimizetable = table_data?.map((item) => {
+      const new_data=item.pot_details.filter(pot=>{
+        return pot.pot!==row.id
+      })
+      return {...item,pot_details:new_data}
+      
+    });
+    setcolumn(optimize);
+    callback({ type: "Set_product_history", data: optimizetable });
+    return true;
+    
+  };
+  const deleteallproduct = (rows) => {
+    setcolumn([]);
+    setselected([])
+    const optimizetable = table_data?.map((item) => {
+      return {...item,pot_details:[]}
+    });
+    callback({ type: "Set_product_history", data: optimizetable });
+    return true;
   };
 
   const columns = [
@@ -114,11 +145,18 @@ function Dailymealform({
   const selectRow = {
     mode: "checkbox",
     clickToSelect: true,
+    selected:selected,
     onSelect: (row, isSelect, rowIndex, e) => {
       if (isSelect) {
-        const response = addproduct(row);
+        const response = addproduct(row,rowIndex);
         if (response) {
           custom_toast(`${row.name} pot added`);
+        }
+      }else{
+       
+        const response = deleteproduct(row,rowIndex);
+        if (response) {
+          custom_toast(`${row.name} pot deleted`);
         }
       }
     },
@@ -127,6 +165,11 @@ function Dailymealform({
         const response = addallproduct(rows);
         if (response) {
           custom_toast("Pots added");
+        }
+      }else{
+        const response = deleteallproduct(rows);
+        if (response) {
+          custom_toast("Pots Deleted");
         }
       }
     },
@@ -164,11 +207,7 @@ function Dailymealform({
                 <SearchBar {...props.searchProps} />
               </div> */}
 
-              {isloading && (
-                <div className="text-center">
-                  <Spinner animation="border" variant="primary" />
-                </div>
-              )}
+              
 
               <div>
                 <BootstrapTable

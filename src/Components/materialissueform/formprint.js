@@ -4,6 +4,7 @@ import "./formprint.css";
 
 function Issueform(props) {
   const data = JSON.parse(localStorage.getItem("data"));
+  const selected_branch = JSON.parse(localStorage.getItem("selected_branch"));
 
   const dishdetails = data.dish_details;
   const proddetails = data.product_details;
@@ -31,6 +32,53 @@ function Issueform(props) {
     >
       {data && (
         <>
+        <div className="d-flex mb-3">
+                  {selected_branch?.logo && (
+                    <div className="col-4 text-start">
+                      <img
+                        src={selected_branch?.logo}
+                        alt="logo"
+                        width={"200"}
+                        height={"100"}
+                      ></img>
+                    </div>
+                  )}
+
+                  <div className="col-4 text-center">
+                    <h5 className="mb-2 text-center">
+                      <strong>{selected_branch?.name}</strong>
+                    </h5>
+                    <h5 className="mb-2 text-center">
+                      <strong>{selected_branch?.arabic_name}</strong>
+                    </h5>
+                  </div>
+
+                  <div className="col-4  text-end">
+                    {selected_branch?.contact && (
+                      <p className="m-0 " style={{ fontSize: "0.8rem" }}>
+                        <strong>Contact : </strong>
+                        {selected_branch?.contact}
+                      </p>
+                    )}
+                    {selected_branch?.email && (
+                      <p className=" m-0 " style={{ fontSize: "0.8rem" }}>
+                        <strong>Email : </strong>
+                        {selected_branch?.email}
+                      </p>
+                    )}
+                    {selected_branch?.vat_number && (
+                      <p className=" m-0 " style={{ fontSize: "0.8rem" }}>
+                        <strong>VAT No. : </strong>
+                        {selected_branch?.vat_number}
+                      </p>
+                    )}
+                    {selected_branch?.address && (
+                      <p className=" m-0 " style={{ fontSize: "0.8rem" }}>
+                        <strong>Address :</strong> {selected_branch?.address}
+                      </p>
+                    )}
+                  </div>
+                </div>
           <div
             className="d-flex border border-dark border-2 mb-2"
             style={{ backgroundColor: "rgb(175, 209, 183)" }}

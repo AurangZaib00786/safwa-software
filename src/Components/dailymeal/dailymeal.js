@@ -85,6 +85,9 @@ function Dailymeal(props) {
         };
       });
       settable_data({ type: "Set_product_history", data: optimize });
+      if (!order){
+        Red_toast('The Customer has no order for this Date !')
+      }
     }
     if (!response.ok) {
       var error = Object.keys(json);
