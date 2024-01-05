@@ -73,7 +73,7 @@ export default function BuffetMenu(props) {
   useEffect(() => {
     const fetchWorkouts = async () => {
       setisloading(true);
-      var url = `${route}/api/buffet-menus/?menu=${menu.value}&title=${title.value}`;
+      var url = `${route}/api/buffet-menus/?menu_id=${menu.value}&title=${title.value}`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },

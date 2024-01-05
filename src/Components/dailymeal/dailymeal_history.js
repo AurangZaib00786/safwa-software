@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import { IconButton } from "@material-ui/core";
 import BootstrapTable from "react-bootstrap-table-next";
-import paginationFactory from "react-bootstrap-table2-paginator";
 import ToolkitProvider, {
   CSVExport,
   Search,
@@ -16,7 +15,6 @@ import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 import { ToastContainer } from "react-toastify";
 import custom_toast from "../alerts/custom_toast";
 import Alert_before_delete from "../../Container/alertContainer";
-import { Link } from "react-router-dom";
 import Select from "../alerts/select";
 import TextField from "@mui/material/TextField";
 import Overlay from "react-bootstrap/Overlay";
@@ -28,11 +26,9 @@ import {
   endOfDay,
   startOfYear,
   endOfYear,
-  addMonths,
   addYears,
   isSameDay,
 } from "date-fns";
-import "./dailymealhistory.css";
 import PrintRoundedIcon from "@material-ui/icons/PrintRounded";
 import { useTranslation } from "react-i18next";
 import pdfMake from "pdfmake/build/pdfmake";
@@ -40,6 +36,7 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
 import Red_toast from "../alerts/red_toast";
+import moment from "moment";
 
 function Dailymeal_history(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -64,17 +61,15 @@ function Dailymeal_history(props) {
   const [allcustomers, setallcustomers] = useState([]);
 
   const [start_date, setstart_date] = useState(
-    addMonths(new Date(), -1).toISOString().substring(0, 10)
+    moment().format().substring(0, 10)
   );
-  const [end_date, setend_date] = useState(
-    new Date().toISOString().substring(0, 10)
-  );
+  const [end_date, setend_date] = useState(moment().format().substring(0, 10));
   const [show, setshow] = useState(false);
   const [target, setTarget] = useState(null);
   const ref = useRef(null);
   const [date_range, setdate_range] = useState([
     {
-      startDate: addMonths(new Date(), -1),
+      startDate: new Date(),
       endDate: new Date(),
       key: "selection",
       showDateDisplay: "false",
@@ -102,7 +97,7 @@ function Dailymeal_history(props) {
       if (!response.ok) {
         var error = Object.keys(json);
         if (error.length > 0) {
-          Red_toast(`${json[error[0]]}`);
+          Red_toast(`${error[0]}:${json[error[0]]}`);
         }
       }
     };
@@ -115,8 +110,9 @@ function Dailymeal_history(props) {
   const handleSelect = (item) => {
     const get_date = item.selection;
     setdate_range([item.selection]);
-    setstart_date(get_date.startDate.toISOString().substring(0, 10));
-    setend_date(get_date.endDate.toISOString().substring(0, 10));
+
+    setstart_date(moment(get_date.startDate).format().substring(0, 10));
+    setend_date(moment(get_date.endDate).format().substring(0, 10));
     if (
       get_date.startDate.toISOString().substring(0, 10) !==
       get_date.endDate.toISOString().substring(0, 10)
@@ -148,7 +144,10 @@ function Dailymeal_history(props) {
       }
       if (!response.ok) {
         setisloading(false);
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
       }
     };
 

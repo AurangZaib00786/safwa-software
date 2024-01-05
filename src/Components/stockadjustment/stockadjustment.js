@@ -42,6 +42,7 @@ import {
   addYears,
   isSameDay,
 } from "date-fns";
+import moment from "moment";
 
 export default function StockAdjustment(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -64,18 +65,6 @@ export default function StockAdjustment(props) {
 
   const [allstore, setallstore] = useState([]);
   const [store, setstore] = useState();
-
-  const [allproduct, setallproduct] = useState([]);
-  const [product, setproduct] = useState({
-    value: "all",
-    label: "All",
-  });
-
-  const [variant, setvariant] = useState({
-    value: "all",
-    label: "All",
-  });
-  const [allvariant, setallvariant] = useState([]);
   const [quantity, setquantity] = useState("");
   const [type, settype] = useState("");
 
@@ -84,22 +73,20 @@ export default function StockAdjustment(props) {
 
   const [allstock, setallstock] = useState([]);
   const [stock, setstock] = useState("");
-  var curr = new Date();
-  var curdate = curr.toISOString().substring(0, 10);
+
+  var curdate = moment().format().substring(0, 10);
   const [date, setdate] = useState(curdate);
   const [remarks, setremarks] = useState("");
   const [start_date, setstart_date] = useState(
-    addMonths(new Date(), -1).toISOString().substring(0, 10)
+    moment().format().substring(0, 10)
   );
-  const [end_date, setend_date] = useState(
-    new Date().toISOString().substring(0, 10)
-  );
+  const [end_date, setend_date] = useState(moment().format().substring(0, 10));
   const [show, setshow] = useState(false);
   const [target, setTarget] = useState(null);
   const ref = useRef(null);
   const [date_range, setdate_range] = useState([
     {
-      startDate: addMonths(new Date(), -1),
+      startDate: new Date(),
       endDate: new Date(),
       key: "selection",
       showDateDisplay: "false",
@@ -109,8 +96,9 @@ export default function StockAdjustment(props) {
   const handleSelect = (item) => {
     const get_date = item.selection;
     setdate_range([item.selection]);
-    setstart_date(get_date.startDate.toISOString().substring(0, 10));
-    setend_date(get_date.endDate.toISOString().substring(0, 10));
+
+    setstart_date(moment(get_date.startDate).format().substring(0, 10));
+    setend_date(moment(get_date.endDate).format().substring(0, 10));
     if (
       get_date.startDate.toISOString().substring(0, 10) !==
       get_date.endDate.toISOString().substring(0, 10)

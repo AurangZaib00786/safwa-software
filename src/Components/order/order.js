@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 import success_toast from "../alerts/success_toast";
 import ClearIcon from "@material-ui/icons/Clear";
+import moment from "moment";
 
 export default function Order(props) {
   const user = props.state.setuser.user;
@@ -21,9 +22,9 @@ export default function Order(props) {
   const current_user = props.state.Setcurrentinfo.current_user;
   const dispatch = props.Settable_history;
   const setActiveTab = props.setActiveTab;
-  var curr = new Date();
+
   const buildingref = useRef(null);
-  var curdate = curr.toISOString().substring(0, 10);
+  var curdate = moment().format().substring(0, 10);
   const [date, setdate] = useState(curdate);
   const [data, setdata] = useState([]);
   const [lunch, setlunch] = useState("");
@@ -39,7 +40,7 @@ export default function Order(props) {
   const [update, setupdate] = useState(false);
   const order = JSON.parse(localStorage.getItem("data"));
   useEffect(() => {
-    if (order?.order&&order.data) {
+    if (order?.order && order.data) {
       let orderdata = order.data;
       setupdate(true);
       setemployee({

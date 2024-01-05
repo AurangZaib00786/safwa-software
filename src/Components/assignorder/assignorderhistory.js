@@ -35,7 +35,7 @@ import {
   addYears,
   isSameDay,
 } from "date-fns";
-
+import moment from "moment";
 function Assignorderhistory(props) {
   const { t } = useTranslation();
 
@@ -47,24 +47,20 @@ function Assignorderhistory(props) {
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
   const { ExportCSVButton } = CSVExport;
-  const [id, setid] = useState("");
-  const [check_update, setcheck_update] = useState(true);
   const [delete_user, setdelete_user] = useState(false);
   const [url_to_delete, seturl_to_delete] = useState("");
   const [row_id, setrow_id] = useState("");
   const [isloading, setisloading] = useState(false);
   const [start_date, setstart_date] = useState(
-    addMonths(new Date(), -1).toISOString().substring(0, 10)
+    moment().format().substring(0, 10)
   );
-  const [end_date, setend_date] = useState(
-    new Date().toISOString().substring(0, 10)
-  );
+  const [end_date, setend_date] = useState(moment().format().substring(0, 10));
   const [show, setshow] = useState(false);
   const [target, setTarget] = useState(null);
   const ref = useRef(null);
   const [date_range, setdate_range] = useState([
     {
-      startDate: addMonths(new Date(), -1),
+      startDate: new Date(),
       endDate: new Date(),
       key: "selection",
       showDateDisplay: "false",
@@ -73,12 +69,10 @@ function Assignorderhistory(props) {
 
   const handleSelect = (item) => {
     const get_date = item.selection;
-
     setdate_range([item.selection]);
-    setstart_date(
-      addDays(get_date.startDate, 1).toISOString().substring(0, 10)
-    );
-    setend_date(get_date.endDate.toISOString().substring(0, 10));
+
+    setstart_date(moment(get_date.startDate).format().substring(0, 10));
+    setend_date(moment(get_date.endDate).format().substring(0, 10));
     if (
       get_date.startDate.toISOString().substring(0, 10) !==
       get_date.endDate.toISOString().substring(0, 10)
@@ -179,7 +173,14 @@ function Assignorderhistory(props) {
   };
 
   const columns = [
-    { dataField: "id", text: "#",formatter:(cell, row, rowIndex, formatExtraData)=>{return rowIndex+1}, headerFormatter: headerstyle },
+    {
+      dataField: "id",
+      text: "#",
+      formatter: (cell, row, rowIndex, formatExtraData) => {
+        return rowIndex + 1;
+      },
+      headerFormatter: headerstyle,
+    },
 
     {
       dataField: "date",

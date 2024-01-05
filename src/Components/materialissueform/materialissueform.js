@@ -44,6 +44,7 @@ import {
   addYears,
   isSameDay,
 } from "date-fns";
+import moment from "moment";
 
 export default function Materialissueform(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -63,8 +64,8 @@ export default function Materialissueform(props) {
   const [url_to_delete, seturl_to_delete] = useState("");
   const [row_id, setrow_id] = useState("");
   const [isloading, setisloading] = useState(false);
-  var curr = new Date();
-  var curdate = curr.toISOString().substring(0, 10);
+
+  var curdate = moment().format().substring(0, 10);
   const [date, setdate] = useState(curdate);
   const [type, settype] = useState("");
   const [govthajj, setgovthajj] = useState("");
@@ -83,11 +84,11 @@ export default function Materialissueform(props) {
   const [allstock, setallstock] = useState([]);
   const [stock, setstock] = useState("");
   const [quantity, setquantity] = useState("");
-  
+
   const [notes, setnotes] = useState("");
 
   const [data, setdata] = useState([]);
-  const [store, setstore] = useState('');
+  const [store, setstore] = useState("");
   const [allstore, setallstore] = useState([]);
 
   const [dish, setdish] = useState("");
@@ -95,18 +96,16 @@ export default function Materialissueform(props) {
   const [dishdata, setdishdata] = useState([]);
 
   const [start_date, setstart_date] = useState(
-    addMonths(new Date(), -1).toISOString().substring(0, 10)
+    moment().format().substring(0, 10)
   );
-  const [end_date, setend_date] = useState(
-    new Date().toISOString().substring(0, 10)
-  );
+  const [end_date, setend_date] = useState(moment().format().substring(0, 10));
   const [show, setshow] = useState(false);
   const [target, setTarget] = useState(null);
   const ref = useRef(null);
   const stockref = useRef(null);
   const [date_range, setdate_range] = useState([
     {
-      startDate: addMonths(new Date(), -1),
+      startDate: new Date(),
       endDate: new Date(),
       key: "selection",
       showDateDisplay: "false",
@@ -116,8 +115,9 @@ export default function Materialissueform(props) {
   const handleSelect = (item) => {
     const get_date = item.selection;
     setdate_range([item.selection]);
-    setstart_date(get_date.startDate.toISOString().substring(0, 10));
-    setend_date(get_date.endDate.toISOString().substring(0, 10));
+
+    setstart_date(moment(get_date.startDate).format().substring(0, 10));
+    setend_date(moment(get_date.endDate).format().substring(0, 10));
     if (
       get_date.startDate.toISOString().substring(0, 10) !==
       get_date.endDate.toISOString().substring(0, 10)
@@ -203,7 +203,7 @@ export default function Materialissueform(props) {
         const optimize = json.map((item) => {
           return { value: item.id, label: item.name };
         });
-        setstore(optimize.length>0 && optimize[0])
+        setstore(optimize.length > 0 && optimize[0]);
         setallstore(optimize);
       }
       if (!response.ok) {
@@ -213,14 +213,14 @@ export default function Materialissueform(props) {
     if (user) {
       fetchemployee();
       fetchdishes();
-      fetchstore()
+      fetchstore();
     }
   }, []);
 
   useEffect(() => {
     const fetchmaterial = async () => {
       var url = `${route}/api/stock/?account_head=${selected_branch.id}&store_id=${store.value}`;
-    
+
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
       });
@@ -240,7 +240,7 @@ export default function Materialissueform(props) {
     if (store) {
       fetchmaterial();
     }
-  }, [selected_branch,store]);
+  }, [selected_branch, store]);
 
   const handlesubmit = async (e) => {
     const optimizedata = data.map((item) => {
@@ -407,7 +407,7 @@ export default function Materialissueform(props) {
       setdata([
         ...data,
         {
-          store:store.label,
+          store: store.label,
           stock: stock.value,
           quantity: quantity,
           remarks: notes,
@@ -418,7 +418,7 @@ export default function Materialissueform(props) {
     setstock("");
     setquantity("");
     setnotes("");
-    stockref.current.focus()
+    stockref.current.focus();
   };
 
   const handleadddishclick = (e) => {
@@ -530,7 +530,7 @@ export default function Materialissueform(props) {
               row.product_details.map((item) => {
                 return {
                   ...item,
-                  store:item.store_name,
+                  store: item.store_name,
                   stock: {
                     id: item.stock,
                     product_name: item.stock_name,
@@ -747,7 +747,6 @@ export default function Materialissueform(props) {
       ...base,
       zIndex: 100,
     }),
-   
   };
   return (
     <div className="p-3 pt-2">
@@ -958,7 +957,7 @@ export default function Materialissueform(props) {
                     <thead className="border-0">
                       <tr>
                         <th className="d-flex align-items-center border-0 p-0">
-                        <h6 className="col-2 p-2 ps-0 pb-0 m-0">Stores</h6>
+                          <h6 className="col-2 p-2 ps-0 pb-0 m-0">Stores</h6>
                           <h6 className="col-2 p-2 ps-0 pb-0 m-0">Stock</h6>
 
                           <h6 className=" col-2  p-2 pb-0 m-0">Unit</h6>
@@ -971,7 +970,7 @@ export default function Materialissueform(props) {
                         return (
                           <tr key={item.stock.id}>
                             <th className="d-flex align-items-center p-0 border-0">
-                            <div className="col-2">
+                              <div className="col-2">
                                 <TextField
                                   className="form-control"
                                   size="small"
@@ -1043,7 +1042,7 @@ export default function Materialissueform(props) {
                       <tr>
                         <td className=" p-0 border-0">
                           <form onSubmit={handleaddclick} className="d-flex ">
-                          <div className="col-2">
+                            <div className="col-2">
                               <Selectr
                                 options={allstore}
                                 value={store}
@@ -1053,7 +1052,7 @@ export default function Materialissueform(props) {
                             </div>
                             <div className="col-2">
                               <Selectr
-                              ref={stockref}
+                                ref={stockref}
                                 options={allstock}
                                 styles={selectStyles}
                                 value={stock}
@@ -1061,7 +1060,6 @@ export default function Materialissueform(props) {
                                 autoFocus
                               />
                             </div>
-
 
                             <div className="col-2">
                               <TextField

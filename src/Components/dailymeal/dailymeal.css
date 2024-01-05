@@ -43,5 +43,14 @@
     font-size: 12px;
     }
 
-
+.printclassmeal{
+    
+    height: 99%;
+    page-break-after: avoid;
+    page-break-before: avoid;
+    padding: 30px;  
+    zoom: 0.8;
+    font-family: 'Times New Roman', Times, serif;
+    
+}
 

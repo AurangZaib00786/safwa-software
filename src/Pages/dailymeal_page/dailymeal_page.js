@@ -5,9 +5,15 @@ import { ToastContainer } from "react-toastify";
 import Dailymeal from "../../Container/dailymealContainer";
 import Dailymeal_history from "../../Container/dailymealhistpryContainer";
 import Dailymeal_Edit from "../../Container/dailymealeditContainer";
+import Dailymealreport from "../../Container/mealreportContainer";
 
 function Dailymeal_page({ current_user }) {
-  const tabs = ["dailymeal", "dailymeal_history",'dailymeal_Edit'];
+  const tabs = [
+    "dailymeal",
+    "dailymeal_history",
+    "dailymeal_Edit",
+    '"dailymeal_report',
+  ];
   var current_tab = localStorage.getItem("activeTab");
   if (!tabs.includes(current_tab)) {
     current_tab = "dailymeal";
@@ -36,16 +42,19 @@ function Dailymeal_page({ current_user }) {
         </Tab>
 
         <Tab eventKey="dailymeal_history" title="Meal History">
-        {activeTab === "dailymeal_history" && <Dailymeal_history setActiveTab={setActiveTab} />}
-            
-          
+          {activeTab === "dailymeal_history" && (
+            <Dailymeal_history setActiveTab={setActiveTab} />
+          )}
         </Tab>
 
-        {activeTab==='dailymeal_Edit' && <Tab eventKey="dailymeal_Edit" title="Meal Edit">
-          
-              <Dailymeal_Edit  />
-          
-        </Tab>}
+        {activeTab === "dailymeal_Edit" && (
+          <Tab eventKey="dailymeal_Edit" title="Meal Edit">
+            <Dailymeal_Edit />
+          </Tab>
+        )}
+        <Tab eventKey="dailymeal_report" title="Meal Report">
+          {activeTab === "dailymeal_report" && <Dailymealreport />}
+        </Tab>
       </Tabs>
 
       <ToastContainer autoClose={2000} hideProgressBar={true} theme="dark" />

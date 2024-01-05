@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import Button from "react-bootstrap/Button";
-// import Select from "../alerts/select";
 import Select from "react-select";
 import Spinner from "react-bootstrap/Spinner";
 import Red_toast from "../alerts/red_toast";

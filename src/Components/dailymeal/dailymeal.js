@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./dailymeal.css";
 import Button from "react-bootstrap/Button";
-
 import Spinner from "react-bootstrap/Spinner";
 import SaveIcon from "@material-ui/icons/Save";
 import Select from "react-select";
@@ -13,6 +12,7 @@ import Dailymealform from "./dailymealform";
 import { useTranslation } from "react-i18next";
 import Red_toast from "../alerts/red_toast";
 import custom_toast from "../alerts/custom_toast";
+import moment from "moment";
 
 function Dailymeal(props) {
   const user = props.state.setuser.user;
@@ -30,8 +30,7 @@ function Dailymeal(props) {
   const [text, settext] = useState("");
   const [type, settype] = useState("");
 
-  var curr = new Date();
-  var curdate = curr.toISOString().substring(0, 10);
+  var curdate = moment().format().substring(0, 10);
 
   const [date, setdate] = useState(curdate);
 
@@ -72,7 +71,7 @@ function Dailymeal(props) {
     if (!response.ok) {
       var error = Object.keys(json);
       if (error.length > 0) {
-        Red_toast(`${json[error[0]]}`);
+        Red_toast(`${error[0]}:${json[error[0]]}`);
       }
     }
   };
@@ -107,7 +106,7 @@ function Dailymeal(props) {
     if (!response.ok) {
       var error = Object.keys(json);
       if (error.length > 0) {
-        Red_toast(`${json[error[0]]}`);
+        Red_toast(`${error[0]}:${json[error[0]]}`);
       }
     }
   };
@@ -129,7 +128,7 @@ function Dailymeal(props) {
       if (!response.ok) {
         var error = Object.keys(json);
         if (error.length > 0) {
-          Red_toast(`${json[error[0]]}`);
+          Red_toast(`${error[0]}:${json[error[0]]}`);
         }
       }
     };
@@ -245,7 +244,7 @@ function Dailymeal(props) {
     if (!response.ok) {
       var error = Object.keys(json);
       if (error.length > 0) {
-        Red_toast(`${json[error[0]]}`);
+        Red_toast(`${error[0]}:${json[error[0]]}`);
       }
     }
 
@@ -298,7 +297,7 @@ function Dailymeal(props) {
     if (!response.ok) {
       var error = Object.keys(json);
       if (error.length > 0) {
-        Red_toast(`${json[error[0]]}`);
+        Red_toast(`${error[0]}:${json[error[0]]}`);
       }
     }
 

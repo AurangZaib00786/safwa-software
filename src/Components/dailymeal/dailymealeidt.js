@@ -163,7 +163,7 @@ function Dailymeal_edit(props) {
     if (!response.ok) {
       var error = Object.keys(json);
       if (error.length > 0) {
-        Red_toast(`${json[error[0]]}`);
+        Red_toast(`${error[0]}:${json[error[0]]}`);
       }
     }
 
@@ -195,7 +195,7 @@ function Dailymeal_edit(props) {
     if (!response.ok) {
       var error = Object.keys(json);
       if (error.length > 0) {
-        Red_toast(`${json[error[0]]}`);
+        Red_toast(`${error[0]}:${json[error[0]]}`);
       }
     }
 
@@ -226,7 +226,7 @@ function Dailymeal_edit(props) {
     if (!response.ok) {
       var error = Object.keys(json);
       if (error.length > 0) {
-        Red_toast(`${json[error[0]]}`);
+        Red_toast(`${error[0]}:${json[error[0]]}`);
       }
     }
 
