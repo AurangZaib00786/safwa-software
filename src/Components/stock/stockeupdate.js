@@ -2,12 +2,9 @@ import React, { useState, useEffect, memo } from "react";
 import "./stock.css";
 import Select from "../alerts/select";
 import Button from "react-bootstrap/Button";
-import { ToastContainer } from "react-toastify";
 import Red_toast from "../alerts/red_toast";
 import Update_button from "../buttons/update_button";
 import success_toast from "../alerts/success_toast";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
-import Spinner from "react-bootstrap/Spinner";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import TextField from "@mui/material/TextField";
 import Stock_table from "./stock";
@@ -159,7 +156,7 @@ function StockUpdate(props) {
       setisloading(false);
       var error = Object.keys(json);
       if (error.length > 0) {
-        Red_toast(`${json[error[0]]}`);
+        Red_toast(`${error[0]}:${json[error[0]]}`);
       }
     }
 

@@ -10,7 +10,7 @@ import ToolkitProvider, {
 } from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import went_wrong_toast from "../alerts/went_wrong_toast";
+import Red_toast from "../alerts/red_toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotate } from "@fortawesome/free-solid-svg-icons";
 import Spinner from "react-bootstrap/Spinner";
@@ -37,8 +37,6 @@ export default function Stock_table({
   const [allstore, setallstore] = useState([]);
 
   useEffect(() => {
-    
-
     const fetchstore = async () => {
       var url = `${route}/api/stores/`;
 
@@ -81,7 +79,10 @@ export default function Stock_table({
         setdata(json);
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
         setisloading(false);
       }
     };
@@ -276,12 +277,7 @@ export default function Stock_table({
     <div className="p-3">
       <div className="card">
         <div className="card-header bg-white  d-flex justify-content-between ">
-          <h1
-            className="mb-3"
-            style={{ fontSize: "1.3rem", fontWeight: "normal" }}
-          >
-            Stock
-          </h1>
+          <h3 className="mt-2 me-2">Stock</h3>
           <Button
             type="button"
             className="mb-2"

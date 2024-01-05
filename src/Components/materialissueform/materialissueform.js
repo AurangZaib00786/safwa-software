@@ -145,7 +145,7 @@ export default function Materialissueform(props) {
       if (!response.ok) {
         var error = Object.keys(json);
         if (error.length > 0) {
-          Red_toast(`${json[error[0]]}`);
+          Red_toast(`${error[0]}:${json[error[0]]}`);
         }
         setisloading(false);
       }
@@ -287,7 +287,7 @@ export default function Materialissueform(props) {
       setisloading(false);
       var error = Object.keys(json);
       if (error.length > 0) {
-        Red_toast(`${json[error[0]]}`);
+        Red_toast(`${error[0]}:${json[error[0]]}`);
       }
     }
 
@@ -357,7 +357,7 @@ export default function Materialissueform(props) {
       setisloading(false);
       var error = Object.keys(json);
       if (error.length > 0) {
-        Red_toast(`${json[error[0]]}`);
+        Red_toast(`${error[0]}:${json[error[0]]}`);
       }
     }
 

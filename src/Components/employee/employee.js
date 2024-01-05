@@ -16,15 +16,12 @@ import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import Red_toast from "../alerts/red_toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { ToastContainer } from "react-toastify";
 import custom_toast from "../alerts/custom_toast";
-import went_wrong_toast from "../alerts/went_wrong_toast";
 import Spinner from "react-bootstrap/Spinner";
 import Alert_before_delete from "../../Container/alertContainer";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import Badge from "@mui/material/Badge";
 import { useTranslation } from "react-i18next";
 import Tab from "react-bootstrap/Tab";
@@ -102,7 +99,10 @@ export default function CustomerType(props) {
         dispatch({ type: "Set_table_history", data: json });
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
         setisloading(false);
       }
     };
@@ -130,7 +130,10 @@ export default function CustomerType(props) {
         setallcategory(optimize);
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
       }
     };
 
@@ -148,7 +151,10 @@ export default function CustomerType(props) {
         setallcountries(optimize);
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
       }
     };
 
@@ -193,7 +199,7 @@ export default function CustomerType(props) {
             setid(row.id);
             setcheck_update(true);
             setname(row.name);
-            setarabicname(row.arabic_name)
+            setarabicname(row.arabic_name);
             setworkinghours(row.working_hours);
             setcontact(row.contact);
             setcategory({ value: row.category, label: row.category_name });
@@ -265,41 +271,35 @@ export default function CustomerType(props) {
       sort: true,
       headerFormatter: headerstyle,
     },
-
     {
-      dataField: "wage_per_day",
-      text: t("Pr Day Wage"),
+      dataField: "contact",
+      text: "Contact No.",
       sort: true,
       headerFormatter: headerstyle,
     },
-
+    {
+      dataField: "address",
+      text: "Address",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
     {
       dataField: "type",
       text: t("type"),
       sort: true,
       headerFormatter: headerstyle,
     },
+
     {
-      dataField: "contact",
-      text: t("Cell"),
+      dataField: "salary",
+      text: "Salary",
       sort: true,
       headerFormatter: headerstyle,
     },
-    {
-      dataField: "basic_salary",
-      text: t("Salary"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
+
     {
       dataField: "hiring_date",
       text: t("Hire Date"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "country",
-      text: t("Nationality"),
       sort: true,
       headerFormatter: headerstyle,
     },

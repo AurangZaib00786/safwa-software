@@ -2,34 +2,21 @@ import React, { useState, useEffect, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import "./dish.css";
 import Select from "../alerts/select";
-import { IconButton, Avatar } from "@material-ui/core";
+import { IconButton } from "@material-ui/core";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
-import BootstrapTable from "react-bootstrap-table-next";
-import paginationFactory from "react-bootstrap-table2-paginator";
-
-import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
-import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import { ToastContainer } from "react-toastify";
-import custom_toast from "../alerts/custom_toast";
-import went_wrong_toast from "../alerts/went_wrong_toast";
+import Red_toast from "../alerts/red_toast";
 import Spinner from "react-bootstrap/Spinner";
 import Alert_before_delete from "../../Container/alertContainer";
-import ToolkitProvider, {
-  Search,
-  CSVExport,
-} from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
-import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
-
+import InputGroup from "react-bootstrap/InputGroup";
+import AddIcon from "@material-ui/icons/Add";
 import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
-
 import success_toast from "../alerts/success_toast";
 import SaveIcon from "@material-ui/icons/Save";
+import ClearIcon from "@material-ui/icons/Clear";
+import { useFetcher } from "react-router-dom";
 
 export default function Dish(props) {
-  pdfMake.vfs = pdfFonts.pdfMake.vfs;
   const { t } = useTranslation();
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
@@ -39,25 +26,18 @@ export default function Dish(props) {
   const dispatch = props.Settable_history;
 
   const inputFile = useRef(null);
-  const [p_category, setp_category] = useState("");
   const [submenu, setsubmenu] = useState("");
   const [name, setname] = useState("");
   const [arabicname, setarabicname] = useState("");
   const [menu, setmenu] = useState("");
   const [allmenu, setallmenu] = useState([]);
   const [allsubmenu, setallsubmenu] = useState([]);
-
-  const [delete_user, setdelete_user] = useState(false);
-  const [url_to_delete, seturl_to_delete] = useState("");
-  const [row_id, setrow_id] = useState("");
   const [isloading, setisloading] = useState(false);
-
-  const [Fileurl, setFileurl] = useState("");
   const [check_update, setcheck_update] = useState(true);
 
   useEffect(() => {
-    dispatch({ type: "Set_table_history", data: [] });
     const fetchWorkouts = async () => {
+      dispatch({ type: "Set_table_history", data: [] });
       setisloading(true);
       var url = `${route}/api/dishes/`;
       if (menu) {
@@ -66,7 +46,7 @@ export default function Dish(props) {
           url = `${url}&sub_menu_id=${submenu.value}`;
         }
       } else if (submenu) {
-        url = `${url}?submenu_id=${submenu.value}`;
+        url = `${url}?sub_menu_id=${submenu.value}`;
       }
 
       const response = await fetch(`${url}`, {
@@ -79,7 +59,10 @@ export default function Dish(props) {
         dispatch({ type: "Set_table_history", data: json });
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
         setisloading(false);
       }
     };
@@ -88,6 +71,10 @@ export default function Dish(props) {
       fetchWorkouts();
     }
   }, [menu, submenu]);
+
+  useEffect(() => {
+    console.log(all_products);
+  }, [all_products]);
 
   useEffect(() => {
     dispatch({ type: "Set_menuitem", data: "dish" });
@@ -138,189 +125,6 @@ export default function Dish(props) {
     }
   }, [menu]);
 
-  const headerstyle = (column, colIndex, { sortElement }) => {
-    return (
-      <div
-        className="d-flex justify-content-between align-items-center"
-        style={{ minHeight: "2.5rem" }}
-      >
-        {column.text}
-        {sortElement}
-      </div>
-    );
-  };
-
-  const handleconfirm = (row) => {
-    dispatch({ type: "Delete_table_history", data: { id: row } });
-    custom_toast("Delete");
-  };
-
-  const Action = (cell, row, rowIndex, formatExtraData) => {
-    return (
-      <span className="action d-flex">
-        <IconButton
-          className="border border-danger rounded me-2"
-          onClick={() => {
-            dispatch({
-              type: "Delete_table_history",
-              data: { row: row, filter: "name" },
-            });
-          }}
-        >
-          <DeleteRoundedIcon className="m-1" color="error" fontSize="medium" />
-        </IconButton>
-      </span>
-    );
-  };
-
-  const columns = [
-    {
-      dataField: "id",
-      text: "Id",
-      hidden: true,
-      headerFormatter: headerstyle,
-      csvExport: false,
-    },
-
-    {
-      dataField: "name",
-      text: t("name"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "arabic_name",
-      text: t("	اسم الطبق"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-
-    {
-      dataField: "action",
-      text: t("action"),
-      formatter: Action,
-      headerFormatter: headerstyle,
-      csvExport: false,
-    },
-  ];
-
-  const customTotal = (from, to, size) => (
-    <span className="react-bootstrap-table-pagination-total ms-2">
-      Showing {from} to {to} of {size} Results
-    </span>
-  );
-
-  const options = {
-    paginationSize: 4,
-    pageStartIndex: 1,
-    firstPageText: "First",
-    showTotal: true,
-    paginationTotalRenderer: customTotal,
-    disablePageTitle: true,
-    sizePerPageList: [
-      {
-        text: "10",
-        value: 10,
-      },
-      {
-        text: "20",
-        value: 20,
-      },
-      {
-        text: "All",
-        value: all_products.length,
-      },
-    ], // A numeric array is also available. the purpose of above example is custom the text
-  };
-
-  const makepdf = () => {
-    const body = all_products.map((item, index) => {
-      return [
-        index + 1,
-        item.category_name,
-        item.submenu_name,
-        item.name,
-        item.arabicname,
-
-        item.menu,
-      ];
-    });
-    body.splice(0, 0, [
-      "#",
-      "Category",
-      "submenu",
-      "Name",
-      "arabicname",
-      "menu",
-    ]);
-
-    const documentDefinition = {
-      content: [
-        { text: "Products", style: "header" },
-        { text: `Account Head: ${selected_branch.name}`, style: "body" },
-        {
-          canvas: [
-            { type: "line", x1: 0, y1: 10, x2: 510, y2: 10, lineWidth: 1 },
-          ],
-        },
-
-        {
-          table: {
-            // headers are automatically repeated if the table spans over multiple pages
-            // you can declare how many rows should be treated as headers
-            headerRows: 1,
-            widths: [30, "*", "*", "*", "*", "*"],
-            body: body,
-          },
-          style: "tableStyle",
-        },
-      ],
-
-      defaultStyle: {
-        font: "ArabicFont",
-      },
-      styles: {
-        tableStyle: {
-          width: "100%", // Set the width of the table to 100%
-          marginTop: 20,
-          font: "ArabicFont",
-        },
-
-        header: {
-          fontSize: 22,
-          bold: true,
-          alignment: "center",
-        },
-        body: {
-          fontSize: 12,
-          bold: true,
-          alignment: "center",
-          marginBottom: 10,
-        },
-      },
-    };
-    return documentDefinition;
-  };
-
-  const download = () => {
-    const documentDefinition = makepdf();
-    pdfMake.createPdf(documentDefinition).download("Products.pdf");
-  };
-
-  const print = () => {
-    const documentDefinition = makepdf();
-    pdfMake.createPdf(documentDefinition).print();
-  };
-
-  const rowstyle = { height: "10px" };
-
-  const selectStyles = {
-    submenu: (base) => ({
-      ...base,
-      zIndex: 100,
-    }),
-  };
-
   const handlesubmit = async (e) => {
     e.preventDefault();
     if (check_update) {
@@ -345,26 +149,25 @@ export default function Dish(props) {
 
       if (!response.ok) {
         setisloading(false);
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
       }
 
       if (response.ok) {
         setisloading(false);
-        dispatch({ type: "Create_table_history", data: json });
+        dispatch({ type: "Set_table_history", data: json });
         success_toast();
         setname("");
         setarabicname("");
-        setmenu("");
-
-        setsubmenu("");
-        setp_category("");
       }
     }
   };
 
   const handleadd = (e) => {
     e.preventDefault();
-    if (menu && submenu && arabicname && name) {
+    if (menu && submenu) {
       dispatch({
         type: "Create_table_history",
         data: {
@@ -378,6 +181,8 @@ export default function Dish(props) {
       });
       setname("");
       setarabicname("");
+    } else {
+      Red_toast("Select Menu and Submenu First!");
     }
   };
 
@@ -408,7 +213,10 @@ export default function Dish(props) {
     const json = await response.json();
 
     if (!response.ok) {
-      went_wrong_toast();
+      var error = Object.keys(json);
+      if (error.length > 0) {
+        Red_toast(`${error[0]}:${json[error[0]]}`);
+      }
     }
 
     if (response.ok) {
@@ -476,108 +284,119 @@ export default function Dish(props) {
               />
             </div>
           </div>
-          <form onSubmit={handleadd} className="row mt-4">
-            <div className="col-md-3">
-              <TextField
-                className="form-control   mb-3"
-                label={"Dish Name"}
-                value={name}
-                onChange={(e) => {
-                  setname(e.target.value);
-                }}
-                size="small"
-                required
-              />
-            </div>
-            <div className="col-md-3">
-              <TextField
-                type="text"
-                className="form-control  mb-3"
-                label={"	اسم الطبق"}
-                value={arabicname}
-                onChange={(e) => {
-                  setarabicname(e.target.value);
-                }}
-                size="small"
-                required
-              />
-            </div>
 
-            <div className="col-md-1">
-              <Button type="submit" variant="outline-dark">
-                Add
-              </Button>
-            </div>
-          </form>
+          <div className="mb-4">
+            <table className="table">
+              <thead className="border-0 ">
+                <tr>
+                  <th className="d-flex align-items-center border-0 p-0">
+                    <h6 className="col-3 p-2 ps-0 pb-0 ">Name</h6>
+                    <h6 className=" col-3  p-2 pb-0 ">اسم الطبق</h6>
+                  </th>
+                </tr>
+                {all_products.map((item) => {
+                  return (
+                    <tr key={item.name}>
+                      <th className="d-flex align-items-center p-0 border-0">
+                        <div className="col-3">
+                          <TextField
+                            className="form-control"
+                            size="small"
+                            value={item.name}
+                          />
+                        </div>
 
-          <ToolkitProvider
-            keyField="id"
-            data={all_products}
-            columns={columns}
-            search
-            exportCSV
-          >
-            {(props) => (
-              <div className="col-md-7">
-                {/* <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
-                    <ExportCSVButton
-                      {...props.csvProps}
-                      className="csvbutton  border bg-secondary text-light me-2 mb-2"
-                    >
-                      Export CSV
-                    </ExportCSVButton>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 me-2 mb-2"
-                      variant="outline-primary"
-                      onClick={download}
-                    >
-                      <PictureAsPdfIcon /> PDF
-                    </Button>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 mb-2"
-                      variant="outline-success"
-                      onClick={print}
-                    >
-                      <PrintIcon /> Print
-                    </Button>
-                  </div>
-                  <SearchBar {...props.searchProps} />
-                </div> */}
-                {isloading && (
-                  <div className="text-center">
-                    <Spinner animation="border" variant="primary" />
-                  </div>
-                )}
-                <hr />
-                <div>
-                  <BootstrapTable
-                    {...props.baseProps}
-                    pagination={paginationFactory(options)}
-                    rowStyle={rowstyle}
-                    striped
-                    bootstrap4
-                    condensed
-                    wrapperClasses="table-responsive"
-                  />
-                </div>
-              </div>
-            )}
-          </ToolkitProvider>
+                        <div className="col-3">
+                          <InputGroup>
+                            <TextField
+                              className="form-control"
+                              size="small"
+                              value={item.arabic_name}
+                            />
+
+                            <IconButton
+                              className="p-0 ps-2 pe-2"
+                              style={{
+                                backgroundColor: "red",
+                                borderRadius: "0",
+                              }}
+                              onClick={() => {
+                                dispatch({
+                                  type: "Delete_table_history",
+                                  data: { row: item, filter: "name" },
+                                });
+                              }}
+                            >
+                              <ClearIcon
+                                style={{
+                                  color: "white",
+                                  height: "fit-content",
+                                }}
+                                fontSize="medium"
+                              />
+                            </IconButton>
+                          </InputGroup>
+                        </div>
+                      </th>
+                    </tr>
+                  );
+                })}
+              </thead>
+              <tbody>
+                <tr>
+                  <td className=" p-0 border-0">
+                    <form onSubmit={handleadd} className="d-flex ">
+                      <div className="col-3">
+                        <TextField
+                          placeholder={"Name"}
+                          size="small"
+                          className="form-control"
+                          value={name}
+                          onChange={(e) => {
+                            setname(e.target.value);
+                          }}
+                          required
+                        />
+                      </div>
+                      <div className="col-3">
+                        <InputGroup>
+                          <TextField
+                            placeholder={"اسم الطبق"}
+                            size="small"
+                            className="form-control"
+                            value={arabicname}
+                            onChange={(e) => {
+                              setarabicname(e.target.value);
+                            }}
+                            required
+                          />
+
+                          <IconButton
+                            className="p-0 ps-2 pe-2"
+                            style={{
+                              backgroundColor: "#0d6efd",
+                              borderRadius: "0",
+                            }}
+                            type="submit"
+                          >
+                            <AddIcon
+                              style={{
+                                color: "white",
+                                height: "fit-content",
+                              }}
+                              fontSize="medium"
+                            />
+                          </IconButton>
+                        </InputGroup>
+                      </div>
+                    </form>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-
-      {delete_user && (
-        <Alert_before_delete
-          show={delete_user}
-          onHide={() => setdelete_user(false)}
-          url={url_to_delete}
-          dis_fun={handleconfirm}
-          row_id={row_id}
-        />
-      )}
     </div>
   );
 }

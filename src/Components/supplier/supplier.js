@@ -12,20 +12,17 @@ import ToolkitProvider, {
 } from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import went_wrong_toast from "../alerts/went_wrong_toast";
 import success_toast from "../alerts/success_toast";
 import Save_button from "../buttons/save_button";
 import TextField from "@mui/material/TextField";
 import custom_toast from "../alerts/custom_toast";
-import Switch from "@mui/material/Switch";
+import Red_toast from "../alerts/red_toast";
 import Spinner from "react-bootstrap/Spinner";
 import Alert_before_delete from "../../Container/alertContainer";
 import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
 import { useTranslation } from "react-i18next";
-import { add } from "date-fns";
 
 function Supplier(props) {
   const { t } = useTranslation();
@@ -73,7 +70,10 @@ function Supplier(props) {
         dispatch({ type: "Set_table_history", data: json });
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
         setisloading(false);
       }
     };
@@ -323,7 +323,10 @@ function Supplier(props) {
 
         if (!response.ok) {
           setisloading(false);
-          went_wrong_toast();
+          var error = Object.keys(json);
+          if (error.length > 0) {
+            Red_toast(`${error[0]}:${json[error[0]]}`);
+          }
         }
 
         if (response.ok) {
@@ -367,7 +370,10 @@ function Supplier(props) {
 
       if (!response.ok) {
         setisloading(false);
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
       }
 
       if (response.ok) {

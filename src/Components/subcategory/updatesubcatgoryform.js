@@ -1,13 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
-import Button from "react-bootstrap/Button";
+import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import TextField from "@mui/material/TextField";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPen } from "@fortawesome/free-solid-svg-icons";
-import { Avatar } from "@material-ui/core";
-import went_wrong_toast from "../alerts/went_wrong_toast";
+import Red_toast from "../alerts/red_toast";
 import Update_button from "../buttons/update_button";
-import { ToastContainer } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import Select from "../alerts/select";
 
@@ -48,7 +45,10 @@ function Updatesubcategories({
 
     if (!response.ok) {
       setisloading(false);
-      went_wrong_toast();
+      var error = Object.keys(json);
+      if (error.length > 0) {
+        Red_toast(`${error[0]}:${json[error[0]]}`);
+      }
     }
 
     if (response.ok) {

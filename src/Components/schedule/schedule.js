@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Select from "../alerts/select";
-import went_wrong_toast from "../alerts/went_wrong_toast";
 import Spinner from "react-bootstrap/Spinner";
 import TextField from "@mui/material/TextField";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
 import success_toast from "../alerts/success_toast";
 import Red_toast from "../alerts/red_toast";
-import Sechule_History from './sechedulehistory'
+import Sechule_History from "./sechedulehistory";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 
 export default function Schedule(props) {
@@ -49,7 +48,10 @@ export default function Schedule(props) {
         setalltiming(optimize);
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
       }
     };
 
@@ -82,7 +84,10 @@ export default function Schedule(props) {
         dispatch({ type: "Set_table_history", data: optimize });
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
         setisloading(false);
       }
     };
@@ -95,6 +100,7 @@ export default function Schedule(props) {
   useEffect(() => {
     const fetchschedule = async () => {
       setisloading(true);
+      dispatch({ type: "Set_table_history", data: [] });
       var url = `${route}/api/schedule/?buffet_time_id=${timing.value}`;
 
       const response = await fetch(`${url}`, {
@@ -151,7 +157,10 @@ export default function Schedule(props) {
         }
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
         setisloading(false);
       }
     };
@@ -245,7 +254,10 @@ export default function Schedule(props) {
 
       if (!response.ok) {
         setisloading(false);
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
         setcallagain(!callagain);
       }
 
@@ -317,12 +329,12 @@ export default function Schedule(props) {
           }}
         />
       ) : (
-    <div className="p-3 pt-2">
-      <div className="card">
-        <div className="card-header d-flex justify-content-between bg-white">
-          <h3 className="mt-2 me-2">Add Schedule</h3>
-          <div className="mt-2 me-2 d-flex ">
-          <Button
+        <div className="p-3 pt-2">
+          <div className="card">
+            <div className="card-header d-flex justify-content-between bg-white">
+              <h3 className="mt-2 me-2">Add Schedule</h3>
+              <div className="mt-2 me-2 d-flex ">
+                <Button
                   type="button"
                   className=" me-3"
                   variant="outline-success"
@@ -334,168 +346,170 @@ export default function Schedule(props) {
                   <VisibilityIcon className="me-2" />
                   View
                 </Button>
-            <Button
-              onClick={check_update ? handleupdate : handlesubmit}
-              variant="outline-primary"
-            >
-              {isloading && (
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                />
-              )}
-              <SaveIcon /> {t("save")}
-            </Button>
-          </div>
-        </div>
+                <Button
+                  onClick={check_update ? handleupdate : handlesubmit}
+                  variant="outline-primary"
+                >
+                  {isloading && (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <SaveIcon /> {t("save")}
+                </Button>
+              </div>
+            </div>
 
-        <div className="card-body pt-0">
-          <div className="row mt-4">
-            <div className="col-md-3">
-              <Select
-                options={alltiming}
-                placeholder={"Time"}
-                value={timing}
-                funct={(e) => settiming(e)}
-                required={true}
-              />
+            <div className="card-body pt-0">
+              <div className="row mt-4">
+                <div className="col-md-3">
+                  <Select
+                    options={alltiming}
+                    placeholder={"Time"}
+                    value={timing}
+                    funct={(e) => settiming(e)}
+                    required={true}
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="card mt-3">
-        <div className="card-body pt-0">
-          <div className="row mt-5">
-            <label className="d-flex justify-content-between align-items-end mb-2">
-              <h5 className="m-0">Processes</h5>
-              <TextField
-                label="Search"
-                variant="outlined"
-                value={search}
-                onChange={handlesearch}
-                size="small"
-              />
-            </label>
+          <div className="card mt-3">
+            <div className="card-body pt-0">
+              <div className="row mt-5">
+                <label className="d-flex justify-content-between align-items-end mb-2">
+                  <h5 className="m-0">Processes</h5>
+                  <TextField
+                    label="Search"
+                    variant="outlined"
+                    value={search}
+                    onChange={handlesearch}
+                    size="small"
+                  />
+                </label>
 
-            <div className="table-responsive">
-              <table
-                className="table  table-bordered border-secondary "
-                style={{ width: "100%" }}
-              >
-                <thead>
-                  <tr>
-                    <th className="text-center">Name</th>
+                <div className="table-responsive">
+                  <table
+                    className="table  table-bordered border-secondary "
+                    style={{ width: "100%" }}
+                  >
+                    <thead>
+                      <tr>
+                        <th className="text-center">Name</th>
 
-                    <th colSpan={2} className="text-center ">
-                      Breakfast
-                    </th>
-                    <th colSpan={2} className="text-center ">
-                      Lunch
-                    </th>
-                    <th colSpan={2} className="text-center ">
-                      Dinner
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {all_products.map((item) => {
-                    return (
-                      <tr key={item.id}>
-                        <td className="pt-0 pb-0 ">{item.name}</td>
-
-                        <td className="text-center">
-                          <TextField
-                            type="Time"
-                            InputLabelProps={{ shrink: true }}
-                            label="Start"
-                            value={item.break_fast_start}
-                            onChange={(e) => {
-                              handletime(e, item, "breakfaststart");
-                            }}
-                            variant="outlined"
-                            size="small"
-                          />
-                        </td>
-                        <td className="text-center">
-                          <TextField
-                            type="Time"
-                            label="End"
-                            value={item.break_fast_end}
-                            onChange={(e) => {
-                              handletime(e, item, "breakfastend");
-                            }}
-                            InputLabelProps={{ shrink: true }}
-                            variant="outlined"
-                            size="small"
-                          />
-                        </td>
-
-                        <td className="  text-center">
-                          <TextField
-                            label="Start"
-                            InputLabelProps={{ shrink: true }}
-                            type="Time"
-                            value={item.lunch_start}
-                            onChange={(e) => {
-                              handletime(e, item, "lunchstart");
-                            }}
-                            variant="outlined"
-                            size="small"
-                          />
-                        </td>
-                        <td className="text-center">
-                          <TextField
-                            type="Time"
-                            InputLabelProps={{ shrink: true }}
-                            label="End"
-                            value={item.lunch_end}
-                            onChange={(e) => {
-                              handletime(e, item, "lunchend");
-                            }}
-                            variant="outlined"
-                            size="small"
-                          />
-                        </td>
-
-                        <td className=" text-center">
-                          <TextField
-                            label="Start"
-                            InputLabelProps={{ shrink: true }}
-                            value={item.dinner_start}
-                            type="Time"
-                            onChange={(e) => {
-                              handletime(e, item, "dinnerstart");
-                            }}
-                            variant="outlined"
-                            size="small"
-                          />
-                        </td>
-                        <td className=" text-center">
-                          <TextField
-                            type="Time"
-                            label="End"
-                            value={item.dinner_end}
-                            onChange={(e) => {
-                              handletime(e, item, "dinnerend");
-                            }}
-                            InputLabelProps={{ shrink: true }}
-                            variant="outlined"
-                            size="small"
-                          />
-                        </td>
+                        <th colSpan={2} className="text-center ">
+                          Breakfast
+                        </th>
+                        <th colSpan={2} className="text-center ">
+                          Lunch
+                        </th>
+                        <th colSpan={2} className="text-center ">
+                          Dinner
+                        </th>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody>
+                      {all_products.map((item) => {
+                        return (
+                          <tr key={item.id}>
+                            <td className="pt-0 pb-0 ">{item.name}</td>
+
+                            <td className="text-center">
+                              <TextField
+                                type="Time"
+                                InputLabelProps={{ shrink: true }}
+                                label="Start"
+                                value={item.break_fast_start}
+                                onChange={(e) => {
+                                  handletime(e, item, "breakfaststart");
+                                }}
+                                variant="outlined"
+                                size="small"
+                              />
+                            </td>
+                            <td className="text-center">
+                              <TextField
+                                type="Time"
+                                label="End"
+                                value={item.break_fast_end}
+                                onChange={(e) => {
+                                  handletime(e, item, "breakfastend");
+                                }}
+                                InputLabelProps={{ shrink: true }}
+                                variant="outlined"
+                                size="small"
+                              />
+                            </td>
+
+                            <td className="  text-center">
+                              <TextField
+                                label="Start"
+                                InputLabelProps={{ shrink: true }}
+                                type="Time"
+                                value={item.lunch_start}
+                                onChange={(e) => {
+                                  handletime(e, item, "lunchstart");
+                                }}
+                                variant="outlined"
+                                size="small"
+                              />
+                            </td>
+                            <td className="text-center">
+                              <TextField
+                                type="Time"
+                                InputLabelProps={{ shrink: true }}
+                                label="End"
+                                value={item.lunch_end}
+                                onChange={(e) => {
+                                  handletime(e, item, "lunchend");
+                                }}
+                                variant="outlined"
+                                size="small"
+                              />
+                            </td>
+
+                            <td className=" text-center">
+                              <TextField
+                                label="Start"
+                                InputLabelProps={{ shrink: true }}
+                                value={item.dinner_start}
+                                type="Time"
+                                onChange={(e) => {
+                                  handletime(e, item, "dinnerstart");
+                                }}
+                                variant="outlined"
+                                size="small"
+                              />
+                            </td>
+                            <td className=" text-center">
+                              <TextField
+                                type="Time"
+                                label="End"
+                                value={item.dinner_end}
+                                onChange={(e) => {
+                                  handletime(e, item, "dinnerend");
+                                }}
+                                InputLabelProps={{ shrink: true }}
+                                variant="outlined"
+                                size="small"
+                              />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>)}</>
+      )}
+    </>
   );
 }

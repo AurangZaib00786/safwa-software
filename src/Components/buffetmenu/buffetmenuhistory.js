@@ -4,7 +4,6 @@ import Red_toast from "../alerts/red_toast";
 import Select from "../alerts/select";
 import "./buffetmenu.css";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import went_wrong_toast from "../alerts/went_wrong_toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotate } from "@fortawesome/free-solid-svg-icons";
 import Spinner from "react-bootstrap/Spinner";
@@ -208,7 +207,10 @@ export default function Stock_table({
         setdata(buffetmenu);
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
         setisloading(false);
       }
     };

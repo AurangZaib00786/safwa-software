@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import "./buffetmenu.css";
 import Select from "../alerts/select";
-import went_wrong_toast from "../alerts/went_wrong_toast";
 import Spinner from "react-bootstrap/Spinner";
 import TextField from "@mui/material/TextField";
 import { useTranslation } from "react-i18next";
@@ -60,7 +59,10 @@ export default function BuffetMenu(props) {
         setcallagain(!callagain);
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
         setisloading(false);
       }
     };
@@ -113,7 +115,10 @@ export default function BuffetMenu(props) {
         }
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
         setisloading(false);
       }
     };
@@ -173,7 +178,10 @@ export default function BuffetMenu(props) {
 
       if (!response.ok) {
         setisloading(false);
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
       }
 
       if (response.ok) {
@@ -220,7 +228,10 @@ export default function BuffetMenu(props) {
 
       if (!response.ok) {
         setisloading(false);
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
       }
 
       if (response.ok) {

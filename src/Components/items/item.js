@@ -7,12 +7,10 @@ import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
-
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import { ToastContainer } from "react-toastify";
 import custom_toast from "../alerts/custom_toast";
-import went_wrong_toast from "../alerts/went_wrong_toast";
+import Red_toast from "../alerts/red_toast";
 import Spinner from "react-bootstrap/Spinner";
 import Alert_before_delete from "../../Container/alertContainer";
 import ToolkitProvider, {
@@ -79,7 +77,10 @@ export default function Item(props) {
         dispatch({ type: "Set_table_history", data: json });
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
         setisloading(false);
       }
     };
@@ -149,7 +150,10 @@ export default function Item(props) {
         setallunits(optimize);
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
         setisloading(false);
       }
     };
@@ -411,7 +415,10 @@ export default function Item(props) {
 
     if (!response.ok) {
       setisloading(false);
-      went_wrong_toast();
+      var error = Object.keys(json);
+      if (error.length > 0) {
+        Red_toast(`${error[0]}:${json[error[0]]}`);
+      }
     }
 
     if (response.ok) {
@@ -450,7 +457,10 @@ export default function Item(props) {
 
     if (!response.ok) {
       setisloading(false);
-      went_wrong_toast();
+      var error = Object.keys(json);
+      if (error.length > 0) {
+        Red_toast(`${error[0]}:${json[error[0]]}`);
+      }
     }
 
     if (response.ok) {
@@ -492,7 +502,10 @@ export default function Item(props) {
     const json = await response.json();
 
     if (!response.ok) {
-      went_wrong_toast();
+      var error = Object.keys(json);
+      if (error.length > 0) {
+        Red_toast(`${error[0]}:${json[error[0]]}`);
+      }
     }
 
     if (response.ok) {

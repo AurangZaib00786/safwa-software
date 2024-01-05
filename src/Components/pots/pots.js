@@ -18,7 +18,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { ToastContainer } from "react-toastify";
 import custom_toast from "../alerts/custom_toast";
-import went_wrong_toast from "../alerts/went_wrong_toast";
+import Red_toast from "../alerts/red_toast";
 import Spinner from "react-bootstrap/Spinner";
 import Alert_before_delete from "../../Container/alertContainer";
 import pdfMake from "pdfmake/build/pdfmake";
@@ -65,7 +65,10 @@ export default function Pots(props) {
         dispatch({ type: "Set_table_history", data: json });
       }
       if (!response.ok) {
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
         setisloading(false);
       }
     };

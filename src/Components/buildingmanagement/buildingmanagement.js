@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Select from "../alerts/select";
 import { IconButton } from "@material-ui/core";
@@ -8,54 +8,16 @@ import Spinner from "react-bootstrap/Spinner";
 import Red_toast from "../alerts/red_toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotate } from "@fortawesome/free-solid-svg-icons";
-import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 import success_toast from "../alerts/success_toast";
 import ClearIcon from "@material-ui/icons/Clear";
 
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
-import BootstrapTable from "react-bootstrap-table-next";
-import paginationFactory from "react-bootstrap-table2-paginator";
-import ToolkitProvider, {
-  Search,
-  CSVExport,
-} from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
-import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
-import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
-import Alert_before_delete from "../../Container/alertContainer";
-import custom_toast from "../alerts/custom_toast";
-import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
-import PrintIcon from "@material-ui/icons/Print";
-import Overlay from "react-bootstrap/Overlay";
-import Popover from "react-bootstrap/Popover";
-import "react-date-range/dist/styles.css"; // main style file
-import "react-date-range/dist/theme/default.css";
-import { DateRangePicker, defaultStaticRanges } from "react-date-range";
-import {
-  endOfDay,
-  startOfYear,
-  endOfYear,
-  addMonths,
-  addYears,
-  isSameDay,
-} from "date-fns";
-
 export default function BuildingManagement(props) {
-  pdfMake.vfs = pdfFonts.pdfMake.vfs;
-  const { t } = useTranslation();
-
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
-  const selected_branch = props.state.Setcurrentinfo.selected_branch;
-  const current_user = props.state.Setcurrentinfo.current_user;
-  const all_stock = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
 
   const [data, setdata] = useState([]);
-  const [allbuilding, setallbuilding] = useState([]);
   const [building, setbuilding] = useState("");
   const [buildingoption, setbuildingoption] = useState([]);
 

@@ -1,12 +1,10 @@
 import React, { useState, useRef } from "react";
-import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "./process.css";
-import { ToastContainer } from "react-toastify";
 import TextField from "@mui/material/TextField";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
-import went_wrong_toast from "../alerts/went_wrong_toast";
+import Red_toast from "../alerts/red_toast";
 import success_toast from "../alerts/success_toast";
 import Save_button from "../buttons/save_button";
 import { useTranslation } from "react-i18next";
@@ -51,7 +49,10 @@ function Unitform({
 
       if (!response.ok) {
         setisloading(false);
-        went_wrong_toast();
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
       }
 
       if (response.ok) {
