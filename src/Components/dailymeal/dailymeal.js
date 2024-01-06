@@ -214,7 +214,7 @@ function Dailymeal(props) {
           type.value === "Breakfast"
             ? item.breakfast
             : type.value === "Lunch"
-            ? item.lunch
+            ? item.launch
             : item.dinner,
         pot_details: item.pot_details,
       };
@@ -267,7 +267,7 @@ function Dailymeal(props) {
           type.value === "Breakfast"
             ? item.breakfast
             : type.value === "Lunch"
-            ? item.lunch
+            ? item.launch
             : item.dinner,
         pot_details: item.pot_details,
       };

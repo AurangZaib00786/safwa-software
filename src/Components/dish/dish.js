@@ -136,7 +136,6 @@ export default function Dish(props) {
         return item;
       });
 
-      const formData = new FormData();
       const response = await fetch(`${route}/api/bulk-dishes/`, {
         method: "POST",
         headers: {

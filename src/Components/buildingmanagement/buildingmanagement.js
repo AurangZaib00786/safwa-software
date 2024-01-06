@@ -11,6 +11,7 @@ import { faRotate } from "@fortawesome/free-solid-svg-icons";
 import TextField from "@mui/material/TextField";
 import success_toast from "../alerts/success_toast";
 import ClearIcon from "@material-ui/icons/Clear";
+import { SignalCellularNull } from "@material-ui/icons";
 
 export default function BuildingManagement(props) {
   const user = props.state.setuser.user;
@@ -25,36 +26,13 @@ export default function BuildingManagement(props) {
   const [employee, setemployee] = useState("");
   const [type, settype] = useState("");
   const [joindate, setjoindate] = useState("");
-  const [enddate, setenddate] = useState("");
+  const [enddate, setenddate] = useState(null);
   const [isloading, setisloading] = useState(false);
+  const [callagain, setcallagain] = useState(false);
 
   useEffect(() => {
     setisloading(true);
     dispatch({ type: "Set_menuitem", data: "building" });
-    const fetchWorkouts = async () => {
-      var url = `${route}/api/buildings/`;
-
-      const response = await fetch(`${url}`, {
-        headers: { Authorization: `Bearer ${user.access}` },
-      });
-      const json = await response.json();
-
-      if (response.ok) {
-        setisloading(false);
-
-        const optimize = json.map((item) => {
-          return { value: item, label: item.building_number };
-        });
-        setbuildingoption(optimize);
-      }
-      if (!response.ok) {
-        var error = Object.keys(json);
-        if (error.length > 0) {
-          Red_toast(`${json[error[0]]}`);
-        }
-        setisloading(false);
-      }
-    };
 
     const fetchemployess = async () => {
       var url = `${route}/api/employee/`;
@@ -79,10 +57,37 @@ export default function BuildingManagement(props) {
     };
 
     if (user) {
-      fetchWorkouts();
       fetchemployess();
     }
   }, []);
+
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      var url = `${route}/api/buildings/`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        setisloading(false);
+
+        const optimize = json.map((item) => {
+          return { value: item, label: item.building_number };
+        });
+        setbuildingoption(optimize);
+      }
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${json[error[0]]}`);
+        }
+        setisloading(false);
+      }
+    };
+    fetchWorkouts();
+  }, [callagain]);
 
   const handlesubmit = async (e) => {
     e.preventDefault();
@@ -118,6 +123,7 @@ export default function BuildingManagement(props) {
       }
 
       if (response.ok) {
+        setcallagain(!callagain);
         success_toast();
         setdata([]);
         setbuilding("");
@@ -164,7 +170,7 @@ export default function BuildingManagement(props) {
 
     setemployee("");
     setjoindate("");
-    setenddate("");
+    setenddate(null);
     settype("");
   };
 

@@ -63,18 +63,6 @@ function Dailymeal_history(props) {
   const [start_date, setstart_date] = useState(
     moment().format().substring(0, 10)
   );
-  const [end_date, setend_date] = useState(moment().format().substring(0, 10));
-  const [show, setshow] = useState(false);
-  const [target, setTarget] = useState(null);
-  const ref = useRef(null);
-  const [date_range, setdate_range] = useState([
-    {
-      startDate: new Date(),
-      endDate: new Date(),
-      key: "selection",
-      showDateDisplay: "false",
-    },
-  ]);
 
   useEffect(() => {
     const fetchcustomers = async () => {
@@ -107,25 +95,11 @@ function Dailymeal_history(props) {
     }
   }, [selected_branch]);
 
-  const handleSelect = (item) => {
-    const get_date = item.selection;
-    setdate_range([item.selection]);
-
-    setstart_date(moment(get_date.startDate).format().substring(0, 10));
-    setend_date(moment(get_date.endDate).format().substring(0, 10));
-    if (
-      get_date.startDate.toISOString().substring(0, 10) !==
-      get_date.endDate.toISOString().substring(0, 10)
-    ) {
-      setshow(!show);
-    }
-  };
-
   useEffect(() => {
     setisloading(true);
     dispatch({ type: "Set_table_history", data: [] });
     const fetchProducts = async () => {
-      var url = `${route}/api/daily-meals/?start_date=${start_date}&end_date=${end_date}`;
+      var url = `${route}/api/daily-meals/?date=${start_date}`;
       if (customer.value !== "all") {
         url = `${url}&customer_id=${customer.value}`;
       }
@@ -154,7 +128,7 @@ function Dailymeal_history(props) {
     if (user) {
       fetchProducts();
     }
-  }, [date_range, type, customer]);
+  }, [start_date, type, customer]);
 
   const handleconfirm = (row) => {
     dispatch({ type: "Delete_table_history", data: { id: row } });
@@ -261,11 +235,6 @@ function Dailymeal_history(props) {
     },
   ];
 
-  const handleselectiochange = (e) => {
-    setshow(!show);
-    setTarget(e.target);
-  };
-
   const makepdf = () => {
     const body = history.map((item, index) => {
       return [
@@ -351,116 +320,16 @@ function Dailymeal_history(props) {
           <div className="card p-3">
             <div className=" d-sm-flex align-items-start mt-3">
               <div className="col-6 col-sm-2  me-3">
-                {date_range[0].endDate.getFullYear() -
-                  date_range[0].startDate.getFullYear() ===
-                10 ? (
-                  <TextField
-                    ref={ref}
-                    type="button"
-                    className="form-control  mb-3"
-                    label={t("date")}
-                    value="From Start"
-                    onClick={handleselectiochange}
-                    size="small"
-                  />
-                ) : (
-                  <TextField
-                    ref={ref}
-                    type="button"
-                    className="form-control  mb-3 "
-                    label={t("date")}
-                    value={`${date_range[0].startDate
-                      .toLocaleString("en-GB")
-                      .substring(0, 10)} - ${date_range[0].endDate
-                      .toLocaleString("en-GB")
-                      .substring(0, 10)}`}
-                    onClick={handleselectiochange}
-                    size="small"
-                  />
-                )}
-                <Overlay
-                  show={show}
-                  target={target}
-                  placement="bottom-start"
-                  container={ref}
-                >
-                  <Popover id="popover-contained" className="pop_over">
-                    <Popover.Body>
-                      <div>
-                        <DateRangePicker
-                          onChange={handleSelect}
-                          showSelectionPreview={true}
-                          showCalendarPreview={false}
-                          dragSelectionEnabled={true}
-                          moveRangeOnFirstSelection={false}
-                          months={2}
-                          ranges={date_range}
-                          direction="horizontal"
-                          preventSnapRefocus={true}
-                          calendarFocus="backwards"
-                          staticRanges={[
-                            ...defaultStaticRanges,
-                            {
-                              label: "Last Year",
-                              range: () => ({
-                                startDate: startOfYear(
-                                  addYears(new Date(), -1)
-                                ),
-                                endDate: endOfYear(addYears(new Date(), -1)),
-                              }),
-                              isSelected(range) {
-                                const definedRange = this.range();
-                                return (
-                                  isSameDay(
-                                    range.startDate,
-                                    definedRange.startDate
-                                  ) &&
-                                  isSameDay(range.endDate, definedRange.endDate)
-                                );
-                              },
-                            },
-                            {
-                              label: "This Year",
-                              range: () => ({
-                                startDate: startOfYear(new Date()),
-                                endDate: endOfDay(new Date()),
-                              }),
-                              isSelected(range) {
-                                const definedRange = this.range();
-                                return (
-                                  isSameDay(
-                                    range.startDate,
-                                    definedRange.startDate
-                                  ) &&
-                                  isSameDay(range.endDate, definedRange.endDate)
-                                );
-                              },
-                            },
-                            {
-                              label: "From Start",
-                              range: () => ({
-                                startDate: startOfYear(
-                                  addYears(new Date(), -10)
-                                ),
-                                endDate: endOfDay(new Date()),
-                              }),
-                              isSelected(range) {
-                                const definedRange = this.range();
-                                return (
-                                  isSameDay(
-                                    range.startDate,
-                                    definedRange.startDate
-                                  ) &&
-                                  isSameDay(range.endDate, definedRange.endDate)
-                                );
-                              },
-                            },
-                          ]}
-                        />
-                      </div>
-                    </Popover.Body>
-                  </Popover>
-                </Overlay>
+                <TextField
+                  type="date"
+                  className="form-control  mb-3"
+                  label={t("date")}
+                  value={start_date}
+                  onChange={(e) => {
+                    setstart_date(e.target.value);
+                  }}
+                  size="small"
+                />
               </div>
               <div className="col-6 col-md-2 mb-2 me-md-3">
                 <Select
@@ -480,7 +349,7 @@ function Dailymeal_history(props) {
               <div className="col-6 col-md-2 mb-2 ">
                 <Select
                   options={[{ value: "all", label: "All" }, ...allcustomers]}
-                  placeholder={"Type"}
+                  placeholder={"Customer"}
                   value={customer}
                   funct={(e) => {
                     setcustomer(e);

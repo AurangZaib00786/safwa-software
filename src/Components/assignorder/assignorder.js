@@ -41,8 +41,10 @@ export default function AssignOrder(props) {
             return {
               ...item,
               breakfast_employee: {
-                value: item2.breakfast_employee,
-                label: item2.breakfast_employee_name,
+                value: item2.breakfast_employee ? item2.breakfast_employee : "",
+                label: item2.breakfast_employee_name
+                  ? item2.breakfast_employee_name
+                  : "",
               },
               launch_employee: {
                 value: item2.launch_employee,
@@ -105,25 +107,13 @@ export default function AssignOrder(props) {
     e.preventDefault();
     var flag = false;
     const optimizedata = allprocess.map((item) => {
-      if (
-        item.breakfast_employee &&
-        item.launch_employee &&
-        item.dinner_employee
-      ) {
-        return {
-          process: item.process,
-          breakfast_employee: item.breakfast_employee.value,
-          launch_employee: item.launch_employee.value,
-          dinner_employee: item.dinner_employee.value,
-        };
-      } else {
-        Red_toast(`Select all employees of ${item.process_name} process!`);
-        flag = true;
-      }
+      return {
+        process: item.process,
+        breakfast_employee: item.breakfast_employee?.value,
+        launch_employee: item.launch_employee?.value,
+        dinner_employee: item.dinner_employee?.value,
+      };
     });
-    if (flag) {
-      return;
-    }
 
     const response = await fetch(`${route}/api/orders/${order.id}/`, {
       method: "PATCH",
