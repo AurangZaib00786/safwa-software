@@ -37,7 +37,7 @@ export default function Unit(props) {
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
-  const settings = props.state.Setcurrentinfo.settings;
+  const setActiveTab = props.setActiveTab;
   const { ExportCSVButton } = CSVExport;
   const [showmodel, setshowmodel] = useState(false);
   const [data, setdata] = useState("");
@@ -248,15 +248,27 @@ export default function Unit(props) {
           >
             Units
           </h1>
-          <Button
-            type="button"
-            className="mb-2"
-            variant="outline-success"
-            onClick={() => setshowmodel(!showmodel)}
-          >
-            <FontAwesomeIcon className="me-2" icon={faUserPlus} />
-            Add
-          </Button>
+          <div className="mt-2 me-2 d-flex">
+            <Button
+              className="me-2 mb-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("Items");
+              }}
+            >
+              {" "}
+              Items
+            </Button>
+            <Button
+              type="button"
+              className="mb-2"
+              variant="outline-success"
+              onClick={() => setshowmodel(!showmodel)}
+            >
+              <FontAwesomeIcon className="me-2" icon={faUserPlus} />
+              Add
+            </Button>
+          </div>
         </div>
 
         <div className="card-body pt-0">

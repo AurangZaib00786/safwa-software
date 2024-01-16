@@ -35,8 +35,7 @@ export default function Menu(props) {
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
-  const settings = props.state.Setcurrentinfo.settings;
-
+  const setActiveTab = props.setActiveTab;
   const { SearchBar } = Search;
   const { ExportCSVButton } = CSVExport;
   const [showmodel, setshowmodel] = useState(false);
@@ -246,15 +245,27 @@ export default function Menu(props) {
           >
             {t("Menu List")}
           </h1>
-          <Button
-            type="button"
-            className="mb-2"
-            variant="outline-success"
-            onClick={() => setshowmodel(!showmodel)}
-          >
-            <FontAwesomeIcon icon={faUserPlus} className="me-2" />
-            {t("Add Menu")}
-          </Button>
+          <div className="mt-2 me-2 d-flex">
+            <Button
+              className="me-2 mb-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("dish");
+              }}
+            >
+              {" "}
+              Dishes
+            </Button>
+            <Button
+              type="button"
+              className="mb-2 "
+              variant="outline-success"
+              onClick={() => setshowmodel(!showmodel)}
+            >
+              <FontAwesomeIcon icon={faUserPlus} className="me-2" />
+              {t("Add Menu")}
+            </Button>
+          </div>
         </div>
 
         <div className="card-body pt-0">

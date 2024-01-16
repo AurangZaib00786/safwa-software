@@ -38,11 +38,8 @@ export default function Item(props) {
   const { SearchBar } = Search;
   const settings = props.state.Setcurrentinfo.settings;
   const { ExportCSVButton } = CSVExport;
-  const [showmodel, setshowmodel] = useState(false);
-  const [data, setdata] = useState("");
-  const [showmodelupdate, setshowmodelupdate] = useState(false);
+  const setActiveTab = props.setActiveTab;
 
-  const [p_category, setp_category] = useState("");
   const [submenu, setsubmenu] = useState("");
   const [name, setname] = useState("");
   const [arabicname, setarabicname] = useState("");
@@ -519,10 +516,40 @@ export default function Item(props) {
         <form onSubmit={check_update ? handleupdate : handlesubmit}>
           <div className="card-header d-flex justify-content-between bg-white">
             <h3 className="mt-2 me-2">Add Item</h3>
-            <div className="mt-2 me-2 d-flex flex-row-reverse">
+            <div className="mt-2 me-2 d-flex">
+              <Button
+                className="me-2"
+                variant="outline-dark"
+                onClick={() => {
+                  setActiveTab("Category");
+                }}
+              >
+                {" "}
+                Categories
+              </Button>
+              <Button
+                className="me-2"
+                variant="outline-secondary"
+                onClick={() => {
+                  setActiveTab("Subcategory");
+                }}
+              >
+                {" "}
+                SubCategories
+              </Button>
+              <Button
+                className="me-2"
+                variant="outline-success"
+                onClick={() => {
+                  setActiveTab("Units");
+                }}
+              >
+                {" "}
+                Units
+              </Button>
               <Save_button isloading={isloading} />
 
-              <div>
+              {/* <div>
                 <input
                   onChange={handleimageselection}
                   id="select-file"
@@ -539,7 +566,7 @@ export default function Item(props) {
                 >
                   {t("Import File")}
                 </Button>
-              </div>
+              </div> */}
             </div>
           </div>
 

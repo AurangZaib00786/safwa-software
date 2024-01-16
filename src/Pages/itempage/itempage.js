@@ -26,26 +26,32 @@ function Items_page({ current_user }) {
   return (
     <div>
       <Tabs
-        defaultActiveKey={activeTab}
+        activeKey={activeTab}
         transition={true}
         onSelect={handleTabSelect}
         id="noanim-tab-example"
         className="mb-3"
       >
         <Tab eventKey="Items" title="Items">
-          {activeTab === "Items" && <Item />}
+          {activeTab === "Items" && <Item setActiveTab={setActiveTab} />}
         </Tab>
-        <Tab eventKey="Category" title="Category">
-          {activeTab === "Category" && <Category />}
-        </Tab>
+        {activeTab === "Category" && (
+          <Tab eventKey="Category" title="Category">
+            <Category setActiveTab={setActiveTab} />
+          </Tab>
+        )}
 
-        <Tab eventKey="Subcategory" title="Subcategory">
-          {activeTab === "Subcategory" && <Subcategory />}
-        </Tab>
+        {activeTab === "Subcategory" && (
+          <Tab eventKey="Subcategory" title="Subcategory">
+            <Subcategory setActiveTab={setActiveTab} />
+          </Tab>
+        )}
 
-        <Tab eventKey="Units" title="Units">
-          {activeTab === "Units" && <Units />}
-        </Tab>
+        {activeTab === "Units" && (
+          <Tab eventKey="Units" title="Units">
+            <Units setActiveTab={setActiveTab} />
+          </Tab>
+        )}
       </Tabs>
       <ToastContainer autoClose={2000} hideProgressBar={true} theme="dark" />
     </div>

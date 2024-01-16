@@ -14,14 +14,14 @@ import TextField from "@mui/material/TextField";
 import success_toast from "../alerts/success_toast";
 import SaveIcon from "@material-ui/icons/Save";
 import ClearIcon from "@material-ui/icons/Clear";
-import { useFetcher } from "react-router-dom";
+import Dish_View from "./viewdishes";
 
 export default function Dish(props) {
   const { t } = useTranslation();
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
-
+  const setActiveTab = props.setActiveTab;
   const all_products = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
 
@@ -34,6 +34,7 @@ export default function Dish(props) {
   const [allsubmenu, setallsubmenu] = useState([]);
   const [isloading, setisloading] = useState(false);
   const [check_update, setcheck_update] = useState(true);
+  const [view, setview] = useState(false);
 
   useEffect(() => {
     const fetchWorkouts = async () => {
@@ -71,10 +72,6 @@ export default function Dish(props) {
       fetchWorkouts();
     }
   }, [menu, submenu]);
-
-  useEffect(() => {
-    console.log(all_products);
-  }, [all_products]);
 
   useEffect(() => {
     dispatch({ type: "Set_menuitem", data: "dish" });
@@ -224,24 +221,56 @@ export default function Dish(props) {
   };
 
   return (
-    <div className="p-3 pt-2">
-      <div className="card">
-        <div className="card-header d-flex justify-content-between bg-white">
-          <h3 className="mt-2 me-2">Add Dish</h3>
-          <div className="mt-2 me-2 d-flex flex-row-reverse">
-            <Button variant="outline-primary" onClick={handlesubmit}>
-              {isloading && (
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                />
-              )}
-              <SaveIcon /> {t("save")}
-            </Button>
-            <div>
+    <>
+      {!view ? (
+        <div className="p-3 pt-2">
+          <div className="card">
+            <div className="card-header d-flex justify-content-between bg-white">
+              <h3 className="mt-2 me-2">Add Dish</h3>
+              <div className="mt-2 me-2 d-flex">
+                <Button
+                  className="me-2"
+                  variant="outline-dark"
+                  onClick={() => {
+                    setActiveTab("menu");
+                  }}
+                >
+                  {" "}
+                  Menu
+                </Button>
+                <Button
+                  className="me-2"
+                  variant="outline-secondary"
+                  onClick={() => {
+                    setActiveTab("submenu");
+                  }}
+                >
+                  {" "}
+                  SubMenu
+                </Button>
+                <Button
+                  className="me-2"
+                  variant="outline-success"
+                  onClick={() => {
+                    setview(true);
+                  }}
+                >
+                  {" "}
+                  View
+                </Button>
+                <Button variant="outline-primary" onClick={handlesubmit}>
+                  {isloading && (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <SaveIcon /> {t("save")}
+                </Button>
+                {/* <div>
               <input
                 onChange={handleimageselection}
                 id="select-file"
@@ -258,144 +287,154 @@ export default function Dish(props) {
               >
                 {t("Import File")}
               </Button>
+            </div> */}
+              </div>
             </div>
-          </div>
-        </div>
 
-        <div className="card-body pt-0" style={{ minHeight: "100vh" }}>
-          <div className="row mt-4">
-            <div className="col-md-3">
-              <Select
-                options={allmenu}
-                placeholder={"Menu"}
-                value={menu}
-                funct={(e) => setmenu(e)}
-                required={true}
-              />
-            </div>
-            <div className="col-md-3">
-              <Select
-                options={allsubmenu}
-                placeholder={"Sub Menu"}
-                value={submenu}
-                funct={(e) => setsubmenu(e)}
-                required={true}
-              />
-            </div>
-          </div>
+            <div className="card-body pt-0" style={{ minHeight: "100vh" }}>
+              <div className="row mt-4">
+                <div className="col-md-3">
+                  <Select
+                    options={allmenu}
+                    placeholder={"Menu"}
+                    value={menu}
+                    funct={(e) => setmenu(e)}
+                    required={true}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <Select
+                    options={allsubmenu}
+                    placeholder={"Sub Menu"}
+                    value={submenu}
+                    funct={(e) => setsubmenu(e)}
+                    required={true}
+                  />
+                </div>
+              </div>
 
-          <div className="mb-4">
-            <table className="table">
-              <thead className="border-0 ">
-                <tr>
-                  <th className="d-flex align-items-center border-0 p-0">
-                    <h6 className="col-3 p-2 ps-0 pb-0 ">Name</h6>
-                    <h6 className=" col-3  p-2 pb-0 ">اسم الطبق</h6>
-                  </th>
-                </tr>
-                {all_products.map((item) => {
-                  return (
-                    <tr key={item.name}>
-                      <th className="d-flex align-items-center p-0 border-0">
-                        <div className="col-3">
-                          <TextField
-                            className="form-control"
-                            size="small"
-                            value={item.name}
-                          />
-                        </div>
-
-                        <div className="col-3">
-                          <InputGroup>
-                            <TextField
-                              className="form-control"
-                              size="small"
-                              value={item.arabic_name}
-                            />
-
-                            <IconButton
-                              className="p-0 ps-2 pe-2"
-                              style={{
-                                backgroundColor: "red",
-                                borderRadius: "0",
-                              }}
-                              onClick={() => {
-                                dispatch({
-                                  type: "Delete_table_history",
-                                  data: { row: item, filter: "name" },
-                                });
-                              }}
-                            >
-                              <ClearIcon
-                                style={{
-                                  color: "white",
-                                  height: "fit-content",
-                                }}
-                                fontSize="medium"
-                              />
-                            </IconButton>
-                          </InputGroup>
-                        </div>
+              <div className="mb-4">
+                <table className="table">
+                  <thead className="border-0 ">
+                    <tr>
+                      <th className="d-flex align-items-center border-0 p-0">
+                        <h6 className="col-3 p-2 ps-0 pb-0 ">Name</h6>
+                        <h6 className=" col-3  p-2 pb-0 ">اسم الطبق</h6>
                       </th>
                     </tr>
-                  );
-                })}
-              </thead>
-              <tbody>
-                <tr>
-                  <td className=" p-0 border-0">
-                    <form onSubmit={handleadd} className="d-flex ">
-                      <div className="col-3">
-                        <TextField
-                          placeholder={"Name"}
-                          size="small"
-                          className="form-control"
-                          value={name}
-                          onChange={(e) => {
-                            setname(e.target.value);
-                          }}
-                          required
-                        />
-                      </div>
-                      <div className="col-3">
-                        <InputGroup>
-                          <TextField
-                            placeholder={"اسم الطبق"}
-                            size="small"
-                            className="form-control"
-                            value={arabicname}
-                            onChange={(e) => {
-                              setarabicname(e.target.value);
-                            }}
-                            required
-                          />
+                    {all_products.map((item) => {
+                      return (
+                        <tr key={item.name}>
+                          <th className="d-flex align-items-center p-0 border-0">
+                            <div className="col-3">
+                              <TextField
+                                className="form-control"
+                                size="small"
+                                value={item.name}
+                              />
+                            </div>
 
-                          <IconButton
-                            className="p-0 ps-2 pe-2"
-                            style={{
-                              backgroundColor: "#0d6efd",
-                              borderRadius: "0",
-                            }}
-                            type="submit"
-                          >
-                            <AddIcon
-                              style={{
-                                color: "white",
-                                height: "fit-content",
+                            <div className="col-3">
+                              <InputGroup>
+                                <TextField
+                                  className="form-control"
+                                  size="small"
+                                  value={item.arabic_name}
+                                />
+
+                                <IconButton
+                                  className="p-0 ps-2 pe-2"
+                                  style={{
+                                    backgroundColor: "red",
+                                    borderRadius: "0",
+                                  }}
+                                  onClick={() => {
+                                    dispatch({
+                                      type: "Delete_table_history",
+                                      data: { row: item, filter: "name" },
+                                    });
+                                  }}
+                                >
+                                  <ClearIcon
+                                    style={{
+                                      color: "white",
+                                      height: "fit-content",
+                                    }}
+                                    fontSize="medium"
+                                  />
+                                </IconButton>
+                              </InputGroup>
+                            </div>
+                          </th>
+                        </tr>
+                      );
+                    })}
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className=" p-0 border-0">
+                        <form onSubmit={handleadd} className="d-flex ">
+                          <div className="col-3">
+                            <TextField
+                              placeholder={"Name"}
+                              size="small"
+                              className="form-control"
+                              value={name}
+                              onChange={(e) => {
+                                setname(e.target.value);
                               }}
-                              fontSize="medium"
+                              required
                             />
-                          </IconButton>
-                        </InputGroup>
-                      </div>
-                    </form>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                          </div>
+                          <div className="col-3">
+                            <InputGroup>
+                              <TextField
+                                placeholder={"اسم الطبق"}
+                                size="small"
+                                className="form-control"
+                                value={arabicname}
+                                onChange={(e) => {
+                                  setarabicname(e.target.value);
+                                }}
+                                required
+                              />
+
+                              <IconButton
+                                className="p-0 ps-2 pe-2"
+                                style={{
+                                  backgroundColor: "#0d6efd",
+                                  borderRadius: "0",
+                                }}
+                                type="submit"
+                              >
+                                <AddIcon
+                                  style={{
+                                    color: "white",
+                                    height: "fit-content",
+                                  }}
+                                  fontSize="medium"
+                                />
+                              </IconButton>
+                            </InputGroup>
+                          </div>
+                        </form>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      ) : (
+        <Dish_View
+          user={user}
+          route={route}
+          setview={() => {
+            setview(!view);
+          }}
+        />
+      )}
+    </>
   );
 }

@@ -14,7 +14,7 @@ function StockUpdate(props) {
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const current_user = props.state.Setcurrentinfo.current_user;
-  const settings = props.state.Setcurrentinfo.settings;
+  const setActiveTab = props.setActiveTab;
   const dispatch = props.Settable_history;
   const [allproducts, setallproducts] = useState([]);
   const [view_stock, setview_stock] = useState(false);
@@ -268,6 +268,7 @@ function StockUpdate(props) {
           route={route}
           selected_branch={selected_branch}
           current_user={current_user}
+          setActiveTab={setActiveTab}
           setview_stock={() => {
             setview_stock(!view_stock);
           }}

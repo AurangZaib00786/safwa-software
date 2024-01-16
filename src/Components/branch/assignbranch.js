@@ -16,7 +16,7 @@ function Account_head(props) {
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const current_user = props.state.Setcurrentinfo.current_user;
-
+  const setActiveTab = props.setActiveTab;
   const dispatch = props.Settable_history;
   const [selected_role, setselected_role] = useState("");
   const [selected, setSelected] = useState([]);
@@ -235,6 +235,16 @@ function Account_head(props) {
       <div className="card">
         <form onSubmit={handlesubmit}>
           <div className="card-header bg-white d-flex justify-content-end">
+            <Button
+              className="me-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("Branch");
+              }}
+            >
+              {" "}
+              Branches
+            </Button>
             <Update_button isloading={isloading} />
           </div>
 

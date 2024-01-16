@@ -26,22 +26,26 @@ function Product_page({ current_user }) {
   return (
     <div>
       <Tabs
-        defaultActiveKey={activeTab}
+        activeKey={activeTab}
         transition={true}
         onSelect={handleTabSelect}
         id="noanim-tab-example"
         className="mb-3"
       >
         <Tab eventKey="dish" title="Dish">
-          {activeTab === "dish" && <Dish />}
+          {activeTab === "dish" && <Dish setActiveTab={setActiveTab} />}
         </Tab>
-        <Tab eventKey="menu" title="Menu">
-          {activeTab === "menu" && <Menu />}
-        </Tab>
+        {activeTab === "menu" && (
+          <Tab eventKey="menu" title="Menu">
+            <Menu setActiveTab={setActiveTab} />
+          </Tab>
+        )}
 
-        <Tab eventKey="submenu" title="SubMenu">
-          {activeTab === "submenu" && <Submenu />}
-        </Tab>
+        {activeTab === "submenu" && (
+          <Tab eventKey="submenu" title="SubMenu">
+            <Submenu setActiveTab={setActiveTab} />
+          </Tab>
+        )}
 
         <Tab eventKey="pots" title="Pots">
           {activeTab === "pots" && <Pots />}

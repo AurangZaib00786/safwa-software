@@ -34,7 +34,7 @@ function User(props) {
 
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
-
+  const setActiveTab = props.setActiveTab;
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_users = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
@@ -338,7 +338,27 @@ function User(props) {
         <form onSubmit={handleSubmit}>
           <div className="card-header d-flex justify-content-between bg-white">
             <h3 className="mt-2 me-2">Add User</h3>
-            <div className="mt-2 me-2 d-flex flex-row-reverse">
+            <div className="mt-2 me-2 d-flex ">
+              <Button
+                className="me-2"
+                variant="outline-secondary"
+                onClick={() => {
+                  setActiveTab("Role");
+                }}
+              >
+                {" "}
+                Roles
+              </Button>
+              <Button
+                className="me-2"
+                variant="outline-success"
+                onClick={() => {
+                  setActiveTab("Group");
+                }}
+              >
+                {" "}
+                Permissions
+              </Button>
               <Save_button isloading={isloading} />
             </div>
           </div>

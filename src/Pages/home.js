@@ -102,40 +102,30 @@ function Layout(props) {
               User Management
             </MenuItem>
 
-            <SubMenu
-              active={
-                menu_status === "customer" ||
-                menu_status === "supplier" ||
-                menu_status === "employee"
-              }
+            <MenuItem
+              active={menu_status === "customer"}
               icon={<SupervisorAccountIcon />}
-              label={"Parties"}
+              component={<Link to={`/customers`} />}
+              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
             >
-              <MenuItem
-                active={menu_status === "customer"}
-                icon={<SupervisorAccountIcon />}
-                component={<Link to={`/customers`} />}
-                rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
-              >
-                Customers
-              </MenuItem>
-              <MenuItem
-                active={menu_status === "supplier"}
-                icon={<SupervisorAccountIcon />}
-                component={<Link to={`/suppliers`} />}
-                rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
-              >
-                Vendors
-              </MenuItem>
-              <MenuItem
-                active={menu_status === "employee"}
-                icon={<SupervisorAccountIcon />}
-                component={<Link to={`/employees`} />}
-                rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
-              >
-                Employees
-              </MenuItem>
-            </SubMenu>
+              Customers
+            </MenuItem>
+            <MenuItem
+              active={menu_status === "supplier"}
+              icon={<SupervisorAccountIcon />}
+              component={<Link to={`/suppliers`} />}
+              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+            >
+              Vendors
+            </MenuItem>
+            <MenuItem
+              active={menu_status === "employee"}
+              icon={<SupervisorAccountIcon />}
+              component={<Link to={`/employees`} />}
+              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+            >
+              Employees
+            </MenuItem>
 
             <SubMenu
               active={

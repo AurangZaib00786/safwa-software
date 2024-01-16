@@ -33,7 +33,7 @@ export default function Submenu(props) {
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
-  const current_user = props.state.Setcurrentinfo.current_user;
+  const setActiveTab = props.setActiveTab;
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
 
@@ -283,15 +283,27 @@ export default function Submenu(props) {
           >
             {t("Sub Menu")}
           </h1>
-          <Button
-            type="button"
-            className="mb-2"
-            variant="outline-success"
-            onClick={() => setshowmodel(!showmodel)}
-          >
-            <FontAwesomeIcon icon={faUserPlus} className="me-2" />
-            {t("Add Submenu")}
-          </Button>
+          <div className="mt-2 me-2 d-flex">
+            <Button
+              className="me-2 mb-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("dish");
+              }}
+            >
+              {" "}
+              Dishes
+            </Button>
+            <Button
+              type="button"
+              className="mb-2"
+              variant="outline-success"
+              onClick={() => setshowmodel(!showmodel)}
+            >
+              <FontAwesomeIcon icon={faUserPlus} className="me-2" />
+              {t("Add Submenu")}
+            </Button>
+          </div>
         </div>
 
         <div className="card-body pt-0">

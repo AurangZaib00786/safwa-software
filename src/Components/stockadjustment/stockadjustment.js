@@ -55,7 +55,7 @@ export default function StockAdjustment(props) {
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_stock = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
-
+  const setActiveTab = props.setActiveTab;
   const [id, setid] = useState("");
   const [check_update, setcheck_update] = useState(false);
   const [delete_user, setdelete_user] = useState(false);
@@ -528,7 +528,17 @@ export default function StockAdjustment(props) {
       <div className="card">
         <div className="card-header d-flex justify-content-between bg-white">
           <h3 className="mt-2 me-2">Stock Adjustment</h3>
-          <div className="mt-2 me-2 d-flex flex-row-reverse">
+          <div className="mt-2 me-2 d-flex">
+            <Button
+              className="me-2"
+              variant="outline-secondary"
+              onClick={() => {
+                setActiveTab("Stock");
+              }}
+            >
+              {" "}
+              Stock
+            </Button>
             <Button
               variant="outline-primary"
               onClick={check_update ? handleupdate : handlesubmit}

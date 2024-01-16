@@ -19,7 +19,6 @@ import custom_toast from "../alerts/custom_toast";
 import went_wrong_toast from "../alerts/went_wrong_toast";
 import Spinner from "react-bootstrap/Spinner";
 import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
 import { useTranslation } from "react-i18next";
@@ -34,7 +33,7 @@ function Accounts(props) {
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const current_user = props.state.Setcurrentinfo.current_user;
-
+  const setActiveTab = props.setActiveTab;
   const all_users = props.state.Settablehistory.table_history;
   const dispatch_1 = props.Setinfo_ofuser;
   const dispatch = props.Settable_history;
@@ -483,7 +482,17 @@ function Accounts(props) {
         <form onSubmit={handleSubmit}>
           <div className="card-header d-flex justify-content-between bg-white">
             <h3 className="mt-2 me-2">Add Branch</h3>
-            <div className="mt-2 me-2 d-flex flex-row-reverse">
+            <div className="mt-2 me-2 d-flex ">
+              <Button
+                className="me-2"
+                variant="outline-success"
+                onClick={() => {
+                  setActiveTab("Assign Branch");
+                }}
+              >
+                {" "}
+                Assign Branches
+              </Button>
               <Save_button isloading={isloading} />
             </div>
           </div>
@@ -558,7 +567,7 @@ function Accounts(props) {
                   <div className="col-md-4">
                     <TextField
                       className="form-control  mb-3"
-                      label="VAT"
+                      label="VAT %"
                       value={tax_percentage}
                       onChange={(e) => {
                         settax_percentage(e.target.value);

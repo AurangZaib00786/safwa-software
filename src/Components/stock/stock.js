@@ -24,6 +24,7 @@ export default function Stock_table({
   route,
   selected_branch,
   current_user,
+  setActiveTab,
   setview_stock,
 }) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -278,15 +279,37 @@ export default function Stock_table({
       <div className="card">
         <div className="card-header bg-white  d-flex justify-content-between ">
           <h3 className="mt-2 me-2">Stock</h3>
-          <Button
-            type="button"
-            className="mb-2"
-            variant="outline-success"
-            onClick={setview_stock}
-          >
-            <FontAwesomeIcon className="me-2" icon={faRotate} />
-            Update Stock
-          </Button>
+          <div className="d-flex mt-2 me-2">
+            <Button
+              className="me-2 mb-2"
+              variant="outline-secondary"
+              onClick={() => {
+                setActiveTab("Store");
+              }}
+            >
+              {" "}
+              Store
+            </Button>
+            <Button
+              className="me-2 mb-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("Stock Adjustment");
+              }}
+            >
+              {" "}
+              Adjustment
+            </Button>
+            <Button
+              type="button"
+              className="mb-2"
+              variant="outline-success"
+              onClick={setview_stock}
+            >
+              <FontAwesomeIcon className="me-2" icon={faRotate} />
+              Update Stock
+            </Button>
+          </div>
         </div>
 
         <div className="card-body pt-0">

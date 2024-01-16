@@ -36,7 +36,7 @@ export default function Store(props) {
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
-  const settings = props.state.Setcurrentinfo.settings;
+  const setActiveTab = props.setActiveTab;
   const { ExportCSVButton } = CSVExport;
   const [showmodel, setshowmodel] = useState(false);
   const [data, setdata] = useState("");
@@ -241,15 +241,27 @@ export default function Store(props) {
       <div className="card">
         <div className="card-header bg-white  d-flex justify-content-between ">
           <h3 className="mt-2 me-2">Stores</h3>
-          <Button
-            type="button"
-            className="mb-2"
-            variant="outline-success"
-            onClick={() => setshowmodel(!showmodel)}
-          >
-            <FontAwesomeIcon className="me-2" icon={faUserPlus} />
-            Add
-          </Button>
+          <div className="mt-2 me-2 d-flex">
+            <Button
+              className="me-2 mb-2"
+              variant="outline-secondary"
+              onClick={() => {
+                setActiveTab("Stock");
+              }}
+            >
+              {" "}
+              Stock
+            </Button>
+            <Button
+              type="button"
+              className="mb-2"
+              variant="outline-success"
+              onClick={() => setshowmodel(!showmodel)}
+            >
+              <FontAwesomeIcon className="me-2" icon={faUserPlus} />
+              Add
+            </Button>
+          </div>
         </div>
 
         <div className="card-body pt-0">

@@ -18,7 +18,7 @@ export default function Schedule(props) {
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_products = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
-
+  const setActiveTab = props.setActiveTab;
   const [all_productscopy, setall_productscopy] = useState([]);
   const [timing, settiming] = useState("");
   const [alltiming, setalltiming] = useState([]);
@@ -324,6 +324,7 @@ export default function Schedule(props) {
           route={route}
           selected_branch={selected_branch}
           current_user={current_user}
+          setActiveTab={setActiveTab}
           setview_stock={() => {
             setview_stock(!view_stock);
           }}

@@ -28,31 +28,37 @@ function User_page() {
   return (
     <div>
       <Tabs
-        defaultActiveKey={activeTab}
+        activeKey={activeTab}
         transition={true}
         onSelect={handleTabSelect}
         id="noanim-tab-example"
         className="mb-3"
       >
         <Tab eventKey="User" title="Users">
-          {activeTab === "User" && <User />}
+          {activeTab === "User" && <User setActiveTab={setActiveTab} />}
         </Tab>
 
-        <Tab eventKey="Role" title="Assign Roles">
-          {activeTab === "Role" && <Assign_role />}
-        </Tab>
+        {activeTab === "Role" && (
+          <Tab eventKey="Role" title="Assign Roles">
+            <Assign_role setActiveTab={setActiveTab} />
+          </Tab>
+        )}
 
-        <Tab eventKey="Group" title="Roles & Permissions">
-          {activeTab === "Group" && <RolePermission />}
-        </Tab>
+        {activeTab === "Group" && (
+          <Tab eventKey="Group" title="Roles & Permissions">
+            <RolePermission setActiveTab={setActiveTab} />
+          </Tab>
+        )}
 
         <Tab eventKey="Branch" title="Branches">
-          {activeTab === "Branch" && <Branch />}
+          {activeTab === "Branch" && <Branch setActiveTab={setActiveTab} />}
         </Tab>
 
-        <Tab eventKey="Assign Branch" title="Assign Branches">
-          {activeTab === "Assign Branch" && <Assign_Branch />}
-        </Tab>
+        {activeTab === "Assign Branch" && (
+          <Tab eventKey="Assign Branch" title="Assign Branches">
+            <Assign_Branch setActiveTab={setActiveTab} />
+          </Tab>
+        )}
       </Tabs>
       <ToastContainer autoClose={2000} hideProgressBar={true} theme="dark" />
     </div>

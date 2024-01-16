@@ -14,6 +14,7 @@ export default function Sechule_History({
   route,
   selected_branch,
   current_user,
+  setActiveTab,
   setview_stock,
 }) {
   const [allmenu, setallmenu] = useState([]);
@@ -134,15 +135,37 @@ export default function Sechule_History({
           >
             Time Schedule
           </h1>
-          <Button
-            type="button"
-            className="mb-2"
-            variant="outline-success"
-            onClick={setview_stock}
-          >
-            <FontAwesomeIcon className="me-2" icon={faRotate} />
-            Update Schedule
-          </Button>
+          <div className="mt-2 me-2 d-flex ">
+            <Button
+              className="me-2 mb-2"
+              variant="outline-secondary"
+              onClick={() => {
+                setActiveTab("Timing");
+              }}
+            >
+              {" "}
+              Timings
+            </Button>
+            <Button
+              className="me-2 mb-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("Process");
+              }}
+            >
+              {" "}
+              Process
+            </Button>
+            <Button
+              type="button"
+              className="mb-2"
+              variant="outline-success"
+              onClick={setview_stock}
+            >
+              <FontAwesomeIcon className="me-2" icon={faRotate} />
+              Update Schedule
+            </Button>
+          </div>
         </div>
 
         <div className="card-body pt-0">
