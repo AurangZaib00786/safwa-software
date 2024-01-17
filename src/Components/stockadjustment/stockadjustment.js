@@ -540,6 +540,16 @@ export default function StockAdjustment(props) {
               Stock
             </Button>
             <Button
+              className="me-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("Store");
+              }}
+            >
+              {" "}
+              Store
+            </Button>
+            <Button
               variant="outline-primary"
               onClick={check_update ? handleupdate : handlesubmit}
               disabled={!data.length > 0}

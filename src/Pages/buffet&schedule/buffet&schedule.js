@@ -26,25 +26,21 @@ function Buffet_page({ current_user }) {
   return (
     <div>
       <Tabs
-        activeKey={activeTab}
+        defaultActiveKey={activeTab}
         transition={true}
         onSelect={handleTabSelect}
         id="noanim-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="Schedule" title="Schedule">
-          {activeTab === "Schedule" && <Schedule setActiveTab={setActiveTab} />}
-        </Tab>
-        {activeTab === "Timing" && (
-          <Tab eventKey="Timing" title="Timing">
+        <Tab eventKey="Schedule" title={activeTab}>
+          {activeTab === "Schedule" ? (
+            <Schedule setActiveTab={setActiveTab} />
+          ) : activeTab === "Timing" ? (
             <Timing setActiveTab={setActiveTab} />
-          </Tab>
-        )}
-        {activeTab === "Process" && (
-          <Tab eventKey="Process" title="Process">
-            <Process setActiveTab={setActiveTab} />
-          </Tab>
-        )}
+          ) : (
+            activeTab === "Process" && <Process setActiveTab={setActiveTab} />
+          )}
+        </Tab>
       </Tabs>
       <ToastContainer autoClose={2000} hideProgressBar={true} theme="dark" />
     </div>

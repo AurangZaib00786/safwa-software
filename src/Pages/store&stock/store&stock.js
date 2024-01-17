@@ -27,26 +27,24 @@ function Stockstore_page({ current_user }) {
   return (
     <div>
       <Tabs
-        activeKey={activeTab}
+        defaultActiveKey={activeTab}
         transition={true}
         onSelect={handleTabSelect}
         id="noanim-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="Stock" title="Stock">
-          {activeTab === "Stock" && <Stock setActiveTab={setActiveTab} />}
-        </Tab>
-        {activeTab === "Store" && (
-          <Tab eventKey="Store" title="Store">
+        <Tab eventKey="Stock" title={activeTab}>
+          {activeTab === "Stock" ? (
+            <Stock setActiveTab={setActiveTab} />
+          ) : activeTab === "Store" ? (
             <Store setActiveTab={setActiveTab} />
-          </Tab>
-        )}
+          ) : (
+            activeTab === "Stock Adjustment" && (
+              <StockAdjustment setActiveTab={setActiveTab} />
+            )
+          )}
+        </Tab>
 
-        {activeTab === "Stock Adjustment" && (
-          <Tab eventKey="Stock Adjustment" title="Stock Adjustment">
-            <StockAdjustment setActiveTab={setActiveTab} />
-          </Tab>
-        )}
         <Tab eventKey="materialform" title="Material Issue Form">
           {activeTab === "materialform" && <Materialissueform />}
         </Tab>

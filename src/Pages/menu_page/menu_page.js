@@ -8,10 +8,10 @@ import { ToastContainer } from "react-toastify";
 import Pots from "../../Container/potsContainer";
 
 function Product_page({ current_user }) {
-  const tabs = ["pots", "menu", "submenu", "dish"];
+  const tabs = ["pots", "Menu", "Submenu", "Dish"];
   var current_tab = localStorage.getItem("activeTab");
   if (!tabs.includes(current_tab)) {
-    current_tab = "dish";
+    current_tab = "Dish";
   }
 
   const [activeTab, setActiveTab] = useState(current_tab);
@@ -26,26 +26,21 @@ function Product_page({ current_user }) {
   return (
     <div>
       <Tabs
-        activeKey={activeTab}
+        defaultActiveKey={activeTab}
         transition={true}
         onSelect={handleTabSelect}
         id="noanim-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="dish" title="Dish">
-          {activeTab === "dish" && <Dish setActiveTab={setActiveTab} />}
-        </Tab>
-        {activeTab === "menu" && (
-          <Tab eventKey="menu" title="Menu">
+        <Tab eventKey="Dish" title={activeTab}>
+          {activeTab === "Dish" ? (
+            <Dish setActiveTab={setActiveTab} />
+          ) : activeTab === "Menu" ? (
             <Menu setActiveTab={setActiveTab} />
-          </Tab>
-        )}
-
-        {activeTab === "submenu" && (
-          <Tab eventKey="submenu" title="SubMenu">
-            <Submenu setActiveTab={setActiveTab} />
-          </Tab>
-        )}
+          ) : (
+            activeTab === "Submenu" && <Submenu setActiveTab={setActiveTab} />
+          )}
+        </Tab>
 
         <Tab eventKey="pots" title="Pots">
           {activeTab === "pots" && <Pots />}

@@ -251,13 +251,33 @@ export default function Unit(props) {
           <div className="mt-2 me-2 d-flex">
             <Button
               className="me-2 mb-2"
-              variant="outline-success"
+              variant="outline-dark"
               onClick={() => {
                 setActiveTab("Items");
               }}
             >
               {" "}
               Items
+            </Button>
+            <Button
+              className="me-2 mb-2"
+              variant="outline-secondary"
+              onClick={() => {
+                setActiveTab("Category");
+              }}
+            >
+              {" "}
+              Category
+            </Button>
+            <Button
+              className="me-2 mb-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("Subcategory");
+              }}
+            >
+              {" "}
+              Subcategory
             </Button>
             <Button
               type="button"

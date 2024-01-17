@@ -250,6 +250,17 @@ function RolePermssion(props) {
               Users
             </Button>
             <Button
+              className="me-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("Role");
+              }}
+            >
+              {" "}
+              Role
+            </Button>
+
+            <Button
               type="button"
               className="me-2"
               variant="outline-success"

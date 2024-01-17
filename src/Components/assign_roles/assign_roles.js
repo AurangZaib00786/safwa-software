@@ -239,13 +239,23 @@ function Assign_roles(props) {
           <div className="card-header bg-white d-flex justify-content-end">
             <Button
               className="me-2"
-              variant="outline-success"
+              variant="outline-secondary"
               onClick={() => {
                 setActiveTab("User");
               }}
             >
               {" "}
               Users
+            </Button>
+            <Button
+              className="me-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("Group");
+              }}
+            >
+              {" "}
+              Permissions
             </Button>
             <Update_button isloading={isloading} />
           </div>

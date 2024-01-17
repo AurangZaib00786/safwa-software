@@ -286,18 +286,28 @@ export default function Submenu(props) {
           <div className="mt-2 me-2 d-flex">
             <Button
               className="me-2 mb-2"
-              variant="outline-success"
+              variant="outline-secondary"
               onClick={() => {
-                setActiveTab("dish");
+                setActiveTab("Dish");
               }}
             >
               {" "}
               Dishes
             </Button>
             <Button
+              className="me-2 mb-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("Menu");
+              }}
+            >
+              {" "}
+              Menu
+            </Button>
+            <Button
               type="button"
               className="mb-2"
-              variant="outline-success"
+              variant="outline-primary"
               onClick={() => setshowmodel(!showmodel)}
             >
               <FontAwesomeIcon icon={faUserPlus} className="me-2" />

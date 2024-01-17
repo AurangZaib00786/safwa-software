@@ -28,37 +28,33 @@ function User_page() {
   return (
     <div>
       <Tabs
-        activeKey={activeTab}
+        defaultActiveKey={activeTab}
         transition={true}
         onSelect={handleTabSelect}
         id="noanim-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="User" title="Users">
-          {activeTab === "User" && <User setActiveTab={setActiveTab} />}
-        </Tab>
-
-        {activeTab === "Role" && (
-          <Tab eventKey="Role" title="Assign Roles">
+        <Tab eventKey="User" title={activeTab}>
+          {activeTab === "User" ? (
+            <User setActiveTab={setActiveTab} />
+          ) : activeTab === "Role" ? (
             <Assign_role setActiveTab={setActiveTab} />
-          </Tab>
-        )}
-
-        {activeTab === "Group" && (
-          <Tab eventKey="Group" title="Roles & Permissions">
-            <RolePermission setActiveTab={setActiveTab} />
-          </Tab>
-        )}
-
-        <Tab eventKey="Branch" title="Branches">
-          {activeTab === "Branch" && <Branch setActiveTab={setActiveTab} />}
+          ) : (
+            activeTab === "Group" && (
+              <RolePermission setActiveTab={setActiveTab} />
+            )
+          )}
         </Tab>
 
-        {activeTab === "Assign Branch" && (
-          <Tab eventKey="Assign Branch" title="Assign Branches">
-            <Assign_Branch setActiveTab={setActiveTab} />
-          </Tab>
-        )}
+        <Tab eventKey="Branch" title={activeTab}>
+          {activeTab === "Branch" ? (
+            <Branch setActiveTab={setActiveTab} />
+          ) : (
+            activeTab === "Assign Branch" && (
+              <Assign_Branch setActiveTab={setActiveTab} />
+            )
+          )}
+        </Tab>
       </Tabs>
       <ToastContainer autoClose={2000} hideProgressBar={true} theme="dark" />
     </div>

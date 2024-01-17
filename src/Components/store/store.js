@@ -252,10 +252,21 @@ export default function Store(props) {
               {" "}
               Stock
             </Button>
+
+            <Button
+              className="me-2 mb-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("Stock Adjustment");
+              }}
+            >
+              {" "}
+              Adjustment
+            </Button>
             <Button
               type="button"
               className="mb-2"
-              variant="outline-success"
+              variant="outline-primary"
               onClick={() => setshowmodel(!showmodel)}
             >
               <FontAwesomeIcon className="me-2" icon={faUserPlus} />

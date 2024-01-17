@@ -159,7 +159,7 @@ export default function Sechule_History({
             <Button
               type="button"
               className="mb-2"
-              variant="outline-success"
+              variant="outline-primary"
               onClick={setview_stock}
             >
               <FontAwesomeIcon className="me-2" icon={faRotate} />

@@ -10,7 +10,7 @@ import { useReactToPrint } from "react-to-print";
 
 export default function Dish_View({ user, route, setview }) {
   const [data, setdata] = useState([]);
-  const [submenu, setsubmenu] = useState("");
+  const [submenu, setsubmenu] = useState({ value: "all", label: "All" });
   const [menu, setmenu] = useState("");
   const [allmenu, setallmenu] = useState([]);
   const [allsubmenu, setallsubmenu] = useState([]);
@@ -24,10 +24,10 @@ export default function Dish_View({ user, route, setview }) {
       var url = `${route}/api/dishes/`;
       if (menu) {
         url = `${url}?menu_id=${menu.value}`;
-        if (submenu) {
+        if (submenu.value !== "all") {
           url = `${url}&sub_menu_id=${submenu.value}`;
         }
-      } else if (submenu) {
+      } else if (submenu.value !== "all") {
         url = `${url}?sub_menu_id=${submenu.value}`;
       }
 
@@ -149,7 +149,7 @@ export default function Dish_View({ user, route, setview }) {
             </div>
             <div className="col-md-3">
               <Select
-                options={allsubmenu}
+                options={[{ value: "all", label: "All" }, ...allsubmenu]}
                 placeholder={"Sub Menu"}
                 value={submenu}
                 funct={(e) => setsubmenu(e)}

@@ -250,13 +250,33 @@ export default function Category(props) {
           <div className="mt-2 me-2 d-flex">
             <Button
               className="me-2 mb-2"
-              variant="outline-success"
+              variant="outline-dark"
               onClick={() => {
                 setActiveTab("Items");
               }}
             >
               {" "}
               Items
+            </Button>
+            <Button
+              className="me-2 mb-2"
+              variant="outline-secondary"
+              onClick={() => {
+                setActiveTab("Subcategory");
+              }}
+            >
+              {" "}
+              Subcategory
+            </Button>
+            <Button
+              className="me-2 mb-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("Units");
+              }}
+            >
+              {" "}
+              Units
             </Button>
             <Button
               type="button"

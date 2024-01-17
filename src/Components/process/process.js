@@ -265,9 +265,19 @@ export default function Process(props) {
               Schedule
             </Button>
             <Button
+              className="me-2 mb-2"
+              variant="outline-success"
+              onClick={() => {
+                setActiveTab("Timing");
+              }}
+            >
+              {" "}
+              Timings
+            </Button>
+            <Button
               type="button"
               className="mb-2"
-              variant="outline-success"
+              variant="outline-primary"
               onClick={() => setshowmodel(!showmodel)}
             >
               <FontAwesomeIcon className="me-2" icon={faUserPlus} />

@@ -232,7 +232,7 @@ export default function Dish(props) {
                   className="me-2"
                   variant="outline-dark"
                   onClick={() => {
-                    setActiveTab("menu");
+                    setActiveTab("Menu");
                   }}
                 >
                   {" "}
@@ -242,7 +242,7 @@ export default function Dish(props) {
                   className="me-2"
                   variant="outline-secondary"
                   onClick={() => {
-                    setActiveTab("submenu");
+                    setActiveTab("Submenu");
                   }}
                 >
                   {" "}
