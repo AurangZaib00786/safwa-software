@@ -2,17 +2,13 @@ import React, { useState, useEffect, memo } from "react";
 import "./branchmanagement.css";
 import Select from "react-select";
 import Button from "react-bootstrap/Button";
-import { ToastContainer } from "react-toastify";
 import went_wrong_toast from "../alerts/went_wrong_toast";
-import Update_button from "../buttons/update_button";
 import success_toast from "../alerts/success_toast";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import Groupform from "./roleform";
 import { useTranslation } from "react-i18next";
-
-import Spinner from "react-bootstrap/Spinner";
 import AddIcon from "@material-ui/icons/Add";
 import TextField from "@mui/material/TextField";
+import Save_button from "../buttons/save_button";
 
 function RolePermssion(props) {
   const { t } = useTranslation();
@@ -23,7 +19,7 @@ function RolePermssion(props) {
   const setActiveTab = props.setActiveTab;
   const dispatch = props.Settable_history;
   const [selected_role, setselected_role] = useState("");
-
+  const setadditionalinfo = props.setadditionalinfo;
   const [allpermissions, setallpermissions] = useState([]);
   const [all_jsonpermissions, setall_jsonpermissions] = useState([]);
   const [showmodel, setshowmodel] = useState(false);
@@ -253,6 +249,7 @@ function RolePermssion(props) {
               className="me-2"
               variant="outline-success"
               onClick={() => {
+                setadditionalinfo(null);
                 setActiveTab("Role");
               }}
             >
@@ -270,7 +267,7 @@ function RolePermssion(props) {
               Add Role
             </Button>
 
-            <Update_button isloading={isloading} />
+            <Save_button isloading={isloading} />
           </div>
 
           <div className="card-body">

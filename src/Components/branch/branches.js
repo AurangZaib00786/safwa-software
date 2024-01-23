@@ -14,7 +14,7 @@ import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import Button from "react-bootstrap/Button";
 import Alert_before_delete from "../../Container/alertContainer";
-
+import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
 import custom_toast from "../alerts/custom_toast";
 import went_wrong_toast from "../alerts/went_wrong_toast";
 import Spinner from "react-bootstrap/Spinner";
@@ -57,8 +57,11 @@ function Accounts(props) {
   const [vatno, setvatno] = useState("");
   const [arabicname, setarabicname] = useState("");
   const [tax_percentage, settax_percentage] = useState("");
-  const [balance, setbalance] = useState(0);
   const [terms, setterms] = useState("");
+
+  const theme = createTheme({
+    direction: "rtl", // Both here and <body dir="rtl">
+  });
 
   useEffect(() => {
     setisloading(true);
@@ -514,25 +517,32 @@ function Accounts(props) {
                       autoFocus
                     />
                   </div>
-                  <div className="col-md-4">
-                    <TextField
-                      className="form-control  mb-3"
-                      label="Arabic Name"
-                      value={arabicname}
-                      onChange={(e) => {
-                        setarabicname(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
+                  <MuiThemeProvider theme={theme}>
+                    <div dir="rtl" className="col-md-4">
+                      <TextField
+                        className="form-control  mb-3"
+                        label="اسم"
+                        value={arabicname}
+                        onChange={(e) => {
+                          setarabicname(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                  </MuiThemeProvider>
 
                   <div className="col-md-4">
                     <TextField
+                      type="number"
                       className="form-control  mb-3"
-                      label="Contact"
+                      label="Mobile"
                       value={contact}
                       onChange={(e) => {
-                        setcontact(e.target.value);
+                        if (e.target.value.length < 11) {
+                          setcontact(e.target.value);
+                        } else {
+                          Red_toast("Mobile digits must be between 0~9");
+                        }
                       }}
                       size="small"
                     />
@@ -554,11 +564,16 @@ function Accounts(props) {
                   </div>
                   <div className="col-md-4">
                     <TextField
+                      type="number"
                       className="form-control  mb-3"
                       label="VAT Number"
                       value={vatno}
                       onChange={(e) => {
-                        setvatno(e.target.value);
+                        if (e.target.value.length < 16) {
+                          setvatno(e.target.value);
+                        } else {
+                          Red_toast("VAT no digits must be between 0~15");
+                        }
                       }}
                       size="small"
                     />
@@ -566,11 +581,16 @@ function Accounts(props) {
 
                   <div className="col-md-4">
                     <TextField
+                      type="number"
                       className="form-control  mb-3"
                       label="VAT %"
                       value={tax_percentage}
                       onChange={(e) => {
-                        settax_percentage(e.target.value);
+                        if (Number(e.target.value) < 101) {
+                          settax_percentage(e.target.value);
+                        } else {
+                          Red_toast("VAT % must be less or equal to 100");
+                        }
                       }}
                       size="small"
                     />

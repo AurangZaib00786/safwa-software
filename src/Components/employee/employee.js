@@ -29,6 +29,7 @@ import Tabs from "react-bootstrap/Tabs";
 import Select from "../alerts/select";
 import TextField from "@mui/material/TextField";
 import success_toast from "../alerts/success_toast";
+import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
 
 export default function CustomerType(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -46,7 +47,10 @@ export default function CustomerType(props) {
   const [delete_user, setdelete_user] = useState(false);
   const [url_to_delete, seturl_to_delete] = useState("");
   const [row_id, setrow_id] = useState("");
-  const inputFile = useRef(null);
+  const inputFileidcard = useRef(null);
+  const inputFilepassport = useRef(null);
+  const inputFileliecence = useRef(null);
+  const inputFilemunicipality = useRef(null);
 
   const [all_files, setall_files] = useState([]);
   const [name, setname] = useState("");
@@ -65,21 +69,41 @@ export default function CustomerType(props) {
   const [prallowance, setprallowance] = useState("");
   const [accomallowance, setaccomallowance] = useState("");
   const [extraallowance, setextraallowance] = useState("");
+
+  const [transportallowancepercenage, settransportallowancepercenage] =
+    useState("");
+  const [foodallowancepercenage, setfoodallowancepercenage] = useState("");
+  const [prallowancepercenage, setprallowancepercenage] = useState("");
+  const [accomallowancepercenage, setaccomallowancepercenage] = useState("");
+  const [extraallowancepercenage, setextraallowancepercenage] = useState("");
+
   const [passport, setpassport] = useState("");
   const [passportdate, setpassportdate] = useState("");
+  const [passportcheck, setpassportcheck] = useState(false);
+
   const [municipalno, setmunicipalno] = useState("");
   const [municipaldate, setmunicipaldate] = useState("");
+  const [municipalnocheck, setmunicipalnocheck] = useState(false);
+
   const [drivinglicense, setdrivinglicense] = useState("");
   const [drivinglicensedate, setdrivinglicensedate] = useState("");
+  const [drivinglicensecheck, setdrivinglicensecheck] = useState(false);
+
   const [workpermit, setworkpermit] = useState("");
   const [workpermitdate, setworkpermitdate] = useState("");
+  const [workpermitcheck, setworkpermitcheck] = useState(false);
+
   const [allcategory, setallcategory] = useState([]);
   const [allcountries, setallcountries] = useState([]);
   const [category, setcategory] = useState("");
   const [isloading, setisloading] = useState(false);
   const [salary, setsalary] = useState("");
+  const [absentdays, setabsentdays] = useState("");
   const [id, setid] = useState("");
   const [check_update, setcheck_update] = useState(false);
+  const theme = createTheme({
+    direction: "rtl", // Both here and <body dir="rtl">
+  });
 
   useEffect(() => {
     setisloading(true);
@@ -214,6 +238,14 @@ export default function CustomerType(props) {
             setextraallowance(row.extra_allowance);
             setsalary(row.salary);
             setaccomallowance(row.accomodation_allowance);
+
+            settransportallowancepercenage(row.transport_allowance_percentage);
+            setfoodallowancepercenage(row.food_allowance_percentage);
+            setprallowancepercenage(row.pr_allowance_percentage);
+            setextraallowancepercenage(row.extra_allowance_percentage);
+            setaccomallowancepercenage(row.accomodation_allowance_percentage);
+            setabsentdays(row.absent_days);
+
             setpassport(row.passport_number);
             setpassportdate(row.passport_expiry_date);
             setmunicipaldate(row.identity_expiry_date);
@@ -222,14 +254,59 @@ export default function CustomerType(props) {
             setdrivinglicensedate(row.driving_license_date);
             setworkpermit(row.work_permit_number);
             setworkpermitdate(row.work_permit_date);
+
             setall_files(
               row.documents.map((item) => {
-                return {
-                  ...item,
-                  picture: { name: item.file },
-                  url: item.file,
-                  type: item.type,
-                };
+                switch (item.document_name) {
+                  case "Id Card":
+                    setworkpermit(item.document_number);
+                    setworkpermitcheck(true);
+                    setworkpermitdate(item.expiry_date);
+                    return {
+                      id: item.id,
+                      picture: { name: item.file.split("/").pop() },
+                      type: item.type,
+                      url: item.file,
+                      file: "",
+                      document_name: "Id Card",
+                    };
+                  case "passport":
+                    setpassport(item.document_number);
+                    setpassportcheck(true);
+                    setpassportdate(item.expiry_date);
+                    return {
+                      id: item.id,
+                      picture: { name: item.file.split("/").pop() },
+                      type: item.type,
+                      url: item.file,
+                      file: "",
+                      document_name: "passport",
+                    };
+                  case "municipality":
+                    setmunicipalno(item.document_number);
+                    setmunicipalnocheck(true);
+                    setmunicipaldate(item.expiry_date);
+                    return {
+                      id: item.id,
+                      picture: { name: item.file.split("/").pop() },
+                      type: item.type,
+                      url: item.file,
+                      file: "",
+                      document_name: "municipality",
+                    };
+                  case "liecence":
+                    setdrivinglicense(item.document_number);
+                    setdrivinglicensecheck(true);
+                    setdrivinglicensedate(item.expiry_date);
+                    return {
+                      id: item.id,
+                      picture: { name: item.file.split("/").pop() },
+                      type: item.type,
+                      url: item.file,
+                      file: "",
+                      document_name: "liecence",
+                    };
+                }
               })
             );
           }}
@@ -431,22 +508,86 @@ export default function CustomerType(props) {
       formData.append("accomodation_allowance", accomallowance);
       formData.append("pr_allowance", prallowance);
       formData.append("extra_allowance", extraallowance);
+
+      formData.append(
+        "transport_allowance_percentage",
+        transportallowancepercenage
+      );
+      formData.append("food_allowance_percentage", foodallowancepercenage);
+      formData.append(
+        "accomodation_allowance_percentage",
+        accomallowancepercenage
+      );
+      formData.append("pr_allowance_percentage", prallowancepercenage);
+      formData.append("extra_allowance_percentage", extraallowancepercenage);
+
       formData.append("hiring_date", hiredate);
       formData.append("expelled_date", firedate);
-      formData.append("passport_number", passport);
-      formData.append("passport_expiry_date", passportdate);
-      formData.append("identity_number", municipalno);
-      formData.append("identity_expiry_date", municipaldate);
-      formData.append("driving_license_number", drivinglicense);
-      formData.append("driving_license_date", drivinglicensedate);
-      formData.append("work_permit_number", workpermit);
-      formData.append("work_permit_date", workpermitdate);
+      formData.append("absent_days", absentdays);
+
       formData.append("account_head", selected_branch.id);
       formData.append("user", current_user.id);
       formData.append("category", category.value);
       all_files.forEach((item, index) => {
-        formData.append(`documents[${index}]file`, item.picture);
-        formData.append(`documents[${index}]type`, item.type);
+        switch (item.document_name) {
+          case "Id Card":
+            if (workpermitcheck) {
+              formData.append(`documents[${index}]file`, item.picture);
+              formData.append(`documents[${index}]type`, item.type);
+              formData.append(
+                `documents[${index}]document_name`,
+                item.document_name
+              );
+              formData.append(`documents[${index}]document_number`, workpermit);
+              formData.append(`documents[${index}]expiry_date`, workpermitdate);
+            }
+            return;
+          case "passport":
+            if (passportcheck) {
+              formData.append(`documents[${index}]file`, item.picture);
+              formData.append(`documents[${index}]type`, item.type);
+              formData.append(
+                `documents[${index}]document_name`,
+                item.document_name
+              );
+              formData.append(`documents[${index}]document_number`, passport);
+              formData.append(`documents[${index}]expiry_date`, passportdate);
+            }
+            return;
+          case "municipality":
+            if (municipalnocheck) {
+              formData.append(`documents[${index}]file`, item.picture);
+              formData.append(`documents[${index}]type`, item.type);
+              formData.append(
+                `documents[${index}]document_name`,
+                item.document_name
+              );
+              formData.append(
+                `documents[${index}]document_number`,
+                municipalno
+              );
+              formData.append(`documents[${index}]expiry_date`, municipaldate);
+            }
+            return;
+          case "liecence":
+            if (drivinglicensecheck) {
+              formData.append(`documents[${index}]file`, item.picture);
+              formData.append(`documents[${index}]type`, item.type);
+              formData.append(
+                `documents[${index}]document_name`,
+                item.document_name
+              );
+              formData.append(
+                `documents[${index}]document_number`,
+                drivinglicense
+              );
+              formData.append(
+                `documents[${index}]expiry_date`,
+                drivinglicensedate
+              );
+            }
+            return;
+        }
       });
 
       const response = await fetch(`${route}/api/employee/`, {
@@ -495,6 +636,17 @@ export default function CustomerType(props) {
         setdrivinglicensedate("");
         setworkpermit("");
         setworkpermitdate("");
+        setabsentdays("");
+        setworkpermitcheck(false);
+        setdrivinglicensecheck(false);
+        setmunicipalnocheck(false);
+        setpassportcheck(false);
+        settransportallowancepercenage("");
+        setfoodallowancepercenage("");
+        setprallowancepercenage("");
+        setextraallowancepercenage("");
+        setaccomallowancepercenage("");
+
         if (e) {
           localStorage.setItem("data", JSON.stringify(json));
           window.open("/employeeprint", "_blank");
@@ -509,11 +661,12 @@ export default function CustomerType(props) {
       const formData = new FormData();
 
       formData.append("name", name);
+      formData.append("arabic_name", arabicname);
       formData.append("contact", contact);
       formData.append("country", nationality?.value);
       formData.append("address", address);
       formData.append("working_hours", workinghours);
-      formData.append("arabic_name", arabicname);
+
       formData.append("type", type.value);
       formData.append("salary", salary);
       formData.append("transport_allowance", transportallowance);
@@ -521,30 +674,113 @@ export default function CustomerType(props) {
       formData.append("accomodation_allowance", accomallowance);
       formData.append("pr_allowance", prallowance);
       formData.append("extra_allowance", extraallowance);
+
+      formData.append(
+        "transport_allowance_percentage",
+        transportallowancepercenage
+      );
+      formData.append("food_allowance_percentage", foodallowancepercenage);
+      formData.append(
+        "accomodation_allowance_percentage",
+        accomallowancepercenage
+      );
+      formData.append("pr_allowance_percentage", prallowancepercenage);
+      formData.append("extra_allowance_percentage", extraallowancepercenage);
+
       formData.append("hiring_date", hiredate ? hiredate : "");
       formData.append("expelled_date", firedate ? firedate : "");
-      formData.append("passport_number", passport);
-      formData.append("passport_expiry_date", passportdate ? passportdate : "");
-      formData.append("identity_number", municipalno);
-      formData.append(
-        "identity_expiry_date",
-        municipaldate ? municipaldate : ""
-      );
-      formData.append("driving_license_number", drivinglicense);
-      formData.append(
-        "driving_license_date",
-        drivinglicensedate ? drivinglicensedate : ""
-      );
-      formData.append("work_permit_number", workpermit);
-      formData.append("work_permit_date", workpermitdate ? workpermitdate : "");
-
+      formData.append("absent_days", absentdays);
+      formData.append("user", current_user.id);
       formData.append("category", category.value);
+
       all_files.forEach((item, index) => {
-        if (item.id) {
-          formData.append(`documents[${index}]id`, item.id);
-        } else {
-          formData.append(`documents[${index}]file`, item.file);
-          formData.append(`documents[${index}]type`, item.type);
+        switch (item.document_name) {
+          case "Id Card":
+            if (workpermitcheck) {
+              if (item.id) {
+                formData.append(`documents[${index}]id`, item.id);
+              }
+              if (item.file) {
+                formData.append(`documents[${index}]file`, item.file);
+              }
+              formData.append(`documents[${index}]type`, item.type);
+              formData.append(
+                `documents[${index}]document_name`,
+                item.document_name
+              );
+              formData.append(`documents[${index}]document_number`, workpermit);
+              formData.append(
+                `documents[${index}]expiry_date`,
+                workpermitdate ? workpermitdate : ""
+              );
+            }
+            return;
+          case "passport":
+            if (passportcheck) {
+              if (item.id) {
+                formData.append(`documents[${index}]id`, item.id);
+              }
+              if (item.file) {
+                formData.append(`documents[${index}]file`, item.file);
+              }
+              formData.append(`documents[${index}]type`, item.type);
+              formData.append(
+                `documents[${index}]document_name`,
+                item.document_name
+              );
+              formData.append(`documents[${index}]document_number`, passport);
+              formData.append(
+                `documents[${index}]expiry_date`,
+                passportdate ? passportdate : ""
+              );
+            }
+            return;
+          case "municipality":
+            if (municipalnocheck) {
+              if (item.id) {
+                formData.append(`documents[${index}]id`, item.id);
+              }
+              if (item.file) {
+                formData.append(`documents[${index}]file`, item.file);
+              }
+              formData.append(`documents[${index}]type`, item.type);
+              formData.append(
+                `documents[${index}]document_name`,
+                item.document_name
+              );
+              formData.append(
+                `documents[${index}]document_number`,
+                municipalno
+              );
+              formData.append(
+                `documents[${index}]expiry_date`,
+                municipaldate ? municipaldate : ""
+              );
+            }
+            return;
+          case "liecence":
+            if (drivinglicensecheck) {
+              if (item.id) {
+                formData.append(`documents[${index}]id`, item.id);
+              }
+              if (item.file) {
+                formData.append(`documents[${index}]file`, item.file);
+              }
+              formData.append(`documents[${index}]type`, item.type);
+              formData.append(
+                `documents[${index}]document_name`,
+                item.document_name
+              );
+              formData.append(
+                `documents[${index}]document_number`,
+                drivinglicense
+              );
+              formData.append(
+                `documents[${index}]expiry_date`,
+                drivinglicensedate ? drivinglicensedate : ""
+              );
+            }
+            return;
         }
       });
 
@@ -594,6 +830,16 @@ export default function CustomerType(props) {
         setdrivinglicensedate("");
         setworkpermit("");
         setworkpermitdate("");
+        setabsentdays("");
+        setworkpermitcheck(false);
+        setdrivinglicensecheck(false);
+        setmunicipalnocheck(false);
+        setpassportcheck(false);
+        settransportallowancepercenage("");
+        setfoodallowancepercenage("");
+        setprallowancepercenage("");
+        setextraallowancepercenage("");
+        setaccomallowancepercenage("");
 
         setid("");
         setcheck_update(false);
@@ -605,40 +851,100 @@ export default function CustomerType(props) {
     }
   };
 
-  const onButtonClick = () => {
+  const onButtonClick = (text) => {
     // `current` points to the mounted file input element
-    inputFile.current.click();
+    switch (text) {
+      case "Id Card":
+        inputFileidcard.current.click();
+        return;
+      case "passport":
+        inputFilepassport.current.click();
+        return;
+      case "liecence":
+        inputFileliecence.current.click();
+        return;
+      case "municipality":
+        inputFilemunicipality.current.click();
+        return;
+    }
   };
 
-  const handlepictureselection = (event) => {
+  const handlepictureselection = (event, text) => {
     const file = event.target.files[0];
 
     if (file) {
       const type = file.type.split("/").shift();
-      if (type === "application") {
-        setall_files([
-          ...all_files,
-          { picture: file, type: type, url: file, file: file },
-        ]);
-      } else if (type === "image") {
-        const reader = new FileReader();
-        reader.onload = () => {
+      const item_present = all_files.filter((item) => {
+        return item.document_name === text;
+      });
+      if (item_present.length === 0) {
+        if (type === "application") {
           setall_files([
             ...all_files,
-            { picture: file, type: type, url: reader.result, file: file },
+            {
+              picture: file,
+              type: type,
+              url: file,
+              file: file,
+              document_name: text,
+            },
           ]);
-        };
-        reader.readAsDataURL(file);
+        } else if (type === "image") {
+          const reader = new FileReader();
+          reader.onload = () => {
+            setall_files([
+              ...all_files,
+              {
+                picture: file,
+                type: type,
+                url: reader.result,
+                file: file,
+                document_name: text,
+              },
+            ]);
+          };
+          reader.readAsDataURL(file);
+        }
+      } else {
+        if (type === "application") {
+          setall_files(
+            all_files.map((item) => {
+              if (item.document_name === item_present[0].document_name) {
+                item["picture"] = file;
+                item["url"] = file;
+                item["file"] = file;
+                item["type"] = type;
+              }
+              return item;
+            })
+          );
+        } else if (type === "image") {
+          const reader = new FileReader();
+          reader.onload = () => {
+            setall_files(
+              all_files.map((item) => {
+                if (item.document_name === item_present[0].document_name) {
+                  item["picture"] = file;
+                  item["url"] = file;
+                  item["file"] = file;
+                  item["type"] = type;
+                }
+                return item;
+              })
+            );
+          };
+          reader.readAsDataURL(file);
+        }
       }
     }
   };
 
-  const handleClick = (file) => {
-    const backend_url = all_files.filter((item) => {
-      return item.picture.name !== file.picture.name;
+  const handledeleteClick = (file) => {
+    const optimize = all_files.filter((item) => {
+      return item.document_name !== file.document_name;
     });
 
-    setall_files(backend_url);
+    setall_files(optimize);
   };
 
   const handleimageclick = (item) => {
@@ -646,8 +952,43 @@ export default function CustomerType(props) {
       const fileURL = URL.createObjectURL(item.file);
       window.open(fileURL, "_blank");
     } else {
-      window.open(item.file, "_blank");
+      console.log("updated version");
+      window.open(item.url, "_blank");
     }
+  };
+  const handlesalary = (e) => {
+    setsalary(e.target.value);
+    settransportallowance(
+      ((Number(e.target.value) / 100) * transportallowancepercenage).toFixed(2)
+    );
+    setfoodallowance(
+      ((Number(e.target.value) / 100) * foodallowancepercenage).toFixed(2)
+    );
+    setprallowance(
+      ((Number(e.target.value) / 100) * prallowancepercenage).toFixed(2)
+    );
+    setaccomallowance(
+      ((Number(e.target.value) / 100) * accomallowancepercenage).toFixed(2)
+    );
+    setextraallowance(
+      ((Number(e.target.value) / 100) * extraallowancepercenage).toFixed(2)
+    );
+  };
+
+  const handleidcardchange = (e) => {
+    setworkpermitcheck(e.target.checked);
+  };
+
+  const handlepassportchange = (e) => {
+    setpassportcheck(e.target.checked);
+  };
+
+  const handledrivingchange = (e) => {
+    setdrivinglicensecheck(e.target.checked);
+  };
+
+  const handlemunicipalitychange = (e) => {
+    setmunicipalnocheck(e.target.checked);
   };
 
   return (
@@ -687,8 +1028,7 @@ export default function CustomerType(props) {
                     aria-hidden="true"
                   />
                 )}
-                <FontAwesomeIcon icon={faRotate} className="me-1" />{" "}
-                {check_update ? "Update" : "Save"}
+                <FontAwesomeIcon icon={faRotate} className="me-1" /> Save
               </Button>
 
               <Button
@@ -733,25 +1073,33 @@ export default function CustomerType(props) {
                         autoFocus
                       />
                     </div>
-                    <div className="col-6 col-md-3">
-                      <TextField
-                        className="form-control  mb-3"
-                        label={"اسم"}
-                        value={arabicname}
-                        onChange={(e) => {
-                          setarabicname(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    </div>
+                    <MuiThemeProvider theme={theme}>
+                      <div dir="rtl" className="col-6 col-md-3">
+                        <TextField
+                          className="form-control  mb-3"
+                          label={"اسم"}
+                          value={arabicname}
+                          onChange={(e) => {
+                            setarabicname(e.target.value);
+                          }}
+                          size="small"
+                          required
+                        />
+                      </div>
+                    </MuiThemeProvider>
 
                     <div className="col-6  col-md-3">
                       <TextField
+                        type="number"
                         className="form-control  mb-3"
-                        label={"Cell"}
+                        label={"Mobile"}
                         value={contact}
                         onChange={(e) => {
-                          setcontact(e.target.value);
+                          if (e.target.value.length < 11) {
+                            setcontact(e.target.value);
+                          } else {
+                            Red_toast("Mobile digits must be between 0~10");
+                          }
                         }}
                         size="small"
                       />
@@ -771,7 +1119,7 @@ export default function CustomerType(props) {
                   </div>
 
                   <div className="row">
-                    <div className="col-6  col-md-3 mb-3">
+                    <div className="col-6  col-md-3 ">
                       <Select
                         options={allcategory}
                         placeholder={"Category"}
@@ -780,7 +1128,7 @@ export default function CustomerType(props) {
                         required={true}
                       ></Select>
                     </div>
-                    <div className="col-6  col-md-3 mb-3">
+                    <div className="col-6  col-md-3 ">
                       <Select
                         options={[
                           { value: "Daily Wage", label: "Daily Wage" },
@@ -807,11 +1155,15 @@ export default function CustomerType(props) {
                     <div className="col-6  col-md-3">
                       <TextField
                         className="form-control   mb-3"
-                        label={"Salary"}
+                        label={type.value === "Daily Wage" ? "Wages" : "Salary"}
                         value={salary}
-                        onChange={(e) => {
-                          setsalary(e.target.value);
-                        }}
+                        onChange={
+                          type.value === "Daily Wage"
+                            ? (e) => {
+                                setsalary(e.target.value);
+                              }
+                            : handlesalary
+                        }
                         size="small"
                       />
                     </div>
@@ -819,73 +1171,173 @@ export default function CustomerType(props) {
 
                   {type?.value === "Monthly Wage" && (
                     <div className="row">
-                      <div className="col-6 col-md-3">
-                        <TextField
-                          type="number"
-                          className="form-control  mb-3"
-                          label={t("Transport Allowance")}
-                          value={transportallowance}
-                          onChange={(e) => {
-                            settransportallowance(e.target.value);
-                          }}
-                          size="small"
-                        />
+                      <div className="d-flex col-6 col-md-3">
+                        <div className=" col-6 ">
+                          <TextField
+                            type="number"
+                            className="form-control  mb-3"
+                            label={t("Transport Allowance %")}
+                            value={transportallowancepercenage}
+                            onChange={(e) => {
+                              settransportallowancepercenage(e.target.value);
+                              settransportallowance(
+                                (
+                                  (Number(salary) / 100) *
+                                  e.target.value
+                                ).toFixed(2)
+                              );
+                            }}
+                            size="small"
+                          />
+                        </div>
+                        <div className=" col-6 ps-3">
+                          <TextField
+                            type="number"
+                            className="form-control  mb-3"
+                            label={t("Transport Allowance")}
+                            value={transportallowance}
+                            onChange={(e) => {
+                              settransportallowance(e.target.value);
+                            }}
+                            size="small"
+                          />
+                        </div>
                       </div>
 
-                      <div className="col-6 col-md-3">
-                        <TextField
-                          type="number"
-                          className="form-control  mb-3"
-                          label={t("Food Allowance")}
-                          value={foodallowance}
-                          onChange={(e) => {
-                            setfoodallowance(e.target.value);
-                          }}
-                          size="small"
-                        />
+                      <div className="d-flex col-6 col-md-3">
+                        <div className="col-6 ">
+                          <TextField
+                            type="number"
+                            className="form-control  mb-3"
+                            label={t("Food Allowance %")}
+                            value={foodallowancepercenage}
+                            onChange={(e) => {
+                              setfoodallowancepercenage(e.target.value);
+                              setfoodallowance(
+                                (
+                                  (Number(salary) / 100) *
+                                  e.target.value
+                                ).toFixed(2)
+                              );
+                            }}
+                            size="small"
+                          />
+                        </div>
+                        <div className="col-6 ps-3">
+                          <TextField
+                            type="number"
+                            className="form-control  mb-3"
+                            label={t("Food Allowance")}
+                            value={foodallowance}
+                            onChange={(e) => {
+                              setfoodallowance(e.target.value);
+                            }}
+                            size="small"
+                          />
+                        </div>
                       </div>
 
-                      <div className="col-6 col-md-3">
-                        <TextField
-                          type="number"
-                          className="form-control  mb-3"
-                          label={t("Accomodation Allowance")}
-                          value={accomallowance}
-                          onChange={(e) => {
-                            setaccomallowance(e.target.value);
-                          }}
-                          size="small"
-                        />
+                      <div className="d-flex col-6 col-md-3">
+                        <div className="col-6 ">
+                          <TextField
+                            type="number"
+                            className="form-control  mb-3"
+                            label={t("Accomod. Allowance %")}
+                            value={accomallowancepercenage}
+                            onChange={(e) => {
+                              setaccomallowancepercenage(e.target.value);
+                              setaccomallowance(
+                                (
+                                  (Number(salary) / 100) *
+                                  e.target.value
+                                ).toFixed(2)
+                              );
+                            }}
+                            size="small"
+                          />
+                        </div>
+                        <div className="col-6 ps-3">
+                          <TextField
+                            type="number"
+                            className="form-control  mb-3"
+                            label={t("Accomodation Allowance")}
+                            value={accomallowance}
+                            onChange={(e) => {
+                              setaccomallowance(e.target.value);
+                            }}
+                            size="small"
+                          />
+                        </div>
                       </div>
 
-                      <div className="col-6 col-md-3">
-                        <TextField
-                          type="Number"
-                          className="form-control  mb-3"
-                          label={t("PR Allowance")}
-                          value={prallowance}
-                          onChange={(e) => {
-                            setprallowance(e.target.value);
-                          }}
-                          size="small"
-                        />
+                      <div className="d-flex col-6 col-md-3">
+                        <div className="col-6">
+                          <TextField
+                            type="Number"
+                            className="form-control  mb-3"
+                            label={t("PR Allowance %")}
+                            value={prallowancepercenage}
+                            onChange={(e) => {
+                              setprallowancepercenage(e.target.value);
+                              setprallowance(
+                                (
+                                  (Number(salary) / 100) *
+                                  e.target.value
+                                ).toFixed(2)
+                              );
+                            }}
+                            size="small"
+                          />
+                        </div>
+                        <div className="col-6 ps-3">
+                          <TextField
+                            type="Number"
+                            className="form-control  mb-3"
+                            label={t("PR Allowance")}
+                            value={prallowance}
+                            onChange={(e) => {
+                              setprallowance(e.target.value);
+                            }}
+                            size="small"
+                          />
+                        </div>
                       </div>
                     </div>
                   )}
 
                   <div className="row">
                     {type?.value === "Monthly Wage" && (
-                      <div className="col-6 col-md-3">
-                        <TextField
-                          type="number"
-                          className="form-control  mb-3"
-                          label={t("Extra Allowance")}
-                          value={extraallowance}
-                          onChange={(e) => {
-                            setextraallowance(e.target.value);
-                          }}
-                          size="small"
-                        />
+                      <div className="d-flex col-6 col-md-3">
+                        <div className="col-6">
+                          <TextField
+                            type="number"
+                            className="form-control  mb-3"
+                            label={t("Extra Allowance %")}
+                            value={extraallowancepercenage}
+                            onChange={(e) => {
+                              setextraallowancepercenage(e.target.value);
+                              setextraallowance(
+                                (
+                                  (Number(salary) / 100) *
+                                  e.target.value
+                                ).toFixed(2)
+                              );
+                            }}
+                            size="small"
+                          />
+                        </div>
+                        <div className="col-6 ps-3">
+                          <TextField
+                            type="number"
+                            className="form-control  mb-3"
+                            label={t("Extra Allowance")}
+                            value={extraallowance}
+                            onChange={(e) => {
+                              setextraallowance(e.target.value);
+                            }}
+                            size="small"
+                          />
+                        </div>
                       </div>
                     )}
                     {type?.value === "Monthly Wage" && (
@@ -894,14 +1346,14 @@ export default function CustomerType(props) {
                           type="number"
                           className="form-control  mb-3"
                           label={t("Total")}
-                          value={
+                          value={(
                             Number(extraallowance) +
                             Number(transportallowance) +
                             Number(foodallowance) +
                             Number(accomallowance) +
                             Number(prallowance) +
                             Number(salary)
-                          }
+                          ).toFixed(2)}
                           size="small"
                         />
                       </div>
@@ -915,176 +1367,6 @@ export default function CustomerType(props) {
                         funct={(e) => setnationality(e)}
                         required={true}
                       ></Select>
-                    </div>
-
-                    <div className="d-flex col-6 col-md-3">
-                      <div className=" col-6">
-                        <TextField
-                          className="form-control   mb-3"
-                          label={t("Passport No")}
-                          value={passport}
-                          onChange={(e) => {
-                            setpassport(e.target.value);
-                          }}
-                          size="small"
-                        />
-                      </div>
-                      <div className="ps-3 col-6 ">
-                        <TextField
-                          type="Date"
-                          className="form-control  mb-3"
-                          label={t("Expiry")}
-                          InputLabelProps={{ shrink: true }}
-                          value={passportdate}
-                          onChange={(e) => {
-                            setpassportdate(e.target.value);
-                          }}
-                          size="small"
-                        />
-                      </div>
-                    </div>
-
-                    {type?.value !== "Monthly Wage" && (
-                      <div className="d-flex col-6 col-md-3 ">
-                        <div className="col-6">
-                          <TextField
-                            className="form-control  mb-3"
-                            label={t("Muncipilaty Card")}
-                            value={municipalno}
-                            onChange={(e) => {
-                              setmunicipalno(e.target.value);
-                            }}
-                            size="small"
-                          />
-                        </div>
-                        <div className="ps-3 col-6 ">
-                          <TextField
-                            type="Date"
-                            className="form-control  mb-3"
-                            label={t("Expiry")}
-                            InputLabelProps={{ shrink: true }}
-                            value={municipaldate}
-                            onChange={(e) => {
-                              setmunicipaldate(e.target.value);
-                            }}
-                            size="small"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {type?.value !== "Monthly Wage" && (
-                      <div className="d-flex col-6 col-md-3 ">
-                        <div className=" col-6">
-                          <TextField
-                            className="form-control  mb-3"
-                            label={t("Driving License")}
-                            value={drivinglicense}
-                            onChange={(e) => {
-                              setdrivinglicense(e.target.value);
-                            }}
-                            size="small"
-                          />
-                        </div>
-                        <div className="ps-3 col-6">
-                          <TextField
-                            type="Date"
-                            className="form-control  mb-3"
-                            label={t("Expiry")}
-                            InputLabelProps={{ shrink: true }}
-                            value={drivinglicensedate}
-                            onChange={(e) => {
-                              setdrivinglicensedate(e.target.value);
-                            }}
-                            size="small"
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="row">
-                    {type?.value === "Monthly Wage" && (
-                      <div className="d-flex col-6 col-md-3 ">
-                        <div className="col-6">
-                          <TextField
-                            className="form-control  mb-3"
-                            label={t("Muncipilaty Card")}
-                            value={municipalno}
-                            onChange={(e) => {
-                              setmunicipalno(e.target.value);
-                            }}
-                            size="small"
-                          />
-                        </div>
-                        <div className="ps-3 col-6 ">
-                          <TextField
-                            type="Date"
-                            className="form-control  mb-3"
-                            label={t("Expiry")}
-                            InputLabelProps={{ shrink: true }}
-                            value={municipaldate}
-                            onChange={(e) => {
-                              setmunicipaldate(e.target.value);
-                            }}
-                            size="small"
-                          />
-                        </div>
-                      </div>
-                    )}
-                    {type?.value === "Monthly Wage" && (
-                      <div className="d-flex col-6 col-md-3 ">
-                        <div className=" col-6">
-                          <TextField
-                            className="form-control  mb-3"
-                            label={t("Driving License")}
-                            value={drivinglicense}
-                            onChange={(e) => {
-                              setdrivinglicense(e.target.value);
-                            }}
-                            size="small"
-                          />
-                        </div>
-                        <div className="ps-3 col-6">
-                          <TextField
-                            type="Date"
-                            className="form-control  mb-3"
-                            label={t("Expiry")}
-                            InputLabelProps={{ shrink: true }}
-                            value={drivinglicensedate}
-                            onChange={(e) => {
-                              setdrivinglicensedate(e.target.value);
-                            }}
-                            size="small"
-                          />
-                        </div>
-                      </div>
-                    )}
-                    <div className="d-flex col-6 col-md-3">
-                      <div className=" col--6">
-                        <TextField
-                          className="form-control   mb-3"
-                          label={t("ID No.")}
-                          value={workpermit}
-                          onChange={(e) => {
-                            setworkpermit(e.target.value);
-                          }}
-                          size="small"
-                        />
-                      </div>
-                      <div className="ps-3 col-6 ">
-                        <TextField
-                          type="Date"
-                          className="form-control  mb-3"
-                          label={t("Expiry")}
-                          InputLabelProps={{ shrink: true }}
-                          value={workpermitdate}
-                          onChange={(e) => {
-                            setworkpermitdate(e.target.value);
-                          }}
-                          size="small"
-                        />
-                      </div>
                     </div>
                     <div className="col-6 col-md-3">
                       <TextField
@@ -1115,6 +1397,20 @@ export default function CustomerType(props) {
                         />
                       </div>
                     )}
+                    {type?.value !== "Monthly Wage" && (
+                      <div className="col-6 col-md-3">
+                        <TextField
+                          type="number"
+                          className="form-control  mb-3"
+                          label={"Absent Days"}
+                          value={absentdays}
+                          onChange={(e) => {
+                            setabsentdays(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {type?.value === "Monthly Wage" && (
@@ -1132,83 +1428,490 @@ export default function CustomerType(props) {
                           size="small"
                         />
                       </div>
+                      <div className="col-6 col-md-3">
+                        <TextField
+                          type="number"
+                          className="form-control  mb-3"
+                          label={"Absent Days"}
+                          value={absentdays}
+                          onChange={(e) => {
+                            setabsentdays(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
               </Tab>
               <Tab eventKey="documents" title="Documents">
-                <div>
-                  <input
-                    onChange={handlepictureselection}
-                    id="select-file"
-                    type="file"
-                    accept=".docx,.pdf,.txt,.png,.jpg,.jpeg"
-                    ref={inputFile}
-                    style={{ display: "none" }}
-                  />
-                  <Button
-                    onClick={onButtonClick}
-                    variant="outline-primary"
-                    shadow
-                  >
-                    Choose file
-                  </Button>
-                </div>
-                <div className="row m-1">
-                  {all_files.map((item, index) => {
-                    return (
+                <div className="row">
+                  <div className="col-3 mb-3 ps-2 pe-2">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={workpermitcheck}
+                        onChange={handleidcardchange}
+                      ></input>
+                      <strong className="ms-3">ID Card</strong>
+                    </label>
+                    {workpermitcheck && (
                       <>
-                        {item.type !== "image" ? (
-                          <span
-                            className="col-1 mb-2 d-flex p-2 "
-                            style={{ width: "fit-content" }}
-                            onClick={() => {
-                              handleimageclick(item);
-                            }}
-                            key={index}
+                        <TextField
+                          className="form-control   mb-3"
+                          variant="standard"
+                          label={"ID Number"}
+                          InputLabelProps={{ shrink: true }}
+                          value={workpermit}
+                          onChange={(e) => {
+                            setworkpermit(e.target.value);
+                          }}
+                          size="small"
+                        />
+                        <TextField
+                          type="date"
+                          className="form-control   mb-3"
+                          variant="standard"
+                          label={"Expiry Date"}
+                          value={workpermitdate}
+                          InputLabelProps={{ shrink: true }}
+                          onChange={(e) => {
+                            setworkpermitdate(e.target.value);
+                          }}
+                          size="small"
+                        />
+                        <div>
+                          <input
+                            onChange={(e) =>
+                              handlepictureselection(e, "Id Card")
+                            }
+                            id="select-file"
+                            type="file"
+                            accept=".docx,.pdf,.txt,.png,.jpg,.jpeg"
+                            ref={inputFileidcard}
+                            style={{ display: "none" }}
+                          />
+                          <Button
+                            onClick={(e) => onButtonClick("Id Card")}
+                            variant="outline-primary"
+                            shadow
                           >
-                            <span className="file p-2">
-                              {item.picture.name}
-                            </span>
-                            <Badge
-                              color="error"
-                              key={index}
-                              className="me-3 badgee pointer"
-                              overlap="circular"
-                              badgeContent="X"
-                              onClick={() => {
-                                handleClick(item);
-                              }}
-                            ></Badge>
-                          </span>
-                        ) : (
-                          <div
-                            className="col-1 mb-2 me-3 d-flex claas-images"
-                            key={index}
-                          >
-                            <Avatar
-                              src={item.url}
-                              className="avatar"
-                              style={{ width: "100px", height: "100px" }}
-                              alt="image"
-                              onClick={() => {
-                                handleimageclick(item);
-                              }}
-                            />
-                            <Badge
-                              color="error"
-                              overlap="circular"
-                              className="badgeepic me-3 badgee pointer"
-                              badgeContent="X"
-                              onClick={() => {
-                                handleClick(item);
-                              }}
-                            ></Badge>
-                          </div>
-                        )}
+                            Choose file
+                          </Button>
+                        </div>
+                        {all_files
+                          .filter((item) => item.document_name === "Id Card")
+                          .map((item) => {
+                            return (
+                              <>
+                                {item.type !== "image" ? (
+                                  <span className="d-flex mt-3">
+                                    <span
+                                      className="col-1 mb-2"
+                                      style={{ width: "fit-content" }}
+                                      onClick={() => {
+                                        handleimageclick(item);
+                                      }}
+                                      key={item.document_name}
+                                    >
+                                      <span className="file p-2">
+                                        {item.picture.name}
+                                      </span>
+                                    </span>
+                                    <Badge
+                                      color="error"
+                                      className="me-3 badgee pointer"
+                                      overlap="circular"
+                                      badgeContent="X"
+                                      onClick={() => {
+                                        handledeleteClick(item);
+                                      }}
+                                    ></Badge>
+                                  </span>
+                                ) : (
+                                  <div
+                                    className="col-1 mb-2 me-3 mt-3 d-flex claas-images"
+                                    key={item.document_name}
+                                  >
+                                    <Avatar
+                                      src={item.url}
+                                      className="avatar"
+                                      style={{
+                                        width: "100px",
+                                        height: "100px",
+                                      }}
+                                      alt="image"
+                                      onClick={() => {
+                                        handleimageclick(item);
+                                      }}
+                                    />
+                                    <Badge
+                                      color="error"
+                                      overlap="circular"
+                                      className="badgeepic me-3 badgee pointer"
+                                      badgeContent="X"
+                                      onClick={() => {
+                                        handledeleteClick(item);
+                                      }}
+                                    ></Badge>
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })}
                       </>
-                    );
-                  })}
+                    )}
+                  </div>
+                  <div className="col-3 mb-3">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={passportcheck}
+                        onChange={handlepassportchange}
+                      ></input>
+                      <strong className="ms-3">Passport</strong>
+                    </label>
+                    {passportcheck && (
+                      <>
+                        <TextField
+                          className="form-control   mb-3"
+                          variant="standard"
+                          label={"Passport No"}
+                          InputLabelProps={{ shrink: true }}
+                          value={passport}
+                          onChange={(e) => {
+                            setpassport(e.target.value);
+                          }}
+                          size="small"
+                        />
+                        <TextField
+                          type="date"
+                          className="form-control   mb-3"
+                          variant="standard"
+                          label={"Expiry Date"}
+                          value={passportdate}
+                          InputLabelProps={{ shrink: true }}
+                          onChange={(e) => {
+                            setpassportdate(e.target.value);
+                          }}
+                          size="small"
+                        />
+                        <div>
+                          <input
+                            onChange={(e) =>
+                              handlepictureselection(e, "passport")
+                            }
+                            id="select-file"
+                            type="file"
+                            accept=".docx,.pdf,.txt,.png,.jpg,.jpeg"
+                            ref={inputFilepassport}
+                            style={{ display: "none" }}
+                          />
+                          <Button
+                            onClick={(e) => onButtonClick("passport")}
+                            variant="outline-primary"
+                            shadow
+                          >
+                            Choose file
+                          </Button>
+                        </div>
+                        {all_files
+                          .filter((item) => item.document_name === "passport")
+                          .map((item) => {
+                            return (
+                              <>
+                                {item.type !== "image" ? (
+                                  <span className="d-flex mt-3">
+                                    <span
+                                      className="col-1 mb-2"
+                                      style={{ width: "fit-content" }}
+                                      onClick={() => {
+                                        handleimageclick(item);
+                                      }}
+                                      key={item.document_name}
+                                    >
+                                      <span className="file p-2">
+                                        {item.picture.name}
+                                      </span>
+                                    </span>
+                                    <Badge
+                                      color="error"
+                                      className="me-3 badgee pointer"
+                                      overlap="circular"
+                                      badgeContent="X"
+                                      onClick={() => {
+                                        handledeleteClick(item);
+                                      }}
+                                    ></Badge>
+                                  </span>
+                                ) : (
+                                  <div
+                                    className="col-1 mb-2 me-3 mt-3 d-flex claas-images"
+                                    key={item.document_name}
+                                  >
+                                    <Avatar
+                                      src={item.url}
+                                      className="avatar"
+                                      style={{
+                                        width: "100px",
+                                        height: "100px",
+                                      }}
+                                      alt="image"
+                                      onClick={() => {
+                                        handleimageclick(item);
+                                      }}
+                                    />
+                                    <Badge
+                                      color="error"
+                                      overlap="circular"
+                                      className="badgeepic me-3 badgee pointer"
+                                      badgeContent="X"
+                                      onClick={() => {
+                                        handledeleteClick(item);
+                                      }}
+                                    ></Badge>
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })}
+                      </>
+                    )}
+                  </div>
+                  <div className="col-3 mb-3">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={municipalnocheck}
+                        onChange={handlemunicipalitychange}
+                      ></input>
+                      <strong className="ms-3">Municipality Card</strong>
+                    </label>
+                    {municipalnocheck && (
+                      <>
+                        <TextField
+                          className="form-control   mb-3"
+                          variant="standard"
+                          label={"Municipality No"}
+                          InputLabelProps={{ shrink: true }}
+                          value={municipalno}
+                          onChange={(e) => {
+                            setmunicipalno(e.target.value);
+                          }}
+                          size="small"
+                        />
+                        <TextField
+                          type="date"
+                          className="form-control   mb-3"
+                          variant="standard"
+                          label={"Expiry Date"}
+                          value={municipaldate}
+                          InputLabelProps={{ shrink: true }}
+                          onChange={(e) => {
+                            setmunicipaldate(e.target.value);
+                          }}
+                          size="small"
+                        />
+                        <div>
+                          <input
+                            onChange={(e) =>
+                              handlepictureselection(e, "municipality")
+                            }
+                            id="select-file"
+                            type="file"
+                            accept=".docx,.pdf,.txt,.png,.jpg,.jpeg"
+                            ref={inputFilemunicipality}
+                            style={{ display: "none" }}
+                          />
+                          <Button
+                            onClick={(e) => onButtonClick("municipality")}
+                            variant="outline-primary"
+                            shadow
+                          >
+                            Choose file
+                          </Button>
+                        </div>
+                        {all_files
+                          .filter(
+                            (item) => item.document_name === "municipality"
+                          )
+                          .map((item) => {
+                            return (
+                              <>
+                                {item.type !== "image" ? (
+                                  <span className="d-flex mt-3">
+                                    <span
+                                      className="col-1 mb-2"
+                                      style={{ width: "fit-content" }}
+                                      onClick={() => {
+                                        handleimageclick(item);
+                                      }}
+                                      key={item.document_name}
+                                    >
+                                      <span className="file p-2">
+                                        {item.picture.name}
+                                      </span>
+                                    </span>
+                                    <Badge
+                                      color="error"
+                                      className="me-3 badgee pointer"
+                                      overlap="circular"
+                                      badgeContent="X"
+                                      onClick={() => {
+                                        handledeleteClick(item);
+                                      }}
+                                    ></Badge>
+                                  </span>
+                                ) : (
+                                  <div
+                                    className="col-1 mb-2 me-3 mt-3 d-flex claas-images"
+                                    key={item.document_name}
+                                  >
+                                    <Avatar
+                                      src={item.url}
+                                      className="avatar"
+                                      style={{
+                                        width: "100px",
+                                        height: "100px",
+                                      }}
+                                      alt="image"
+                                      onClick={() => {
+                                        handleimageclick(item);
+                                      }}
+                                    />
+                                    <Badge
+                                      color="error"
+                                      overlap="circular"
+                                      className="badgeepic me-3 badgee pointer"
+                                      badgeContent="X"
+                                      onClick={() => {
+                                        handledeleteClick(item);
+                                      }}
+                                    ></Badge>
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })}
+                      </>
+                    )}
+                  </div>
+                  <div className="col-3 mb-3">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={drivinglicensecheck}
+                        onChange={handledrivingchange}
+                      ></input>
+                      <strong className="ms-3">Driving License</strong>
+                    </label>
+                    {drivinglicensecheck && (
+                      <>
+                        <TextField
+                          className="form-control   mb-3"
+                          variant="standard"
+                          label={"Driving License"}
+                          value={drivinglicense}
+                          InputLabelProps={{ shrink: true }}
+                          onChange={(e) => {
+                            setdrivinglicense(e.target.value);
+                          }}
+                          size="small"
+                        />
+                        <TextField
+                          type="date"
+                          className="form-control   mb-3"
+                          variant="standard"
+                          label={"Expiry Date"}
+                          value={drivinglicensedate}
+                          InputLabelProps={{ shrink: true }}
+                          onChange={(e) => {
+                            setdrivinglicensedate(e.target.value);
+                          }}
+                          size="small"
+                        />
+                        <div>
+                          <input
+                            onChange={(e) =>
+                              handlepictureselection(e, "liecence")
+                            }
+                            id="select-file"
+                            type="file"
+                            accept=".docx,.pdf,.txt,.png,.jpg,.jpeg"
+                            ref={inputFileliecence}
+                            style={{ display: "none" }}
+                          />
+                          <Button
+                            onClick={(e) => onButtonClick("liecence")}
+                            variant="outline-primary"
+                            shadow
+                          >
+                            Choose file
+                          </Button>
+                        </div>
+                        {all_files
+                          .filter((item) => item.document_name === "liecence")
+                          .map((item) => {
+                            return (
+                              <>
+                                {item.type !== "image" ? (
+                                  <span className="d-flex mt-3">
+                                    <span
+                                      className="col-1 mb-2"
+                                      style={{ width: "fit-content" }}
+                                      onClick={() => {
+                                        handleimageclick(item);
+                                      }}
+                                      key={item.document_name}
+                                    >
+                                      <span className="file p-2">
+                                        {item.picture.name}
+                                      </span>
+                                    </span>
+                                    <Badge
+                                      color="error"
+                                      className="me-3 badgee pointer"
+                                      overlap="circular"
+                                      badgeContent="X"
+                                      onClick={() => {
+                                        handledeleteClick(item);
+                                      }}
+                                    ></Badge>
+                                  </span>
+                                ) : (
+                                  <div
+                                    className="col-1 mb-2 me-3 mt-3 d-flex claas-images"
+                                    key={item.document_name}
+                                  >
+                                    <Avatar
+                                      src={item.url}
+                                      className="avatar"
+                                      style={{
+                                        width: "100px",
+                                        height: "100px",
+                                      }}
+                                      alt="image"
+                                      onClick={() => {
+                                        handleimageclick(item);
+                                      }}
+                                    />
+                                    <Badge
+                                      color="error"
+                                      overlap="circular"
+                                      className="badgeepic me-3 badgee pointer"
+                                      badgeContent="X"
+                                      onClick={() => {
+                                        handledeleteClick(item);
+                                      }}
+                                    ></Badge>
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })}
+                      </>
+                    )}
+                  </div>
                 </div>
               </Tab>
             </Tabs>

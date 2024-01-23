@@ -3,10 +3,8 @@ import "./account_heads.css";
 import Select from "react-select";
 import Button from "react-bootstrap/Button";
 import went_wrong_toast from "../alerts/went_wrong_toast";
-import Update_button from "../buttons/update_button";
+import Save_button from "../buttons/save_button";
 import success_toast from "../alerts/success_toast";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
-
 import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 
@@ -15,19 +13,40 @@ function Account_head(props) {
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
+  const additionalinfo = props.additionalinfo;
   const current_user = props.state.Setcurrentinfo.current_user;
   const setActiveTab = props.setActiveTab;
-  const dispatch = props.Settable_history;
+
+  const [checkall, setcheckall] = useState(false);
+  const [controller, setcontroller] = useState(false);
   const [selected_role, setselected_role] = useState("");
-  const [selected, setSelected] = useState([]);
   const [allpermissions, setallpermissions] = useState([]);
   const [all_jsonpermissions, setall_jsonpermissions] = useState([]);
-  const [showmodel, setshowmodel] = useState(false);
   const [allroles, setallroles] = useState([]);
   const [isloading, setisloading] = useState(false);
   const [status, setstatus] = useState(false);
   const [search, setsearch] = useState("");
   const [allpermissions_copy, setallpermissions_copy] = useState([]);
+
+  useEffect(() => {
+    const fetchalluser = async () => {
+      const response = await fetch(
+        `${route}/api/subusers-account-heads/?user_id=${current_user.id}`,
+        {
+          headers: { Authorization: `Bearer ${user.access}` },
+        }
+      );
+      const json = await response.json();
+
+      if (response.ok) {
+        setallroles(json);
+      }
+    };
+
+    if (current_user) {
+      fetchalluser();
+    }
+  }, [status, current_user]);
 
   useEffect(() => {
     const fetchallbraches = async () => {
@@ -51,31 +70,20 @@ function Account_head(props) {
 
         setallpermissions(nestedArray);
         setallpermissions_copy(nestedArray);
+        setcontroller(nestedArray);
       }
     };
-
     fetchallbraches();
   }, []);
 
   useEffect(() => {
-    const fetchalluser = async () => {
-      const response = await fetch(
-        `${route}/api/subusers-account-heads/?user_id=${current_user.id}`,
-        {
-          headers: { Authorization: `Bearer ${user.access}` },
-        }
-      );
-      const json = await response.json();
-
-      if (response.ok) {
-        setallroles(json);
-      }
-    };
-
-    if (current_user) {
-      fetchalluser();
+    if (additionalinfo) {
+      handleselect({
+        value: additionalinfo.id,
+        label: additionalinfo.username,
+      });
     }
-  }, [status, current_user]);
+  }, [controller]);
 
   const handlesubmit = async (e) => {
     e.preventDefault();
@@ -112,6 +120,9 @@ function Account_head(props) {
       setisloading(false);
       success_toast();
       setstatus(!status);
+      if (additionalinfo) {
+        setActiveTab("User");
+      }
     }
   };
 
@@ -120,16 +131,23 @@ function Account_head(props) {
     const role = allroles.filter((item) => {
       return item.id === selected_option.value;
     });
-    const permissions = role[0].account_heads;
+    const permissions = role[0]?.account_heads;
+
     const optimize = all_jsonpermissions.map((item) => {
-      if (permissions.includes(item.id)) {
+      if (permissions?.includes(item.id)) {
         item["value"] = true;
       } else {
         item["value"] = false;
       }
       return item;
     });
+
     setall_jsonpermissions(optimize);
+    if (permissions?.length === optimize?.length) {
+      setcheckall(true);
+    } else {
+      setcheckall(false);
+    }
     const nestedArray = [];
 
     for (let i = 0; i < optimize.length; i += 2) {
@@ -167,6 +185,7 @@ function Account_head(props) {
 
       setallpermissions(nestedArray);
       setallpermissions_copy(nestedArray);
+      setcheckall(true);
     } else {
       const optimize = all_jsonpermissions.map((item) => {
         item["value"] = false;
@@ -183,6 +202,7 @@ function Account_head(props) {
 
       setallpermissions(nestedArray);
       setallpermissions_copy(nestedArray);
+      setcheckall(false);
     }
   };
 
@@ -245,7 +265,7 @@ function Account_head(props) {
               {" "}
               Branches
             </Button>
-            <Update_button isloading={isloading} />
+            <Save_button isloading={isloading} />
           </div>
 
           <div className="card-body">
@@ -283,9 +303,10 @@ function Account_head(props) {
                         <input
                           className="form-check-input m-0 me-2"
                           type="checkbox"
+                          checked={checkall}
                           onChange={handleallchange}
                         />{" "}
-                        Check All
+                        All
                       </th>
                     </tr>
                   </thead>

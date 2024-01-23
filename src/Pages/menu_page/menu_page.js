@@ -15,9 +15,12 @@ function Product_page({ current_user }) {
   }
 
   const [activeTab, setActiveTab] = useState(current_tab);
-
+  const [tabname, settabname] = useState(current_tab);
   useEffect(() => {
     localStorage.setItem("activeTab", activeTab);
+    if (activeTab !== "pots") {
+      settabname(activeTab);
+    }
   }, [activeTab]);
 
   const handleTabSelect = (tab) => {
@@ -32,7 +35,7 @@ function Product_page({ current_user }) {
         id="noanim-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="Dish" title={activeTab}>
+        <Tab eventKey="Dish" title={tabname}>
           {activeTab === "Dish" ? (
             <Dish setActiveTab={setActiveTab} />
           ) : activeTab === "Menu" ? (

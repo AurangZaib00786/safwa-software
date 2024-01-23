@@ -27,6 +27,7 @@ import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
 import { useTranslation } from "react-i18next";
 import Red_toast from "../alerts/red_toast";
+import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
 
 export default function Customer(props) {
   const { t } = useTranslation();
@@ -38,8 +39,7 @@ export default function Customer(props) {
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
   const { ExportCSVButton } = CSVExport;
-  const settings = props.state.Setcurrentinfo.settings;
-  const [data, setdata] = useState("");
+
   const [id, setid] = useState("");
   const [check_update, setcheck_update] = useState(true);
   const [delete_user, setdelete_user] = useState(false);
@@ -49,19 +49,14 @@ export default function Customer(props) {
   const [name, setname] = useState("");
   const [arabicname, setarabicname] = useState("");
   const [contact, setcontact] = useState("");
-  const [contactperson, setcontactperson] = useState("");
   const [address, setaddress] = useState("");
   const [vatno, setvatno] = useState("");
 
   const [bankdetails, setbankdetails] = useState("");
-  const [timing, settiming] = useState("");
-  const [menu, setmenu] = useState("");
-
   const [isloading, setisloading] = useState(false);
-
-  const [allmenu, setallmenu] = useState([]);
-  const [alltiming, setalltiming] = useState([]);
-
+  const theme = createTheme({
+    direction: "rtl", // Both here and <body dir="rtl">
+  });
   useEffect(() => {
     dispatch({ type: "Set_table_history", data: [] });
     setisloading(true);
@@ -92,59 +87,6 @@ export default function Customer(props) {
     }
   }, [selected_branch]);
 
-  useEffect(() => {
-    const fetchmenu = async () => {
-      var url = `${route}/api/menu/`;
-
-      const response = await fetch(`${url}`, {
-        headers: { Authorization: `Bearer ${user.access}` },
-      });
-      const json = await response.json();
-
-      if (response.ok) {
-        const optimize = json.map((item) => {
-          return { value: item.id, label: item.name };
-        });
-
-        setallmenu(optimize);
-      }
-      if (!response.ok) {
-        var error = Object.keys(json);
-        if (error.length > 0) {
-          Red_toast(`${json[error[0]]}`);
-        }
-      }
-    };
-
-    const fetchtiming = async () => {
-      var url = `${route}/api/buffet-timing/`;
-
-      const response = await fetch(`${url}`, {
-        headers: { Authorization: `Bearer ${user.access}` },
-      });
-      const json = await response.json();
-
-      if (response.ok) {
-        const optimize = json.map((item) => {
-          return { value: item.id, label: item.name };
-        });
-
-        setalltiming(optimize);
-      }
-      if (!response.ok) {
-        var error = Object.keys(json);
-        if (error.length > 0) {
-          Red_toast(`${json[error[0]]}`);
-        }
-      }
-    };
-
-    if (user) {
-      fetchmenu();
-      fetchtiming();
-    }
-  }, []);
-
   const handleconfirm = (row) => {
     dispatch({ type: "Delete_table_history", data: { id: row } });
     custom_toast("Delete");
@@ -173,11 +115,6 @@ export default function Customer(props) {
             setvatno(row.vat_number);
 
             setaddress(row.address);
-            settiming({
-              value: row.timing,
-              label: row.timing_name,
-            });
-            setmenu({ value: row.menu, label: row.menu_name });
 
             setbankdetails(row.bank);
             setid(row.id);
@@ -241,18 +178,7 @@ export default function Customer(props) {
       sort: true,
       headerFormatter: headerstyle,
     },
-    {
-      dataField: "timing_name",
-      text: "Timing",
-      sort: true,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "menu_name",
-      text: t("Menu"),
-      sort: true,
-      headerFormatter: headerstyle,
-    },
+
     {
       dataField: "address",
       text: t("address"),
@@ -398,8 +324,6 @@ export default function Customer(props) {
         formData.append("bank", bankdetails);
         formData.append("type", "customer");
         formData.append("account_head", selected_branch.id);
-        formData.append("menu", menu.value);
-        formData.append("timing", timing.value);
 
         const response = await fetch(`${route}/api/parties/`, {
           method: "POST",
@@ -425,9 +349,9 @@ export default function Customer(props) {
 
           setname("");
           setarabicname("");
-          settiming("");
+
           setvatno("");
-          setmenu("");
+
           setaddress("");
           setcontact("");
           setbankdetails("");
@@ -447,8 +371,7 @@ export default function Customer(props) {
 
       formData.append("contact", contact);
       formData.append("vat_number", vatno);
-      formData.append("menu", menu.value);
-      formData.append("timing", timing.value);
+
       formData.append("address", address);
       formData.append("bank", bankdetails);
       formData.append("type", "customer");
@@ -476,9 +399,9 @@ export default function Customer(props) {
 
         setname("");
         setarabicname("");
-        settiming("");
+
         setvatno("");
-        setmenu("");
+
         setaddress("");
         setcontact("");
         setbankdetails("");
@@ -523,26 +446,33 @@ export default function Customer(props) {
                     autoFocus
                   />
                 </div>
-                <div className="col-md-3">
-                  <TextField
-                    className="form-control  mb-3"
-                    label={"اسم"}
-                    value={arabicname}
-                    onChange={(e) => {
-                      setarabicname(e.target.value);
-                    }}
-                    size="small"
-                    required
-                  />
-                </div>
+                <MuiThemeProvider theme={theme}>
+                  <div dir="rtl" className="col-md-3">
+                    <TextField
+                      className="form-control  mb-3"
+                      label={"اسم"}
+                      value={arabicname}
+                      onChange={(e) => {
+                        setarabicname(e.target.value);
+                      }}
+                      size="small"
+                      required
+                    />
+                  </div>
+                </MuiThemeProvider>
 
                 <div className="col-md-3">
                   <TextField
+                    type="number"
                     className="form-control  mb-3"
-                    label={"Cell"}
+                    label={"Mobile"}
                     value={contact}
                     onChange={(e) => {
-                      setcontact(e.target.value);
+                      if (e.target.value.length < 11) {
+                        setcontact(e.target.value);
+                      } else {
+                        Red_toast("Mobile digits must be between 0~10");
+                      }
                     }}
                     size="small"
                   />
@@ -550,11 +480,16 @@ export default function Customer(props) {
 
                 <div className="col-md-3">
                   <TextField
+                    type="number"
                     className="form-control  mb-3"
                     label={"VAT No"}
                     value={vatno}
                     onChange={(e) => {
-                      setvatno(e.target.value);
+                      if (e.target.value.length < 16) {
+                        setvatno(e.target.value);
+                      } else {
+                        Red_toast("VAT no digits must be between 0~15");
+                      }
                     }}
                     size="small"
                   />
@@ -562,42 +497,6 @@ export default function Customer(props) {
               </div>
 
               <div className="row">
-                <div className=" col-md-3 mb-3">
-                  <Select
-                    className={
-                      timing
-                        ? "form-control selector timing "
-                        : "form-control selector"
-                    }
-                    styles={selectStyles}
-                    options={alltiming}
-                    placeholder={"Select Timing"}
-                    value={timing}
-                    onChange={(e) => {
-                      settiming(e);
-                    }}
-                    required
-                  ></Select>
-                </div>
-
-                <div className=" col-md-3 mb-3">
-                  <Select
-                    className={
-                      menu
-                        ? "form-control selector menu "
-                        : "form-control selector"
-                    }
-                    styles={selectStyles}
-                    options={allmenu}
-                    placeholder={"Select Menu"}
-                    value={menu}
-                    onChange={(e) => {
-                      setmenu(e);
-                    }}
-                    required
-                  ></Select>
-                </div>
-
                 <div className="col-md-3">
                   <TextField
                     multiline

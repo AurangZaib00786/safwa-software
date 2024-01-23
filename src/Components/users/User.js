@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, memo } from "react";
 import "./user.css";
 import { IconButton, Avatar } from "@material-ui/core";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
+
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 import BootstrapTable from "react-bootstrap-table-next";
@@ -19,15 +19,18 @@ import custom_toast from "../alerts/custom_toast";
 import went_wrong_toast from "../alerts/went_wrong_toast";
 import Spinner from "react-bootstrap/Spinner";
 import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
+// import Tooltiprender from "../alerts/tooltip";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
 import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 import Save_button from "../buttons/save_button";
 import success_toast from "../alerts/success_toast";
-import { set } from "date-fns";
+import StoreIcon from "@material-ui/icons/Store";
 import Red_toast from "../alerts/red_toast";
+import DeviceHubIcon from "@material-ui/icons/DeviceHub";
+import ListAltIcon from "@material-ui/icons/ListAlt";
 
 function User(props) {
   const { t } = useTranslation();
@@ -35,7 +38,7 @@ function User(props) {
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const setActiveTab = props.setActiveTab;
-  const current_user = props.state.Setcurrentinfo.current_user;
+  const setadditionalinfo = props.setadditionalinfo;
   const all_users = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
@@ -113,6 +116,7 @@ function User(props) {
 
         <IconButton
           style={{ border: "1px solid #003049", borderRadius: "5px" }}
+          className="me-2"
           onClick={() => {
             setusername(row.username);
             setemail(row.email);
@@ -124,6 +128,36 @@ function User(props) {
           <EditOutlinedIcon
             className="m-1"
             style={{ color: "#003049" }}
+            fontSize="medium"
+          />
+        </IconButton>
+
+        <IconButton
+          style={{ border: "1px solid #004099", borderRadius: "5px" }}
+          className="me-2"
+          onClick={() => {
+            setadditionalinfo(row);
+            setActiveTab("Assign Branch");
+          }}
+        >
+          <StoreIcon
+            className="m-1"
+            style={{ color: "#004099" }}
+            fontSize="medium"
+          />
+        </IconButton>
+
+        <IconButton
+          style={{ border: "1px solid #007299", borderRadius: "5px" }}
+          className="me-2"
+          onClick={() => {
+            setadditionalinfo(row);
+            setActiveTab("Role");
+          }}
+        >
+          <DeviceHubIcon
+            className="m-1"
+            style={{ color: "#007299" }}
             fontSize="medium"
           />
         </IconButton>
@@ -344,10 +378,11 @@ function User(props) {
                 variant="outline-secondary"
                 onClick={() => {
                   setActiveTab("Role");
+                  setadditionalinfo(null);
                 }}
               >
                 {" "}
-                Roles
+                Assign Roles
               </Button>
               <Button
                 className="me-2"

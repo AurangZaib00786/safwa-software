@@ -11,15 +11,16 @@ import { ToastContainer } from "react-toastify";
 
 function User_page() {
   const tabs = ["User", "Role", "Group", "Assign Branch", "Branch"];
-  var current_tab = localStorage.getItem("activeTab");
-  if (!tabs.includes(current_tab)) {
-    current_tab = "User";
-  }
+  var current_tab = "User";
 
   const [activeTab, setActiveTab] = useState(current_tab);
+  const [tabname, settabname] = useState(current_tab);
+  const [additionalinfo, setadditionalinfo] = useState(null);
 
   useEffect(() => {
-    localStorage.setItem("activeTab", activeTab);
+    if (activeTab !== "Branch" && activeTab !== "Assign Branch") {
+      settabname(activeTab);
+    }
   }, [activeTab]);
 
   const handleTabSelect = (tab) => {
@@ -34,24 +35,42 @@ function User_page() {
         id="noanim-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="User" title={activeTab}>
+        <Tab eventKey="User" title={tabname}>
           {activeTab === "User" ? (
-            <User setActiveTab={setActiveTab} />
+            <User
+              setActiveTab={setActiveTab}
+              setadditionalinfo={setadditionalinfo}
+            />
           ) : activeTab === "Role" ? (
-            <Assign_role setActiveTab={setActiveTab} />
+            <Assign_role
+              setActiveTab={setActiveTab}
+              setadditionalinfo={setadditionalinfo}
+              additionalinfo={additionalinfo}
+            />
+          ) : activeTab === "Group" ? (
+            <RolePermission
+              setActiveTab={setActiveTab}
+              setadditionalinfo={setadditionalinfo}
+            />
           ) : (
-            activeTab === "Group" && (
-              <RolePermission setActiveTab={setActiveTab} />
+            activeTab === "Assign Branch" && (
+              <Assign_Branch
+                setActiveTab={setActiveTab}
+                additionalinfo={additionalinfo}
+              />
             )
           )}
         </Tab>
 
-        <Tab eventKey="Branch" title={activeTab}>
+        <Tab eventKey="Branch" title="Branches">
           {activeTab === "Branch" ? (
             <Branch setActiveTab={setActiveTab} />
           ) : (
             activeTab === "Assign Branch" && (
-              <Assign_Branch setActiveTab={setActiveTab} />
+              <Assign_Branch
+                setActiveTab={setActiveTab}
+                additionalinfo={null}
+              />
             )
           )}
         </Tab>

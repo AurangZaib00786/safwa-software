@@ -3,32 +3,45 @@ import "./assign_roles.css";
 import Select from "react-select";
 import Button from "react-bootstrap/Button";
 import went_wrong_toast from "../alerts/went_wrong_toast";
-import Update_button from "../buttons/update_button";
+import Save_button from "../buttons/save_button";
 import success_toast from "../alerts/success_toast";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
-
 import { useTranslation } from "react-i18next";
-
 import TextField from "@mui/material/TextField";
 
 function Assign_roles(props) {
   const { t } = useTranslation();
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
-  const selected_branch = props.state.Setcurrentinfo.selected_branch;
-  const current_user = props.state.Setcurrentinfo.current_user;
+  const additionalinfo = props.additionalinfo;
+  const setadditionalinfo = props.setadditionalinfo;
   const setActiveTab = props.setActiveTab;
-  const dispatch = props.Settable_history;
   const [selected_role, setselected_role] = useState("");
-  const [selected, setSelected] = useState([]);
+  const [checkall, setcheckall] = useState(false);
+  const [controller, setcontroller] = useState(false);
   const [allpermissions, setallpermissions] = useState([]);
   const [all_jsonpermissions, setall_jsonpermissions] = useState([]);
-  const [showmodel, setshowmodel] = useState(false);
   const [allroles, setallroles] = useState([]);
   const [isloading, setisloading] = useState(false);
   const [status, setstatus] = useState(false);
   const [search, setsearch] = useState("");
   const [allpermissions_copy, setallpermissions_copy] = useState([]);
+
+  useEffect(() => {
+    const fetchalluser = async () => {
+      const response = await fetch(`${route}/api/users-groups/`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        setallroles(json);
+      }
+    };
+
+    if (user) {
+      fetchalluser();
+    }
+  }, [status]);
 
   useEffect(() => {
     const fetchallbraches = async () => {
@@ -54,6 +67,7 @@ function Assign_roles(props) {
 
         setallpermissions(nestedArray);
         setallpermissions_copy(nestedArray);
+        setcontroller(nestedArray);
       }
     };
 
@@ -63,21 +77,13 @@ function Assign_roles(props) {
   }, []);
 
   useEffect(() => {
-    const fetchalluser = async () => {
-      const response = await fetch(`${route}/api/users-groups/`, {
-        headers: { Authorization: `Bearer ${user.access}` },
+    if (additionalinfo) {
+      handleselect({
+        value: additionalinfo.id,
+        label: additionalinfo.username,
       });
-      const json = await response.json();
-
-      if (response.ok) {
-        setallroles(json);
-      }
-    };
-
-    if (user) {
-      fetchalluser();
     }
-  }, [status]);
+  }, [controller]);
 
   const handlesubmit = async (e) => {
     e.preventDefault();
@@ -114,6 +120,10 @@ function Assign_roles(props) {
       setisloading(false);
       success_toast();
       setstatus(!status);
+      if (additionalinfo) {
+        setActiveTab("User");
+        setadditionalinfo(null);
+      }
     }
   };
 
@@ -122,9 +132,9 @@ function Assign_roles(props) {
     const role = allroles.filter((item) => {
       return item.id === selected_option.value;
     });
-    const permissions = role[0].groups;
-    const optimize = all_jsonpermissions.map((item) => {
-      if (permissions.includes(item.id)) {
+    const permissions = role[0]?.groups;
+    const optimize = all_jsonpermissions?.map((item) => {
+      if (permissions?.includes(item.id)) {
         item["value"] = true;
       } else {
         item["value"] = false;
@@ -132,6 +142,11 @@ function Assign_roles(props) {
       return item;
     });
     setall_jsonpermissions(optimize);
+    if (permissions?.length === optimize?.length) {
+      setcheckall(true);
+    } else {
+      setcheckall(false);
+    }
     const nestedArray = [];
 
     for (let i = 0; i < optimize.length; i += 2) {
@@ -169,6 +184,7 @@ function Assign_roles(props) {
 
       setallpermissions(nestedArray);
       setallpermissions_copy(nestedArray);
+      setcheckall(true);
     } else {
       const optimize = all_jsonpermissions.map((item) => {
         item["value"] = false;
@@ -185,6 +201,7 @@ function Assign_roles(props) {
 
       setallpermissions(nestedArray);
       setallpermissions_copy(nestedArray);
+      setcheckall(false);
     }
   };
 
@@ -257,7 +274,7 @@ function Assign_roles(props) {
               {" "}
               Permissions
             </Button>
-            <Update_button isloading={isloading} />
+            <Save_button isloading={isloading} />
           </div>
 
           <div className="card-body">
@@ -295,9 +312,10 @@ function Assign_roles(props) {
                         <input
                           className="form-check-input m-0 me-2"
                           type="checkbox"
+                          checked={checkall}
                           onChange={handleallchange}
                         />{" "}
-                        Check All
+                        All
                       </th>
                     </tr>
                   </thead>

@@ -23,34 +23,32 @@ import pdfMake from "pdfmake/build/pdfmake";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
 import { useTranslation } from "react-i18next";
+import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
 
 function Supplier(props) {
   const { t } = useTranslation();
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
-  const current_user = props.state.Setcurrentinfo.current_user;
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
   const { ExportCSVButton } = CSVExport;
-  const settings = props.state.Setcurrentinfo.settings;
-  const [data, setdata] = useState("");
   const [id, setid] = useState("");
   const [check_update, setcheck_update] = useState(true);
   const [delete_user, setdelete_user] = useState(false);
   const [url_to_delete, seturl_to_delete] = useState("");
   const [row_id, setrow_id] = useState("");
-
   const [name, setname] = useState("");
   const [arabicname, setarabicname] = useState("");
   const [contact, setcontact] = useState("");
-  const [contactperson, setcontactperson] = useState("");
   const [address, setaddress] = useState("");
   const [vatno, setvatno] = useState("");
-
   const [bankdetails, setbankdetails] = useState("");
   const [isloading, setisloading] = useState(false);
+  const theme = createTheme({
+    direction: "rtl", // Both here and <body dir="rtl">
+  });
 
   useEffect(() => {
     dispatch({ type: "Set_table_history", data: [] });
@@ -418,36 +416,48 @@ function Supplier(props) {
                     required
                   />
                 </div>
-                <div className="col-md-3">
-                  <TextField
-                    className="form-control  mb-3"
-                    label={"اسم"}
-                    value={arabicname}
-                    onChange={(e) => {
-                      setarabicname(e.target.value);
-                    }}
-                    size="small"
-                  />
-                </div>
+                <MuiThemeProvider theme={theme}>
+                  <div dir="rtl" className="col-md-3">
+                    <TextField
+                      className="form-control  mb-3"
+                      label={"اسم"}
+                      value={arabicname}
+                      onChange={(e) => {
+                        setarabicname(e.target.value);
+                      }}
+                      size="small"
+                    />
+                  </div>
+                </MuiThemeProvider>
 
                 <div className="col-md-3">
                   <TextField
+                    type="number"
                     className="form-control  mb-3"
-                    label={"Cell"}
+                    label={"Mobile"}
                     value={contact}
                     onChange={(e) => {
-                      setcontact(e.target.value);
+                      if (e.target.value.length < 11) {
+                        setcontact(e.target.value);
+                      } else {
+                        Red_toast("Mobile digits must be between 0~10");
+                      }
                     }}
                     size="small"
                   />
                 </div>
                 <div className="col-md-3">
                   <TextField
+                    type="number"
                     className="form-control  mb-3"
                     label={"VAT No"}
                     value={vatno}
                     onChange={(e) => {
-                      setvatno(e.target.value);
+                      if (e.target.value.length < 16) {
+                        setvatno(e.target.value);
+                      } else {
+                        Red_toast("VAT no digits must be between 0~15");
+                      }
                     }}
                     size="small"
                   />

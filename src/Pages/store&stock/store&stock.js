@@ -16,9 +16,13 @@ function Stockstore_page({ current_user }) {
   }
 
   const [activeTab, setActiveTab] = useState(current_tab);
+  const [tabname, settabname] = useState(current_tab);
 
   useEffect(() => {
     localStorage.setItem("activeTab", activeTab);
+    if (activeTab !== "materialform") {
+      settabname(activeTab);
+    }
   }, [activeTab]);
 
   const handleTabSelect = (tab) => {
@@ -33,7 +37,7 @@ function Stockstore_page({ current_user }) {
         id="noanim-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="Stock" title={activeTab}>
+        <Tab eventKey="Stock" title={tabname}>
           {activeTab === "Stock" ? (
             <Stock setActiveTab={setActiveTab} />
           ) : activeTab === "Store" ? (
