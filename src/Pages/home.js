@@ -110,14 +110,14 @@ function Layout(props) {
             >
               Customers
             </MenuItem>
-            <MenuItem
+            {/* <MenuItem
               active={menu_status === "supplier"}
               icon={<SupervisorAccountIcon />}
               component={<Link to={`/suppliers`} />}
               rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
             >
               Vendors
-            </MenuItem>
+            </MenuItem> */}
             <MenuItem
               active={menu_status === "employee"}
               icon={<SupervisorAccountIcon />}
@@ -127,7 +127,7 @@ function Layout(props) {
               Employees
             </MenuItem>
 
-            <SubMenu
+            {/* <SubMenu
               active={
                 menu_status === "dish" ||
                 menu_status === "buffet" ||
@@ -212,7 +212,7 @@ function Layout(props) {
               rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
             >
               Daily Meal
-            </MenuItem>
+            </MenuItem> */}
 
             {/* {current_user?.permissions?.includes("view_payments") && (
               <MenuItem

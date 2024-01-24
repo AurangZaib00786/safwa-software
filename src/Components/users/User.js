@@ -30,7 +30,7 @@ import success_toast from "../alerts/success_toast";
 import StoreIcon from "@material-ui/icons/Store";
 import Red_toast from "../alerts/red_toast";
 import DeviceHubIcon from "@material-ui/icons/DeviceHub";
-import ListAltIcon from "@material-ui/icons/ListAlt";
+import Select from "../alerts/select";
 
 function User(props) {
   const { t } = useTranslation();
@@ -39,7 +39,7 @@ function User(props) {
   const route = props.state.setuser.route;
   const setActiveTab = props.setActiveTab;
   const current_user = props.state.Setcurrentinfo.current_user;
-  console.log(current_user);
+  const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const setadditionalinfo = props.setadditionalinfo;
   const all_users = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
@@ -55,6 +55,8 @@ function User(props) {
   const [username, setusername] = useState("");
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
+  const [allemployee, setallemployee] = useState([]);
+  const [employee, setemployee] = useState("");
 
   useEffect(() => {
     setisloading(true);
@@ -78,6 +80,35 @@ function User(props) {
 
     fetchWorkouts();
   }, []);
+
+  useEffect(() => {
+    const fetchemployees = async () => {
+      var url = `${route}/api/employee/?account_head=${selected_branch.id}`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        setisloading(false);
+        const optimize = json.map((item) => {
+          return { value: item.id, label: `${item.id}-${item.name}` };
+        });
+        setallemployee(optimize);
+      }
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
+        setisloading(false);
+      }
+    };
+    if (user) {
+      fetchemployees();
+    }
+  }, [selected_branch]);
 
   const headerstyle = (column, colIndex, { sortElement }) => {
     return (
@@ -123,6 +154,12 @@ function User(props) {
             onClick={() => {
               setusername(row.username);
               setemail(row.email);
+              setemployee({
+                value: row.extended.employee,
+                label: row.extended.employee
+                  ? `${row.extended.employee}-${row.extended.employee_name}`
+                  : "",
+              });
 
               setid(row.id);
               setcheck_update(false);
@@ -301,6 +338,7 @@ function User(props) {
         formData.append("username", username);
         formData.append("email", email);
         formData.append("password", password);
+        formData.append("extended.employee", employee ? employee?.value : "");
 
         const response = await fetch(`${route}/api/users/`, {
           method: "POST",
@@ -323,10 +361,14 @@ function User(props) {
           success_toast();
           setusername("");
           setemail("");
+          setemployee("");
           setpassword("");
         }
       }
-    } else if (current_user?.permissions?.includes("change_user")) {
+    } else if (
+      !check_update &&
+      current_user?.permissions?.includes("change_user")
+    ) {
       handleSubmit_update(e);
     }
   };
@@ -340,9 +382,11 @@ function User(props) {
       formData.append("username", username);
       formData.append("email", email);
       formData.append("password", password);
+      formData.append("extended.employee", employee ? employee?.value : "");
     } else {
       formData.append("username", username);
       formData.append("email", email);
+      formData.append("extended.employee", employee ? employee?.value : "");
     }
 
     const response = await fetch(`${route}/api/users/${id}/`, {
@@ -366,6 +410,7 @@ function User(props) {
       success_toast();
       setusername("");
       setemail("");
+      setemployee("");
       setpassword("");
 
       setcheck_update(true);
@@ -463,13 +508,21 @@ function User(props) {
                     />
                   )}
                 </div>
+                <div className="col-md-3">
+                  <Select
+                    options={allemployee}
+                    value={employee}
+                    placeholder={"Employee"}
+                    funct={(e) => setemployee(e)}
+                  />
+                </div>
               </div>
             </div>
           )}
         </form>
       </div>
 
-      {current_user?.permissions?.includes("view_user") ? (
+      {current_user?.permissions?.includes("view_user") && (
         <div className="card mt-3">
           <div className="card-body pt-0">
             <ToolkitProvider
@@ -527,19 +580,6 @@ function User(props) {
               )}
             </ToolkitProvider>
           </div>
-        </div>
-      ) : (
-        <div
-          style={{
-            fontSize: "20px",
-            opacity: "0.6",
-            fontWeight: "bold",
-            height: "90vh",
-          }}
-          className="d-flex justify-content-center align-items-center"
-        >
-          {" "}
-          User has no permission to see users.
         </div>
       )}
 

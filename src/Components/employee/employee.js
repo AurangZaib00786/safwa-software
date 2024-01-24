@@ -30,6 +30,7 @@ import Select from "../alerts/select";
 import TextField from "@mui/material/TextField";
 import success_toast from "../alerts/success_toast";
 import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
+import { formatDistance, intervalToDuration } from "date-fns";
 
 export default function CustomerType(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -101,6 +102,7 @@ export default function CustomerType(props) {
   const [absentdays, setabsentdays] = useState("");
   const [id, setid] = useState("");
   const [check_update, setcheck_update] = useState(false);
+  const [remainingdays, setremainingdays] = useState(0);
   const theme = createTheme({
     direction: "rtl", // Both here and <body dir="rtl">
   });
@@ -340,7 +342,7 @@ export default function CustomerType(props) {
   };
 
   const columns = [
-    { dataField: "id", text: "Id", hidden: true, headerFormatter: headerstyle },
+    { dataField: "id", text: "Id", headerFormatter: headerstyle },
     {
       dataField: "name",
       text: t("name"),
@@ -488,12 +490,6 @@ export default function CustomerType(props) {
   };
 
   const rowstyle = { height: "10px", paddingLeft: "30px" };
-  const selectStyles = {
-    menu: (base) => ({
-      ...base,
-      zIndex: 100,
-    }),
-  };
 
   const handleSubmit = async (e) => {
     if (!isloading) {
@@ -996,9 +992,21 @@ export default function CustomerType(props) {
     setmunicipalnocheck(e.target.checked);
   };
 
+  const finddatedifferenc = (date1, date2) => {
+    if (date1 && date2) {
+      const a = intervalToDuration({
+        start: new Date(date1),
+        end: new Date(date2),
+      });
+
+      setremainingdays(a.days + a.months * 30);
+    }
+  };
+
   return (
     <div className="p-3">
-      {current_user?.permissions?.includes("add_employee") && (
+      {(current_user?.permissions?.includes("add_employee") ||
+        current_user?.permissions?.includes("change_employee")) && (
         <div className="card">
           <form
             onSubmit={
@@ -1056,7 +1064,7 @@ export default function CustomerType(props) {
               </div>
             </div>
 
-            <div className="card-body pt-0" style={{ minHeight: "60vh" }}>
+            <div className="card-body pt-0" style={{ minHeight: "50vh" }}>
               <Tabs
                 defaultActiveKey={"information"}
                 transition={true}
@@ -1122,9 +1130,7 @@ export default function CustomerType(props) {
                           size="small"
                         />
                       </div>
-                    </div>
 
-                    <div className="row">
                       <div className="col-6  col-md-3 ">
                         <Select
                           options={allcategory}
@@ -1158,27 +1164,27 @@ export default function CustomerType(props) {
                           size="small"
                         />
                       </div>
-                      <div className="col-6  col-md-3">
-                        <TextField
-                          className="form-control   mb-3"
-                          label={
-                            type.value === "Daily Wage" ? "Wages" : "Salary"
-                          }
-                          value={salary}
-                          onChange={
-                            type.value === "Daily Wage"
-                              ? (e) => {
-                                  setsalary(e.target.value);
-                                }
-                              : handlesalary
-                          }
-                          size="small"
-                        />
-                      </div>
-                    </div>
+                      {type && (
+                        <div className="col-6  col-md-3">
+                          <TextField
+                            className="form-control   mb-3"
+                            label={
+                              type.value === "Daily Wage" ? "Wages" : "Salary"
+                            }
+                            value={salary}
+                            onChange={
+                              type.value === "Daily Wage"
+                                ? (e) => {
+                                    setsalary(e.target.value);
+                                  }
+                                : handlesalary
+                            }
+                            size="small"
+                          />
+                        </div>
+                      )}
 
-                    {type?.value === "Monthly Wage" && (
-                      <div className="row">
+                      {type?.value === "Monthly Wage" && (
                         <div className="d-flex col-6 col-md-3">
                           <div className=" col-6 ">
                             <TextField
@@ -1211,7 +1217,9 @@ export default function CustomerType(props) {
                             />
                           </div>
                         </div>
+                      )}
 
+                      {type?.value === "Monthly Wage" && (
                         <div className="d-flex col-6 col-md-3">
                           <div className="col-6 ">
                             <TextField
@@ -1244,7 +1252,9 @@ export default function CustomerType(props) {
                             />
                           </div>
                         </div>
+                      )}
 
+                      {type?.value === "Monthly Wage" && (
                         <div className="d-flex col-6 col-md-3">
                           <div className="col-6 ">
                             <TextField
@@ -1277,7 +1287,9 @@ export default function CustomerType(props) {
                             />
                           </div>
                         </div>
+                      )}
 
+                      {type?.value === "Monthly Wage" && (
                         <div className="d-flex col-6 col-md-3">
                           <div className="col-6">
                             <TextField
@@ -1310,10 +1322,8 @@ export default function CustomerType(props) {
                             />
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    <div className="row">
                       {type?.value === "Monthly Wage" && (
                         <div className="d-flex col-6 col-md-3">
                           <div className="col-6">
@@ -1385,71 +1395,70 @@ export default function CustomerType(props) {
                           value={hiredate}
                           onChange={(e) => {
                             sethiredate(e.target.value);
+                            if (type?.value !== "Monthly Wage") {
+                              finddatedifferenc(e.target.value, firedate);
+                            }
                           }}
                           size="small"
                         />
                       </div>
 
-                      {type?.value !== "Monthly Wage" && (
-                        <div className="col-6 col-md-3">
-                          <TextField
-                            type="Date"
-                            className="form-control  mb-3"
-                            label={t("End Date")}
-                            InputLabelProps={{ shrink: true }}
-                            value={firedate}
-                            onChange={(e) => {
-                              setfiredate(e.target.value);
-                            }}
-                            size="small"
-                          />
-                        </div>
-                      )}
-                      {type?.value !== "Monthly Wage" && (
+                      <div className="col-6 col-md-3">
+                        <TextField
+                          type="Date"
+                          className="form-control  mb-3"
+                          label={t("End Date")}
+                          InputLabelProps={{ shrink: true }}
+                          value={firedate}
+                          onChange={(e) => {
+                            setfiredate(e.target.value);
+                            if (type?.value !== "Monthly Wage") {
+                              finddatedifferenc(hiredate, e.target.value);
+                            }
+                          }}
+                          size="small"
+                        />
+                      </div>
+
+                      {type?.value !== "Monthly Wage" && type && (
                         <div className="col-6 col-md-3">
                           <TextField
                             type="number"
                             className="form-control  mb-3"
-                            label={"Absent Days"}
-                            value={absentdays}
-                            onChange={(e) => {
-                              setabsentdays(e.target.value);
-                            }}
+                            label={t("Days")}
+                            value={remainingdays}
+                            size="small"
+                          />
+                        </div>
+                      )}
+
+                      <div className="col-6 col-md-3">
+                        <TextField
+                          type="number"
+                          className="form-control  mb-3"
+                          label={"Absent Days"}
+                          value={absentdays}
+                          onChange={(e) => {
+                            setabsentdays(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                      {type?.value !== "Monthly Wage" && type && (
+                        <div className="col-6 col-md-3">
+                          <TextField
+                            type="number"
+                            className="form-control  mb-3"
+                            label={t("Total")}
+                            value={
+                              Number(salary) *
+                              (Number(remainingdays) - Number(absentdays))
+                            }
                             size="small"
                           />
                         </div>
                       )}
                     </div>
-
-                    {type?.value === "Monthly Wage" && (
-                      <div className="row">
-                        <div className="col-6 col-md-3">
-                          <TextField
-                            type="Date"
-                            className="form-control  mb-3"
-                            label={t("End Date")}
-                            InputLabelProps={{ shrink: true }}
-                            value={firedate}
-                            onChange={(e) => {
-                              setfiredate(e.target.value);
-                            }}
-                            size="small"
-                          />
-                        </div>
-                        <div className="col-6 col-md-3">
-                          <TextField
-                            type="number"
-                            className="form-control  mb-3"
-                            label={"Absent Days"}
-                            value={absentdays}
-                            onChange={(e) => {
-                              setabsentdays(e.target.value);
-                            }}
-                            size="small"
-                          />
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </Tab>
                 <Tab eventKey="documents" title="Documents">
@@ -1928,7 +1937,7 @@ export default function CustomerType(props) {
         </div>
       )}
 
-      {current_user?.permissions?.includes("view_employee") ? (
+      {current_user?.permissions?.includes("view_employee") && (
         <div className="card mt-3">
           <div className="card-body pt-0">
             <ToolkitProvider
@@ -1989,19 +1998,6 @@ export default function CustomerType(props) {
               )}
             </ToolkitProvider>
           </div>
-        </div>
-      ) : (
-        <div
-          style={{
-            fontSize: "20px",
-            opacity: "0.6",
-            fontWeight: "bold",
-            height: "90vh",
-          }}
-          className="d-flex justify-content-center align-items-center"
-        >
-          {" "}
-          User has no permission to see employees.
         </div>
       )}
 

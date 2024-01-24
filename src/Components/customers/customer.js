@@ -59,7 +59,7 @@ export default function Customer(props) {
   const [allemployee, setallemployee] = useState([]);
 
   const [contact_name, setcontact_name] = useState("");
-  const [contact_phone, setcontact_phone] = useState("");
+
   const [contact_mobile, setcontact_mobile] = useState("");
   const [contact_email, setcontact_email] = useState("");
   const [contact_notes, setcontact_notes] = useState("");
@@ -110,7 +110,7 @@ export default function Customer(props) {
       if (response.ok) {
         setisloading(false);
         const optimize = json.map((item) => {
-          return { value: item.id, label: item.name };
+          return { value: item.id, label: `${item.id}-${item.name}` };
         });
         setallemployee(optimize);
       }
@@ -198,7 +198,6 @@ export default function Customer(props) {
               setcontact_mobile(row.contact_details?.mobile);
               setcontact_name(row.contact_details?.name);
               setcontact_notes(row.contact_details?.notes);
-              setcontact_phone(row.contact_details?.phone);
 
               setsaleman_saleman({
                 value: row.saleman_details?.sale_man,
@@ -439,9 +438,7 @@ export default function Customer(props) {
       if (contact_email) {
         formData.append("contact_details.email", contact_email);
       }
-      if (contact_phone) {
-        formData.append("contact_details.phone", contact_phone);
-      }
+
       if (contact_mobile) {
         formData.append("contact_details.mobile", contact_mobile);
       }
@@ -494,7 +491,6 @@ export default function Customer(props) {
         setcontact_mobile("");
         setcontact_name("");
         setcontact_notes("");
-        setcontact_phone("");
       }
     }
   };
@@ -531,9 +527,7 @@ export default function Customer(props) {
       if (contact_email) {
         formData.append("contact_details.email", contact_email);
       }
-      if (contact_phone) {
-        formData.append("contact_details.phone", contact_phone);
-      }
+
       if (contact_mobile) {
         formData.append("contact_details.mobile", contact_mobile);
       }
@@ -583,7 +577,6 @@ export default function Customer(props) {
         setcontact_mobile("");
         setcontact_name("");
         setcontact_notes("");
-        setcontact_phone("");
 
         setid("");
         setcheck_update(true);
@@ -603,7 +596,7 @@ export default function Customer(props) {
               </div>
             </div>
 
-            <div className="card-body pt-0">
+            <div className="card-body pt-0" style={{ minHeight: "45vh" }}>
               <Tabs
                 defaultActiveKey={"information"}
                 transition={true}
@@ -757,22 +750,6 @@ export default function Customer(props) {
 
                       <div className="col-md-3">
                         <TextField
-                          className="form-control  mb-3"
-                          label={"Phone"}
-                          value={contact_phone}
-                          onChange={(e) => {
-                            if (e.target.value.length < 11) {
-                              setcontact_phone(e.target.value);
-                            } else {
-                              Red_toast("Mobile digits must be between 0~10");
-                            }
-                          }}
-                          size="small"
-                        />
-                      </div>
-
-                      <div className="col-md-3">
-                        <TextField
                           type="number"
                           className="form-control  mb-3"
                           label={"Mobile"}
@@ -800,9 +777,6 @@ export default function Customer(props) {
                           size="small"
                         />
                       </div>
-                    </div>
-
-                    <div className="row">
                       <div className="col-md-3">
                         <TextField
                           multiline
@@ -899,7 +873,7 @@ export default function Customer(props) {
         </div>
       )}
 
-      {current_user?.permissions?.includes("view_customer") ? (
+      {current_user?.permissions?.includes("view_customer") && (
         <div className="card mt-3">
           <div className="card-body pt-0">
             <ToolkitProvider
@@ -957,19 +931,6 @@ export default function Customer(props) {
               )}
             </ToolkitProvider>
           </div>
-        </div>
-      ) : (
-        <div
-          style={{
-            fontSize: "20px",
-            opacity: "0.6",
-            fontWeight: "bold",
-            height: "90vh",
-          }}
-          className="d-flex justify-content-center align-items-center"
-        >
-          {" "}
-          User has no permission to see customers.
         </div>
       )}
 

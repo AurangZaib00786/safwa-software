@@ -106,42 +106,50 @@ function Accounts(props) {
   const linkFollow = (cell, row, rowIndex, formatExtraData) => {
     return (
       <span className="action d-flex">
-        <IconButton
-          className="me-2 border border-danger rounded"
-          onClick={() => {
-            setrow_id(row.id);
-            seturl_to_delete(`${route}/api/account-heads/${row.id}/`);
-            setdelete_user(true);
-          }}
-        >
-          <DeleteRoundedIcon className="m-1" color="error" fontSize="medium" />
-        </IconButton>
+        {current_user?.permissions?.includes("delete_branch") && (
+          <IconButton
+            className="me-2 border border-danger rounded"
+            onClick={() => {
+              setrow_id(row.id);
+              seturl_to_delete(`${route}/api/account-heads/${row.id}/`);
+              setdelete_user(true);
+            }}
+          >
+            <DeleteRoundedIcon
+              className="m-1"
+              color="error"
+              fontSize="medium"
+            />
+          </IconButton>
+        )}
 
-        <IconButton
-          style={{ border: "1px solid #003049", borderRadius: "5px" }}
-          onClick={() => {
-            setname(row.name);
-            setemail(row.email);
-            setcontact(row.contact);
+        {current_user?.permissions?.includes("change_branch") && (
+          <IconButton
+            style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            onClick={() => {
+              setname(row.name);
+              setemail(row.email);
+              setcontact(row.contact);
 
-            setbank_details(row.bank_details);
-            setaddress(row.address);
-            setFileurl(row.logo);
-            setvatno(row.vat_number);
-            setarabicname(row.arabic_name);
+              setbank_details(row.bank_details);
+              setaddress(row.address);
+              setFileurl(row.logo);
+              setvatno(row.vat_number);
+              setarabicname(row.arabic_name);
 
-            setterms(row.terms);
-            settax_percentage(row.vat_percentage);
-            setid(row.id);
-            setcheck_update(false);
-          }}
-        >
-          <EditOutlinedIcon
-            className="m-1"
-            style={{ color: "#003049" }}
-            fontSize="medium"
-          />
-        </IconButton>
+              setterms(row.terms);
+              settax_percentage(row.vat_percentage);
+              setid(row.id);
+              setcheck_update(false);
+            }}
+          >
+            <EditOutlinedIcon
+              className="m-1"
+              style={{ color: "#003049" }}
+              fontSize="medium"
+            />
+          </IconButton>
+        )}
       </span>
     );
   };
@@ -335,7 +343,7 @@ function Accounts(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (check_update) {
+    if (check_update && current_user?.permissions?.includes("add_branch")) {
       if (!isloading) {
         setisloading(true);
         const formData = new FormData();
@@ -397,7 +405,10 @@ function Accounts(props) {
           });
         }
       }
-    } else {
+    } else if (
+      !check_update &&
+      current_user?.permissions?.includes("change_branch")
+    ) {
       handleSubmit_update(e);
     }
   };
@@ -496,229 +507,237 @@ function Accounts(props) {
                 {" "}
                 Assign Branches
               </Button>
-              <Save_button isloading={isloading} />
+              {(current_user?.permissions?.includes("add_branch") ||
+                current_user?.permissions?.includes("change_branch")) && (
+                <Save_button isloading={isloading} />
+              )}
             </div>
           </div>
 
-          <div className="card-body pt-0">
-            <div className="row mt-4">
-              <div className="col-md-9">
-                <div className="row">
-                  <div className="col-md-4">
-                    <TextField
-                      className="form-control   mb-3"
-                      label="Name"
-                      value={name}
-                      onChange={(e) => {
-                        setname(e.target.value);
-                      }}
-                      size="small"
-                      required
-                      autoFocus
-                    />
-                  </div>
-                  <MuiThemeProvider theme={theme}>
-                    <div dir="rtl" className="col-md-4">
+          {(current_user?.permissions?.includes("add_branch") ||
+            current_user?.permissions?.includes("change_branch")) && (
+            <div className="card-body pt-0">
+              <div className="row mt-4">
+                <div className="col-md-9">
+                  <div className="row">
+                    <div className="col-md-4">
                       <TextField
-                        className="form-control  mb-3"
-                        label="اسم"
-                        value={arabicname}
+                        className="form-control   mb-3"
+                        label="Name"
+                        value={name}
                         onChange={(e) => {
-                          setarabicname(e.target.value);
+                          setname(e.target.value);
+                        }}
+                        size="small"
+                        required
+                        autoFocus
+                      />
+                    </div>
+                    <MuiThemeProvider theme={theme}>
+                      <div dir="rtl" className="col-md-4">
+                        <TextField
+                          className="form-control  mb-3"
+                          label="اسم"
+                          value={arabicname}
+                          onChange={(e) => {
+                            setarabicname(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                    </MuiThemeProvider>
+
+                    <div className="col-md-4">
+                      <TextField
+                        type="number"
+                        className="form-control  mb-3"
+                        label="Mobile"
+                        value={contact}
+                        onChange={(e) => {
+                          if (e.target.value.length < 11) {
+                            setcontact(e.target.value);
+                          } else {
+                            Red_toast("Mobile digits must be between 0~9");
+                          }
                         }}
                         size="small"
                       />
                     </div>
-                  </MuiThemeProvider>
+                  </div>
 
-                  <div className="col-md-4">
-                    <TextField
-                      type="number"
-                      className="form-control  mb-3"
-                      label="Mobile"
-                      value={contact}
-                      onChange={(e) => {
-                        if (e.target.value.length < 11) {
-                          setcontact(e.target.value);
-                        } else {
-                          Red_toast("Mobile digits must be between 0~9");
-                        }
-                      }}
-                      size="small"
-                    />
+                  <div className="row">
+                    <div className="col-md-4">
+                      <TextField
+                        type="email"
+                        className="form-control   mb-3"
+                        label="Email"
+                        value={email}
+                        onChange={(e) => {
+                          setemail(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <TextField
+                        type="number"
+                        className="form-control  mb-3"
+                        label="VAT Number"
+                        value={vatno}
+                        onChange={(e) => {
+                          if (e.target.value.length < 16) {
+                            setvatno(e.target.value);
+                          } else {
+                            Red_toast("VAT no digits must be between 0~15");
+                          }
+                        }}
+                        size="small"
+                      />
+                    </div>
+
+                    <div className="col-md-4">
+                      <TextField
+                        type="number"
+                        className="form-control  mb-3"
+                        label="VAT %"
+                        value={tax_percentage}
+                        onChange={(e) => {
+                          if (Number(e.target.value) < 101) {
+                            settax_percentage(e.target.value);
+                          } else {
+                            Red_toast("VAT % must be less or equal to 100");
+                          }
+                        }}
+                        size="small"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-md-4">
+                      <TextField
+                        multiline
+                        className="form-control   mb-3"
+                        label="Address"
+                        value={address}
+                        onChange={(e) => {
+                          setaddress(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+
+                    <div className="col-md-4">
+                      <TextField
+                        multiline
+                        className="form-control   mb-3"
+                        label="Banks"
+                        value={bank_details}
+                        onChange={(e) => {
+                          setbank_details(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+
+                    <div className="col-md-4">
+                      <TextField
+                        multiline
+                        className="form-control   mb-3"
+                        label="Terms & Conditions"
+                        value={terms}
+                        onChange={(e) => {
+                          setterms(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
                   </div>
                 </div>
-
-                <div className="row">
-                  <div className="col-md-4">
-                    <TextField
-                      type="email"
-                      className="form-control   mb-3"
-                      label="Email"
-                      value={email}
-                      onChange={(e) => {
-                        setemail(e.target.value);
-                      }}
-                      size="small"
+                <div className="col-md-3 d-flex flex-column align-items-center">
+                  {Fileurl && (
+                    <img
+                      style={{ width: "100px", height: "100px" }}
+                      src={Fileurl}
                     />
-                  </div>
-                  <div className="col-md-4">
-                    <TextField
-                      type="number"
-                      className="form-control  mb-3"
-                      label="VAT Number"
-                      value={vatno}
-                      onChange={(e) => {
-                        if (e.target.value.length < 16) {
-                          setvatno(e.target.value);
-                        } else {
-                          Red_toast("VAT no digits must be between 0~15");
-                        }
-                      }}
-                      size="small"
-                    />
-                  </div>
-
-                  <div className="col-md-4">
-                    <TextField
-                      type="number"
-                      className="form-control  mb-3"
-                      label="VAT %"
-                      value={tax_percentage}
-                      onChange={(e) => {
-                        if (Number(e.target.value) < 101) {
-                          settax_percentage(e.target.value);
-                        } else {
-                          Red_toast("VAT % must be less or equal to 100");
-                        }
-                      }}
-                      size="small"
-                    />
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="col-md-4">
-                    <TextField
-                      multiline
-                      className="form-control   mb-3"
-                      label="Address"
-                      value={address}
-                      onChange={(e) => {
-                        setaddress(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-
-                  <div className="col-md-4">
-                    <TextField
-                      multiline
-                      className="form-control   mb-3"
-                      label="Banks"
-                      value={bank_details}
-                      onChange={(e) => {
-                        setbank_details(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-
-                  <div className="col-md-4">
-                    <TextField
-                      multiline
-                      className="form-control   mb-3"
-                      label="Terms & Conditions"
-                      value={terms}
-                      onChange={(e) => {
-                        setterms(e.target.value);
-                      }}
-                      size="small"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-3 d-flex flex-column align-items-center">
-                {Fileurl && (
-                  <img
-                    style={{ width: "100px", height: "100px" }}
-                    src={Fileurl}
+                  )}
+                  <input
+                    onChange={handleimageselection}
+                    id="select-file"
+                    type="file"
+                    ref={inputFile}
+                    style={{ display: "none" }}
                   />
-                )}
-                <input
-                  onChange={handleimageselection}
-                  id="select-file"
-                  type="file"
-                  ref={inputFile}
-                  style={{ display: "none" }}
-                />
-                <Button onClick={onButtonClick} shadow>
-                  {t("choose_file")}
-                </Button>
+                  <Button onClick={onButtonClick} shadow>
+                    {t("choose_file")}
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </form>
       </div>
 
-      <div className="card mt-3">
-        <div className="card-body pt-0">
-          <ToolkitProvider
-            keyField="id"
-            data={all_users}
-            columns={columns}
-            search
-            exportCSV
-          >
-            {(props) => (
-              <div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
-                    <ExportCSVButton
-                      {...props.csvProps}
-                      className="csvbutton  border bg-secondary text-light me-2 mb-2"
-                    >
-                      Export CSV
-                    </ExportCSVButton>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 me-2 mb-2"
-                      variant="outline-primary"
-                      onClick={download}
-                    >
-                      <PictureAsPdfIcon /> PDF
-                    </Button>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 mb-2"
-                      variant="outline-success"
-                      onClick={print}
-                    >
-                      <PrintIcon /> Print
-                    </Button>
+      {current_user?.permissions?.includes("view_branch") && (
+        <div className="card mt-3">
+          <div className="card-body pt-0">
+            <ToolkitProvider
+              keyField="id"
+              data={all_users}
+              columns={columns}
+              search
+              exportCSV
+            >
+              {(props) => (
+                <div>
+                  <div className="d-sm-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <ExportCSVButton
+                        {...props.csvProps}
+                        className="csvbutton  border bg-secondary text-light me-2 mb-2"
+                      >
+                        Export CSV
+                      </ExportCSVButton>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 me-2 mb-2"
+                        variant="outline-primary"
+                        onClick={download}
+                      >
+                        <PictureAsPdfIcon /> PDF
+                      </Button>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 mb-2"
+                        variant="outline-success"
+                        onClick={print}
+                      >
+                        <PrintIcon /> Print
+                      </Button>
+                    </div>
+                    <SearchBar {...props.searchProps} />
                   </div>
-                  <SearchBar {...props.searchProps} />
+                  {isloading && (
+                    <div className="text-center">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
+                  <hr />
+                  <BootstrapTable
+                    {...props.baseProps}
+                    pagination={paginationFactory(options)}
+                    rowStyle={rowstyle}
+                    striped
+                    bootstrap4
+                    condensed
+                    wrapperClasses="table-responsive"
+                  />
                 </div>
-                {isloading && (
-                  <div className="text-center">
-                    <Spinner animation="border" variant="primary" />
-                  </div>
-                )}
-                <hr />
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={paginationFactory(options)}
-                  rowStyle={rowstyle}
-                  striped
-                  bootstrap4
-                  condensed
-                  wrapperClasses="table-responsive"
-                />
-              </div>
-            )}
-          </ToolkitProvider>
+              )}
+            </ToolkitProvider>
+          </div>
         </div>
-      </div>
+      )}
 
       {delete_user && (
         <Alert_before_delete

@@ -184,6 +184,7 @@ function RolePermssion(props) {
         return item;
       });
       setdata_to_send([...data_to_send, ...dummydata]);
+      console.log([...data_to_send, ...dummydata]);
       setall_jsonpermissions(optimize);
     } else {
       const optimize = all_jsonpermissions.map((item) => {
@@ -202,6 +203,7 @@ function RolePermssion(props) {
       setdata_to_send(
         data_to_send.filter((item) => !dummydata.includes(item.id))
       );
+      console.log(data_to_send.filter((item) => !dummydata.includes(item.id)));
       setall_jsonpermissions(optimize);
     }
   };
@@ -232,7 +234,8 @@ function RolePermssion(props) {
       setdata_to_send([...data_to_send, row]);
     } else {
       row["value"] = false;
-      setdata_to_send(data_to_send.filter((item) => item !== row.id));
+
+      setdata_to_send(data_to_send.filter((item) => item.id !== row.id));
     }
   };
 
