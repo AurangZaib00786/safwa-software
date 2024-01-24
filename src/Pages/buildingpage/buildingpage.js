@@ -13,6 +13,7 @@ function Items_page({ current_user }) {
   }
 
   const [activeTab, setActiveTab] = useState(current_tab);
+  const [additionalinfo, setadditionalinfo] = useState(null);
 
   useEffect(() => {
     localStorage.setItem("activeTab", activeTab);
@@ -24,17 +25,28 @@ function Items_page({ current_user }) {
   return (
     <div>
       <Tabs
-        defaultActiveKey={activeTab}
+        activeKey={activeTab}
         transition={true}
         onSelect={handleTabSelect}
         id="noanim-tab-example"
         className="mb-3"
       >
         <Tab eventKey="building" title="Building">
-          {activeTab === "building" && <Building />}
+          {activeTab === "building" && (
+            <Building
+              setActiveTab={setActiveTab}
+              setadditionalinfo={setadditionalinfo}
+            />
+          )}
         </Tab>
         <Tab eventKey="buildingmanagement" title="Building Management">
-          {activeTab === "buildingmanagement" && <BuildingManagement />}
+          {activeTab === "buildingmanagement" && (
+            <BuildingManagement
+              setActiveTab={setActiveTab}
+              additionalinfo={additionalinfo}
+              setadditionalinfo={setadditionalinfo}
+            />
+          )}
         </Tab>
       </Tabs>
       <ToastContainer autoClose={2000} hideProgressBar={true} theme="dark" />

@@ -18,6 +18,10 @@ export default function BuildingManagement(props) {
   const route = props.state.setuser.route;
   const dispatch = props.Settable_history;
   const selected_year = props.state.Setcurrentinfo.selected_year;
+  const setActiveTab = props.setActiveTab;
+  const setadditionalinfo = props.setadditionalinfo;
+  const additionalinfo = props.additionalinfo;
+
   const [data, setdata] = useState([]);
   const [building, setbuilding] = useState("");
   const [buildingoption, setbuildingoption] = useState([]);
@@ -29,6 +33,15 @@ export default function BuildingManagement(props) {
   const [enddate, setenddate] = useState(null);
   const [isloading, setisloading] = useState(false);
   const [callagain, setcallagain] = useState(false);
+
+  useEffect(() => {
+    if (additionalinfo) {
+      handlebuildingchange({
+        value: additionalinfo,
+        label: additionalinfo.building_number,
+      });
+    }
+  }, [buildingoption]);
 
   useEffect(() => {
     setisloading(true);
@@ -127,6 +140,8 @@ export default function BuildingManagement(props) {
         success_toast();
         setdata([]);
         setbuilding("");
+        setadditionalinfo(null);
+        setActiveTab("building");
       }
     } else {
       Red_toast("Pleae Select Building First!");

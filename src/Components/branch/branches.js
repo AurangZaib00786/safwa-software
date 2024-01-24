@@ -108,7 +108,7 @@ function Accounts(props) {
       <span className="action d-flex">
         {current_user?.permissions?.includes("delete_branch") && (
           <IconButton
-            className="me-2 border border-danger rounded"
+            className="me-2 border border-danger rounded tooltipclass"
             onClick={() => {
               setrow_id(row.id);
               seturl_to_delete(`${route}/api/account-heads/${row.id}/`);
@@ -120,12 +120,14 @@ function Accounts(props) {
               color="error"
               fontSize="medium"
             />
+            <span className="tooltip-textclass">Delete</span>
           </IconButton>
         )}
 
         {current_user?.permissions?.includes("change_branch") && (
           <IconButton
             style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            className="tooltipclass"
             onClick={() => {
               setname(row.name);
               setemail(row.email);
@@ -148,6 +150,7 @@ function Accounts(props) {
               style={{ color: "#003049" }}
               fontSize="medium"
             />
+            <span className="tooltip-textclass">Edit</span>
           </IconButton>
         )}
       </span>

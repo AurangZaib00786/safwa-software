@@ -23,13 +23,16 @@ import pdfMake from "pdfmake/build/pdfmake";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
 import { useTranslation } from "react-i18next";
-
+import ApartmentIcon from "@material-ui/icons/Apartment";
+import Tooltip from "@mui/material/Tooltip";
 export default function Building(props) {
   const { t } = useTranslation();
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const current_user = props.state.Setcurrentinfo.current_user;
+  const setActiveTab = props.setActiveTab;
+  const setadditionalinfo = props.setadditionalinfo;
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
@@ -88,7 +91,7 @@ export default function Building(props) {
     return (
       <span className="action d-flex">
         <IconButton
-          className="border border-danger rounded me-2"
+          className="border border-danger rounded me-2 tooltipclass"
           onClick={() => {
             setrow_id(row.id);
             seturl_to_delete(`${route}/api/buildings/${row.id}/`);
@@ -96,10 +99,12 @@ export default function Building(props) {
           }}
         >
           <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
+          <span className="tooltip-textclass">Delete</span>
         </IconButton>
 
         <IconButton
           style={{ border: "1px solid #003049", borderRadius: "5px" }}
+          className="me-2 tooltipclass"
           onClick={() => {
             setbuilding_number(row.building_number);
             setcapacity(row.capacity);
@@ -115,6 +120,23 @@ export default function Building(props) {
             style={{ color: "#003049" }}
             fontSize="small"
           />
+          <span className="tooltip-textclass">Edit</span>
+        </IconButton>
+
+        <IconButton
+          style={{ border: "1px solid #002000", borderRadius: "5px" }}
+          className="me-2 tooltipclass"
+          onClick={() => {
+            setadditionalinfo(row);
+            setActiveTab("buildingmanagement");
+          }}
+        >
+          <ApartmentIcon
+            className="m-1"
+            style={{ color: "#002000" }}
+            fontSize="small"
+          />
+          <span className="tooltip-textclass">Assign Employees</span>
         </IconButton>
       </span>
     );
@@ -137,7 +159,7 @@ export default function Building(props) {
 
     {
       dataField: "building_number",
-      text: "Number",
+      text: "Name",
       sort: true,
       headerFormatter: headerstyle,
     },

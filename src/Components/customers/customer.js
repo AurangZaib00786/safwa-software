@@ -166,7 +166,7 @@ export default function Customer(props) {
       <span className="action d-flex">
         {current_user?.permissions?.includes("delete_customer") && (
           <IconButton
-            className="border border-danger rounded me-2"
+            className="border border-danger rounded me-2 tooltipclass"
             onClick={() => {
               setrow_id(row.id);
               seturl_to_delete(`${route}/api/parties/${row.id}/`);
@@ -174,12 +174,14 @@ export default function Customer(props) {
             }}
           >
             <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
+            <span className="tooltip-textclass">Delete</span>
           </IconButton>
         )}
 
         {current_user?.permissions?.includes("change_customer") && (
           <IconButton
             style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            className="tooltipclass"
             onClick={() => {
               setname(row.name);
               setarabicname(row.arabic_name);
@@ -215,6 +217,7 @@ export default function Customer(props) {
               style={{ color: "#003049" }}
               fontSize="small"
             />
+            <span className="tooltip-textclass">Edit</span>
           </IconButton>
         )}
       </span>

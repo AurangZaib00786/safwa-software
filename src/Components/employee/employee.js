@@ -199,7 +199,7 @@ export default function CustomerType(props) {
     return (
       <span className="action d-flex">
         <IconButton
-          className="border border-primary rounded me-2"
+          className="border border-primary rounded me-2 tooltipclass"
           onClick={() => {
             localStorage.setItem("data", JSON.stringify(row));
 
@@ -207,10 +207,11 @@ export default function CustomerType(props) {
           }}
         >
           <PrintRoundedIcon className="m-1" color="primary" fontSize="medium" />
+          <span className="tooltip-textclass">Print</span>
         </IconButton>
         {current_user?.permissions?.includes("delete_employee") && (
           <IconButton
-            className="border border-danger rounded me-2"
+            className="border border-danger rounded me-2 tooltipclass"
             onClick={() => {
               setrow_id(row.id);
               seturl_to_delete(`${route}/api/employee/${row.id}/`);
@@ -218,12 +219,14 @@ export default function CustomerType(props) {
             }}
           >
             <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
+            <span className="tooltip-textclass">Delete</span>
           </IconButton>
         )}
 
         {current_user?.permissions?.includes("change_employee") && (
           <IconButton
             style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            className="tooltipclass"
             onClick={() => {
               setid(row.id);
               setcheck_update(true);
@@ -323,6 +326,7 @@ export default function CustomerType(props) {
               style={{ color: "#003049" }}
               fontSize="small"
             />
+            <span className="tooltip-textclass">Edit</span>
           </IconButton>
         )}
       </span>

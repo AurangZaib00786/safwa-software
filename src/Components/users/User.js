@@ -38,9 +38,10 @@ function User(props) {
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const setActiveTab = props.setActiveTab;
+  const setadditionalinfo = props.setadditionalinfo;
   const current_user = props.state.Setcurrentinfo.current_user;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
-  const setadditionalinfo = props.setadditionalinfo;
+
   const all_users = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
@@ -130,9 +131,9 @@ function User(props) {
   const linkFollow = (cell, row, rowIndex, formatExtraData) => {
     return (
       <span className="action d-flex">
-        {row.id !== 1 && (
+        {row.id !== 1 && current_user?.permissions?.includes("delete_user") && (
           <IconButton
-            className="me-2 border border-danger rounded"
+            className="me-2 border border-danger rounded tooltipclass"
             onClick={() => {
               setrow_id(row.id);
               seturl_to_delete(`${route}/api/users/${row.id}/`);
@@ -144,15 +145,18 @@ function User(props) {
               color="error"
               fontSize="medium"
             />
+            <span className="tooltip-textclass">Delete</span>
           </IconButton>
         )}
 
         {current_user?.permissions?.includes("change_user") && (
           <IconButton
             style={{ border: "1px solid #003049", borderRadius: "5px" }}
-            className="me-2"
+            className="me-2 tooltipclass"
             onClick={() => {
               setusername(row.username);
+              setid(row.id);
+              setcheck_update(false);
               setemail(row.email);
               setemployee({
                 value: row.extended.employee,
@@ -160,9 +164,6 @@ function User(props) {
                   ? `${row.extended.employee}-${row.extended.employee_name}`
                   : "",
               });
-
-              setid(row.id);
-              setcheck_update(false);
             }}
           >
             <EditOutlinedIcon
@@ -170,29 +171,29 @@ function User(props) {
               style={{ color: "#003049" }}
               fontSize="medium"
             />
-          </IconButton>
-        )}
-
-        {current_user?.permissions?.includes("delete_user") && (
-          <IconButton
-            style={{ border: "1px solid #004099", borderRadius: "5px" }}
-            className="me-2"
-            onClick={() => {
-              setadditionalinfo(row);
-              setActiveTab("Assign Branch");
-            }}
-          >
-            <StoreIcon
-              className="m-1"
-              style={{ color: "#004099" }}
-              fontSize="medium"
-            />
+            <span className="tooltip-textclass">Edit</span>
           </IconButton>
         )}
 
         <IconButton
+          style={{ border: "1px solid #004099", borderRadius: "5px" }}
+          className="me-2 tooltipclass"
+          onClick={() => {
+            setadditionalinfo(row);
+            setActiveTab("Assign Branch");
+          }}
+        >
+          <StoreIcon
+            className="m-1"
+            style={{ color: "#004099" }}
+            fontSize="medium"
+          />
+          <span className="tooltip-textclass">Assign Branches</span>
+        </IconButton>
+
+        <IconButton
           style={{ border: "1px solid #007299", borderRadius: "5px" }}
-          className="me-2"
+          className="me-2 tooltipclass"
           onClick={() => {
             setadditionalinfo(row);
             setActiveTab("Assign Roles");
@@ -203,6 +204,7 @@ function User(props) {
             style={{ color: "#007299" }}
             fontSize="medium"
           />
+          <span className="tooltip-textclass">Assign Roles</span>
         </IconButton>
       </span>
     );

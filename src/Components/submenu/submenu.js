@@ -123,7 +123,7 @@ export default function Submenu(props) {
     return (
       <span className="action d-flex">
         <IconButton
-          className="border border-danger rounded me-2"
+          className="border border-danger rounded me-2 tooltipclass"
           onClick={() => {
             setrow_id(row.id);
             seturl_to_delete(`${route}/api/sub-menu/${row.id}/`);
@@ -131,10 +131,12 @@ export default function Submenu(props) {
           }}
         >
           <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
+          <span className="tooltip-textclass">Delete</span>
         </IconButton>
 
         <IconButton
           style={{ border: "1px solid #003049", borderRadius: "5px" }}
+          className="tooltipclass"
           onClick={() => {
             setdata(row);
             setshowmodelupdate(true);
@@ -145,6 +147,7 @@ export default function Submenu(props) {
             style={{ color: "#003049" }}
             fontSize="small"
           />
+          <span className="tooltip-textclass">Edit</span>
         </IconButton>
       </span>
     );
