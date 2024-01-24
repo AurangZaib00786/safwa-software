@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import AddIcon from "@material-ui/icons/Add";
 import TextField from "@mui/material/TextField";
 import Save_button from "../buttons/save_button";
+import Red_toast from "../alerts/red_toast";
 
 function RolePermssion(props) {
   const { t } = useTranslation();
@@ -23,6 +24,7 @@ function RolePermssion(props) {
   const [allpermissions, setallpermissions] = useState([]);
   const [all_jsonpermissions, setall_jsonpermissions] = useState([]);
   const [showmodel, setshowmodel] = useState(false);
+
   const [allroles, setallroles] = useState([]);
   const [isloading, setisloading] = useState(false);
   const [status, setstatus] = useState(false);
@@ -30,6 +32,10 @@ function RolePermssion(props) {
   const [allpermissions_copy, setallpermissions_copy] = useState([]);
   const [keys, setkeys] = useState([]);
   const [data_to_send, setdata_to_send] = useState([]);
+  const [addcheck, setaddcheck] = useState(false);
+  const [changecheck, setchangecheck] = useState(false);
+  const [deletecheck, setdeletecheck] = useState(false);
+  const [viewcheck, setviewcheck] = useState(false);
 
   useEffect(() => {
     const fetchallbraches = async () => {
@@ -62,7 +68,7 @@ function RolePermssion(props) {
 
         setkeys(Object.keys(json));
 
-        setall_jsonpermissions(json);
+        setall_jsonpermissions(Object.values(json));
         setallpermissions(json);
         setallpermissions_copy(json);
       }
@@ -94,17 +100,18 @@ function RolePermssion(props) {
 
   const handlesubmit = async (e) => {
     e.preventDefault();
+    if (!selected_role) {
+      Red_toast("Select Role First!");
+      return;
+    }
     setisloading(true);
 
-    const permissions = [];
-    all_jsonpermissions.forEach((item) => {
-      if (item.value) {
-        permissions.push(item.id);
-      }
+    const permissions = data_to_send.map((item) => {
+      return item.id;
     });
 
     const response = await fetch(
-      `${route}/api/groups/${selected_role.value}/`,
+      `${route}/api/groups/${selected_role.value.id}/`,
       {
         method: "PATCH",
         headers: {
@@ -132,75 +139,69 @@ function RolePermssion(props) {
 
   const handleselect = (selected_option) => {
     setselected_role(selected_option);
-    const role = allroles.filter((item) => {
-      return item.id === selected_option.value;
-    });
-    const permissions = role[0].permissions;
+    const dummydata = [];
+    const permissions = selected_option.value.permissions;
     const optimize = all_jsonpermissions.map((item) => {
-      if (permissions.includes(item.id)) {
-        item["value"] = true;
-      } else {
-        item["value"] = false;
-      }
+      Object.keys(item)?.map((item2) => {
+        item[item2]?.map((item3) => {
+          if (permissions.includes(item3.id)) {
+            item3["value"] = true;
+            dummydata.push(item3);
+          } else {
+            item3["value"] = false;
+          }
+          return item3;
+        });
+        return item2;
+      });
       return item;
     });
+    setdata_to_send(dummydata);
     setall_jsonpermissions(optimize);
-
-    setallpermissions(optimize);
-    setallpermissions_copy(optimize);
   };
 
   const userlist = allroles.map((item) => {
     return {
-      value: item.id,
+      value: item,
       label: item.name,
     };
   });
 
-  const handleallchange = (e) => {
+  const handleallchange = (e, text) => {
+    const dummydata = [];
     if (e.target.checked) {
       const optimize = all_jsonpermissions.map((item) => {
-        item["value"] = true;
-
+        Object.keys(item)?.map((item2) => {
+          item[item2]?.map((item3) => {
+            if (item3.name === text) {
+              item3["value"] = true;
+              dummydata.push(item3);
+            }
+            return item3;
+          });
+          return item2;
+        });
         return item;
       });
+      setdata_to_send([...data_to_send, ...dummydata]);
       setall_jsonpermissions(optimize);
-
-      setallpermissions(optimize);
-      setallpermissions_copy(optimize);
     } else {
       const optimize = all_jsonpermissions.map((item) => {
-        item["value"] = false;
+        Object.keys(item)?.map((item2) => {
+          item[item2]?.map((item3) => {
+            if (item3.name === text) {
+              item3["value"] = false;
+              dummydata.push(item3.id);
+            }
+            return item3;
+          });
+          return item2;
+        });
         return item;
       });
+      // setdata_to_send(data_to_send.filter(item=>return item.id))
       setall_jsonpermissions(optimize);
-      const nestedArray = [];
-
-      for (let i = 0; i < optimize.length; i += 2) {
-        const subArray = optimize.slice(i, i + 2);
-
-        nestedArray.push({ p_0: subArray[0], p_1: subArray[1] });
-      }
-
-      setallpermissions(nestedArray);
-      setallpermissions_copy(nestedArray);
     }
-  };
-
-  const handlecheckboxchange = (cell) => {
-    const optimize = all_jsonpermissions.map((item) => {
-      if (item.id === cell.id) {
-        if (item["value"]) {
-          item["value"] = false;
-        } else {
-          item["value"] = true;
-        }
-      }
-      return item;
-    });
-    setall_jsonpermissions(optimize);
-
-    setallpermissions(optimize);
   };
 
   const handlesearch = (e) => {
@@ -225,8 +226,10 @@ function RolePermssion(props) {
 
   const handlechange = (e, row) => {
     if (e.target.checked) {
+      row["value"] = true;
       setdata_to_send([...data_to_send, row]);
     } else {
+      row["value"] = false;
       setdata_to_send(data_to_send.filter((item) => item !== row.id));
     }
   };
@@ -308,71 +311,82 @@ function RolePermssion(props) {
                       <th>Delete</th>
                       <th>View</th>
                     </tr>
-                    <tr>
+                    {/* <tr>
                       <th>
                         <input
                           className="form-check-input m-0 me-2"
                           type="checkbox"
-                          onChange={handleallchange}
+                          checked={addcheck}
+                          onChange={(e) => {
+                            setaddcheck(e.target.checked);
+                            handleallchange(e, "add");
+                          }}
                         />
                       </th>
                       <th>
                         <input
                           className="form-check-input m-0 me-2"
                           type="checkbox"
-                          onChange={handleallchange}
+                          checked={changecheck}
+                          onChange={(e) => {
+                            setchangecheck(e.target.checked);
+                            handleallchange(e, "change");
+                          }}
                         />
                       </th>
                       <th>
                         <input
                           className="form-check-input m-0 me-2"
                           type="checkbox"
-                          onChange={handleallchange}
+                          checked={deletecheck}
+                          onChange={(e) => {
+                            setdeletecheck(e.target.checked);
+                            handleallchange(e, "delete");
+                          }}
                         />
                       </th>
                       <th>
                         <input
                           className="form-check-input m-0 me-2"
                           type="checkbox"
-                          onChange={handleallchange}
+                          checked={viewcheck}
+                          onChange={(e) => {
+                            setviewcheck(e.target.checked);
+                            handleallchange(e, "view");
+                          }}
                         />
                       </th>
-                    </tr>
+                    </tr> */}
                   </thead>
                   <tbody>
-                    {keys?.map((item) => {
+                    {all_jsonpermissions?.map((item, index) => {
                       return (
                         <>
                           <tr>
                             <td className="text-danger" colSpan={5}>
-                              <strong>{item}</strong>
+                              <strong>{keys[index]}</strong>
                             </td>
                           </tr>
 
-                          {Object.keys(all_jsonpermissions[item])?.map(
-                            (item2) => {
-                              return (
-                                <tr>
-                                  <td className="ps-4">{item2}</td>
-                                  {all_jsonpermissions[item][item2].map(
-                                    (item3) => {
-                                      return (
-                                        <td className="ps-4">
-                                          <input
-                                            className="form-check-input m-0 me-2"
-                                            type="checkbox"
-                                            onChange={(e) =>
-                                              handlechange(e, item3)
-                                            }
-                                          />
-                                        </td>
-                                      );
-                                    }
-                                  )}
-                                </tr>
-                              );
-                            }
-                          )}
+                          {Object.keys(item)?.map((item2) => {
+                            return (
+                              <tr>
+                                <td className="ps-4">{item2}</td>
+                                {item[item2]?.map((item3) => {
+                                  return (
+                                    <td className="ps-4">
+                                      <input
+                                        className="form-check-input m-0 me-2"
+                                        type="checkbox"
+                                        checked={item3.value}
+                                        onChange={(e) => handlechange(e, item3)}
+                                      />
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            );
+                          })}
                         </>
                       );
                     })}
