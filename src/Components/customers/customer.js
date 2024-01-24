@@ -33,6 +33,7 @@ export default function Customer(props) {
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
+  const selected_year = props.state.Setcurrentinfo.selected_year;
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
@@ -407,7 +408,7 @@ export default function Customer(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isloading) {
+    if (!isloading && current_user?.permissions?.includes("add_customer")) {
       setisloading(true);
       const formData = new FormData();
       formData.append("name", name);
@@ -497,7 +498,7 @@ export default function Customer(props) {
 
   const handleSubmit_update = async (e) => {
     e.preventDefault();
-    if (!isloading) {
+    if (!isloading && current_user?.permissions?.includes("change_customer")) {
       setisloading(true);
       const formData = new FormData();
       formData.append("name", name);
@@ -586,7 +587,8 @@ export default function Customer(props) {
 
   return (
     <div className="p-3 pt-2">
-      {current_user?.permissions?.includes("add_customer") && (
+      {(current_user?.permissions?.includes("add_customer") ||
+        current_user?.permissions?.includes("change_customer")) && (
         <div className="card">
           <form onSubmit={check_update ? handleSubmit : handleSubmit_update}>
             <div className="card-header d-flex justify-content-between bg-white">
@@ -805,6 +807,12 @@ export default function Customer(props) {
                           onChange={(e) => {
                             setsaleman_start_date(e.target.value);
                           }}
+                          InputProps={{
+                            inputProps: {
+                              min: `${selected_year.value}-01-01`,
+                              max: `${selected_year.value}-12-31`,
+                            },
+                          }}
                           size="small"
                           autoFocus
                         />
@@ -834,6 +842,12 @@ export default function Customer(props) {
                           InputLabelProps={{ shrink: true }}
                           onChange={(e) => {
                             setclient_date(e.target.value);
+                          }}
+                          InputProps={{
+                            inputProps: {
+                              min: `${selected_year.value}-01-01`,
+                              max: `${selected_year.value}-12-31`,
+                            },
                           }}
                           size="small"
                           autoFocus

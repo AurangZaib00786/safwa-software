@@ -34,7 +34,7 @@ export default function Building(props) {
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
   const { ExportCSVButton } = CSVExport;
-  const settings = props.state.Setcurrentinfo.settings;
+  const selected_year = props.state.Setcurrentinfo.selected_year;
 
   const [id, setid] = useState("");
   const [check_update, setcheck_update] = useState(false);
@@ -144,6 +144,12 @@ export default function Building(props) {
     {
       dataField: "capacity",
       text: "Capacity",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "total_employees",
+      text: "Employees",
       sort: true,
       headerFormatter: headerstyle,
     },
@@ -383,7 +389,7 @@ export default function Building(props) {
                 <div className="col-md-3">
                   <TextField
                     className="form-control   mb-3"
-                    label={"Building No."}
+                    label={"Building / Name"}
                     value={building_number}
                     onChange={(e) => {
                       setbuilding_number(e.target.value);
@@ -413,6 +419,12 @@ export default function Building(props) {
                     className="form-control  mb-3"
                     label={"Opening date"}
                     value={opening_date}
+                    InputProps={{
+                      inputProps: {
+                        min: `${selected_year.value}-01-01`,
+                        max: `${selected_year.value}-12-31`,
+                      },
+                    }}
                     InputLabelProps={{ shrink: true }}
                     onChange={(e) => {
                       setopening_date(e.target.value);
@@ -427,6 +439,12 @@ export default function Building(props) {
                     type="date"
                     className="form-control  mb-3"
                     label={"Closing date"}
+                    InputProps={{
+                      inputProps: {
+                        min: `${selected_year.value}-01-01`,
+                        max: `${selected_year.value}-12-31`,
+                      },
+                    }}
                     InputLabelProps={{ shrink: true }}
                     value={closing_date}
                     onChange={(e) => {

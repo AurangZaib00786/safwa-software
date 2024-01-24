@@ -17,7 +17,7 @@ export default function BuildingManagement(props) {
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const dispatch = props.Settable_history;
-
+  const selected_year = props.state.Setcurrentinfo.selected_year;
   const [data, setdata] = useState([]);
   const [building, setbuilding] = useState("");
   const [buildingoption, setbuildingoption] = useState([]);
@@ -286,6 +286,12 @@ export default function BuildingManagement(props) {
                                   className="form-control"
                                   size="small"
                                   value={item.start_date}
+                                  InputProps={{
+                                    inputProps: {
+                                      min: `${selected_year.value}-01-01`,
+                                      max: `${selected_year.value}-12-31`,
+                                    },
+                                  }}
                                   onChange={(e) => {
                                     handlesavejoindatechange(
                                       e.target.value,
@@ -301,6 +307,12 @@ export default function BuildingManagement(props) {
                                     className="form-control"
                                     size="small"
                                     value={item.end_date}
+                                    InputProps={{
+                                      inputProps: {
+                                        min: `${selected_year.value}-01-01`,
+                                        max: `${selected_year.value}-12-31`,
+                                      },
+                                    }}
                                     onChange={(e) => {
                                       handlesaveenddatechange(
                                         e.target.value,
@@ -371,6 +383,12 @@ export default function BuildingManagement(props) {
                                 onChange={(e) => {
                                   setjoindate(e.target.value);
                                 }}
+                                InputProps={{
+                                  inputProps: {
+                                    min: `${selected_year.value}-01-01`,
+                                    max: `${selected_year.value}-12-31`,
+                                  },
+                                }}
                                 required
                               />
                             </div>
@@ -382,6 +400,12 @@ export default function BuildingManagement(props) {
                                   size="small"
                                   className="form-control"
                                   value={enddate}
+                                  InputProps={{
+                                    inputProps: {
+                                      min: `${selected_year.value}-01-01`,
+                                      max: `${selected_year.value}-12-31`,
+                                    },
+                                  }}
                                   onChange={(e) => {
                                     setenddate(e.target.value);
                                   }}

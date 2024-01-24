@@ -23,6 +23,7 @@ const initialstates = {
   selected_branch: user_branch,
   settings: null,
   invoice_type: user_invoice_type,
+  selected_year: { value: "2024", label: "Year 2024" },
 };
 export default function Setcurrentinfo(state = initialstates, action) {
   switch (action.type) {
@@ -32,6 +33,7 @@ export default function Setcurrentinfo(state = initialstates, action) {
         current_user: action.payload,
         settings: state.settings,
         invoice_type: state.invoice_type,
+        selected_year: state.selected_year,
       };
 
     case Set_Branch:
@@ -44,6 +46,7 @@ export default function Setcurrentinfo(state = initialstates, action) {
         current_user: state.current_user,
         settings: state.settings,
         invoice_type: state.invoice_type,
+        selected_year: state.selected_year,
       };
 
     case Set_Branch_first:
@@ -52,6 +55,7 @@ export default function Setcurrentinfo(state = initialstates, action) {
         current_user: state.current_user,
         settings: state.settings,
         invoice_type: state.invoice_type,
+        selected_year: state.selected_year,
       };
     case "Set_settings":
       return {
@@ -59,6 +63,7 @@ export default function Setcurrentinfo(state = initialstates, action) {
         current_user: state.current_user,
         settings: action.payload,
         invoice_type: state.invoice_type,
+        selected_year: state.selected_year,
       };
 
     case "Set_invoice_type":
@@ -68,6 +73,16 @@ export default function Setcurrentinfo(state = initialstates, action) {
         selected_branch: state.selected_branch,
         current_user: state.current_user,
         settings: state.settings,
+        selected_year: state.selected_year,
+      };
+
+    case "Set_year":
+      return {
+        invoice_type: state.invoice_type,
+        selected_branch: state.selected_branch,
+        current_user: state.current_user,
+        settings: state.settings,
+        selected_year: action.payload,
       };
 
     default:

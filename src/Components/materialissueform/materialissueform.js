@@ -57,6 +57,7 @@ export default function Materialissueform(props) {
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_stock = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
+  const selected_year = props.state.Setcurrentinfo.selected_year;
 
   const [id, setid] = useState("");
   const [check_update, setcheck_update] = useState(false);
@@ -838,6 +839,12 @@ export default function Materialissueform(props) {
                     className="form-control   mb-3"
                     label={"Date"}
                     InputLabelProps={{ shrink: true }}
+                    InputProps={{
+                      inputProps: {
+                        min: `${selected_year.value}-01-01`,
+                        max: `${selected_year.value}-12-31`,
+                      },
+                    }}
                     value={date}
                     onChange={(e) => setdate(e.target.value)}
                     size="small"

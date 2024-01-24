@@ -30,7 +30,7 @@ import Select from "../alerts/select";
 import TextField from "@mui/material/TextField";
 import success_toast from "../alerts/success_toast";
 import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
-import { formatDistance, intervalToDuration } from "date-fns";
+import { differenceInDays, intervalToDuration } from "date-fns";
 
 export default function CustomerType(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -42,7 +42,7 @@ export default function CustomerType(props) {
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
-
+  const selected_year = props.state.Setcurrentinfo.selected_year;
   const { SearchBar } = Search;
 
   const [delete_user, setdelete_user] = useState(false);
@@ -492,7 +492,7 @@ export default function CustomerType(props) {
   const rowstyle = { height: "10px", paddingLeft: "30px" };
 
   const handleSubmit = async (e) => {
-    if (!isloading) {
+    if (!isloading && current_user?.permissions?.includes("add_employee")) {
       setisloading(true);
       const formData = new FormData();
 
@@ -658,7 +658,7 @@ export default function CustomerType(props) {
   };
 
   const handleSubmit_update = async (e) => {
-    if (!isloading) {
+    if (!isloading && current_user?.permissions?.includes("change_employee")) {
       setisloading(true);
       const formData = new FormData();
 
@@ -994,12 +994,9 @@ export default function CustomerType(props) {
 
   const finddatedifferenc = (date1, date2) => {
     if (date1 && date2) {
-      const a = intervalToDuration({
-        start: new Date(date1),
-        end: new Date(date2),
-      });
+      const a = differenceInDays(new Date(date2), new Date(date1));
 
-      setremainingdays(a.days + a.months * 30);
+      setremainingdays(a + 1);
     }
   };
 
@@ -1393,6 +1390,12 @@ export default function CustomerType(props) {
                           label={t("Joining Date")}
                           InputLabelProps={{ shrink: true }}
                           value={hiredate}
+                          InputProps={{
+                            inputProps: {
+                              min: `${selected_year.value}-01-01`,
+                              max: `${selected_year.value}-12-31`,
+                            },
+                          }}
                           onChange={(e) => {
                             sethiredate(e.target.value);
                             if (type?.value !== "Monthly Wage") {
@@ -1410,6 +1413,12 @@ export default function CustomerType(props) {
                           label={t("End Date")}
                           InputLabelProps={{ shrink: true }}
                           value={firedate}
+                          InputProps={{
+                            inputProps: {
+                              min: `${selected_year.value}-01-01`,
+                              max: `${selected_year.value}-12-31`,
+                            },
+                          }}
                           onChange={(e) => {
                             setfiredate(e.target.value);
                             if (type?.value !== "Monthly Wage") {
@@ -1491,6 +1500,12 @@ export default function CustomerType(props) {
                             variant="standard"
                             label={"Expiry Date"}
                             value={workpermitdate}
+                            InputProps={{
+                              inputProps: {
+                                min: `${selected_year.value}-01-01`,
+                                max: `${selected_year.value}-12-31`,
+                              },
+                            }}
                             InputLabelProps={{ shrink: true }}
                             onChange={(e) => {
                               setworkpermitdate(e.target.value);
@@ -1606,6 +1621,12 @@ export default function CustomerType(props) {
                             className="form-control   mb-3"
                             variant="standard"
                             label={"Expiry Date"}
+                            InputProps={{
+                              inputProps: {
+                                min: `${selected_year.value}-01-01`,
+                                max: `${selected_year.value}-12-31`,
+                              },
+                            }}
                             value={passportdate}
                             InputLabelProps={{ shrink: true }}
                             onChange={(e) => {
@@ -1723,6 +1744,12 @@ export default function CustomerType(props) {
                             variant="standard"
                             label={"Expiry Date"}
                             value={municipaldate}
+                            InputProps={{
+                              inputProps: {
+                                min: `${selected_year.value}-01-01`,
+                                max: `${selected_year.value}-12-31`,
+                              },
+                            }}
                             InputLabelProps={{ shrink: true }}
                             onChange={(e) => {
                               setmunicipaldate(e.target.value);
@@ -1841,6 +1868,12 @@ export default function CustomerType(props) {
                             variant="standard"
                             label={"Expiry Date"}
                             value={drivinglicensedate}
+                            InputProps={{
+                              inputProps: {
+                                min: `${selected_year.value}-01-01`,
+                                max: `${selected_year.value}-12-31`,
+                              },
+                            }}
                             InputLabelProps={{ shrink: true }}
                             onChange={(e) => {
                               setdrivinglicensedate(e.target.value);

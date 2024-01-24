@@ -54,6 +54,7 @@ export default function StockAdjustment(props) {
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_stock = props.state.Settablehistory.table_history;
+  const selected_year = props.state.Setcurrentinfo.selected_year;
   const dispatch = props.Settable_history;
   const setActiveTab = props.setActiveTab;
   const [id, setid] = useState("");
@@ -585,6 +586,12 @@ export default function StockAdjustment(props) {
                       className="form-control   mb-3"
                       label={"Date"}
                       InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        inputProps: {
+                          min: `${selected_year.value}-01-01`,
+                          max: `${selected_year.value}-12-31`,
+                        },
+                      }}
                       value={date}
                       onChange={(e) => setdate(e.target.value)}
                       size="small"
