@@ -152,7 +152,7 @@ function User(props) {
           className="me-2"
           onClick={() => {
             setadditionalinfo(row);
-            setActiveTab("Role");
+            setActiveTab("Assign Roles");
           }}
         >
           <DeviceHubIcon
@@ -377,7 +377,7 @@ function User(props) {
                 className="me-2"
                 variant="outline-secondary"
                 onClick={() => {
-                  setActiveTab("Role");
+                  setActiveTab("Assign Roles");
                   setadditionalinfo(null);
                 }}
               >
@@ -388,7 +388,7 @@ function User(props) {
                 className="me-2"
                 variant="outline-success"
                 onClick={() => {
-                  setActiveTab("Group");
+                  setActiveTab("Permissions");
                 }}
               >
                 {" "}

@@ -32,12 +32,6 @@ function Areaform({
 
       formData.append("name", name);
 
-      if (current_user.profile.user_type === "user") {
-        formData.append("user", current_user.profile.parent_user);
-      } else {
-        formData.append("user", current_user.id);
-      }
-
       const response = await fetch(`${route}/api/area/`, {
         method: "POST",
         headers: {

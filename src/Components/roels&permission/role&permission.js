@@ -28,29 +28,43 @@ function RolePermssion(props) {
   const [status, setstatus] = useState(false);
   const [search, setsearch] = useState("");
   const [allpermissions_copy, setallpermissions_copy] = useState([]);
+  const [keys, setkeys] = useState([]);
+  const [data_to_send, setdata_to_send] = useState([]);
 
   useEffect(() => {
     const fetchallbraches = async () => {
-      const response = await fetch(`${route}/api/permissions/?content_type=4`, {
+      const response = await fetch(`${route}/api/grouped-permission/`, {
         headers: { Authorization: `Bearer ${user.access}` },
       });
       const json = await response.json();
       if (response.ok) {
-        const optimize = json.map((item) => {
-          item["value"] = false;
-          return item;
+        Object.keys(json).map((item) => {
+          Object.keys(json[item]).map((item2) => {
+            json[item][item2].sort((a, b) => {
+              const nameA = a.name.toLowerCase();
+              const nameB = b.name.toLowerCase();
+
+              if (nameA < nameB) return -1;
+              if (nameA > nameB) return 1;
+              return 0;
+            });
+          });
         });
-        setall_jsonpermissions(optimize);
-        const nestedArray = [];
 
-        for (let i = 0; i < optimize.length; i += 2) {
-          const subArray = optimize.slice(i, i + 2);
+        Object.keys(json).map((item) => {
+          Object.keys(json[item]).map((item2) => {
+            json[item][item2].map((item3) => {
+              item3["value"] = false;
+              return item3;
+            });
+          });
+        });
 
-          nestedArray.push({ p_0: subArray[0], p_1: subArray[1] });
-        }
+        setkeys(Object.keys(json));
 
-        setallpermissions(nestedArray);
-        setallpermissions_copy(nestedArray);
+        setall_jsonpermissions(json);
+        setallpermissions(json);
+        setallpermissions_copy(json);
       }
     };
 
@@ -131,16 +145,9 @@ function RolePermssion(props) {
       return item;
     });
     setall_jsonpermissions(optimize);
-    const nestedArray = [];
 
-    for (let i = 0; i < optimize.length; i += 2) {
-      const subArray = optimize.slice(i, i + 2);
-
-      nestedArray.push({ p_0: subArray[0], p_1: subArray[1] });
-    }
-
-    setallpermissions(nestedArray);
-    setallpermissions_copy(nestedArray);
+    setallpermissions(optimize);
+    setallpermissions_copy(optimize);
   };
 
   const userlist = allroles.map((item) => {
@@ -158,16 +165,9 @@ function RolePermssion(props) {
         return item;
       });
       setall_jsonpermissions(optimize);
-      const nestedArray = [];
 
-      for (let i = 0; i < optimize.length; i += 2) {
-        const subArray = optimize.slice(i, i + 2);
-
-        nestedArray.push({ p_0: subArray[0], p_1: subArray[1] });
-      }
-
-      setallpermissions(nestedArray);
-      setallpermissions_copy(nestedArray);
+      setallpermissions(optimize);
+      setallpermissions_copy(optimize);
     } else {
       const optimize = all_jsonpermissions.map((item) => {
         item["value"] = false;
@@ -199,15 +199,8 @@ function RolePermssion(props) {
       return item;
     });
     setall_jsonpermissions(optimize);
-    const nestedArray = [];
 
-    for (let i = 0; i < optimize.length; i += 2) {
-      const subArray = optimize.slice(i, i + 2);
-
-      nestedArray.push({ p_0: subArray[0], p_1: subArray[1] });
-    }
-
-    setallpermissions(nestedArray);
+    setallpermissions(optimize);
   };
 
   const handlesearch = (e) => {
@@ -227,6 +220,14 @@ function RolePermssion(props) {
       setallpermissions(sortout);
     } else {
       setallpermissions(allpermissions_copy);
+    }
+  };
+
+  const handlechange = (e, row) => {
+    if (e.target.checked) {
+      setdata_to_send([...data_to_send, row]);
+    } else {
+      setdata_to_send(data_to_send.filter((item) => item !== row.id));
     }
   };
 
@@ -250,11 +251,11 @@ function RolePermssion(props) {
               variant="outline-success"
               onClick={() => {
                 setadditionalinfo(null);
-                setActiveTab("Role");
+                setActiveTab("Assign Roles");
               }}
             >
               {" "}
-              Role
+              Assign Roles
             </Button>
 
             <Button
@@ -298,61 +299,81 @@ function RolePermssion(props) {
               </label>
 
               <div className="table-responsive">
-                <table className="table table-striped">
+                <table className="table table-bordered ">
                   <thead>
+                    <tr>
+                      <th rowSpan={2}>Name</th>
+                      <th>ADD</th>
+                      <th>Change</th>
+                      <th>Delete</th>
+                      <th>View</th>
+                    </tr>
                     <tr>
                       <th>
                         <input
                           className="form-check-input m-0 me-2"
                           type="checkbox"
                           onChange={handleallchange}
-                        />{" "}
-                        Check All
+                        />
+                      </th>
+                      <th>
+                        <input
+                          className="form-check-input m-0 me-2"
+                          type="checkbox"
+                          onChange={handleallchange}
+                        />
+                      </th>
+                      <th>
+                        <input
+                          className="form-check-input m-0 me-2"
+                          type="checkbox"
+                          onChange={handleallchange}
+                        />
+                      </th>
+                      <th>
+                        <input
+                          className="form-check-input m-0 me-2"
+                          type="checkbox"
+                          onChange={handleallchange}
+                        />
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {allpermissions.map((item) => {
+                    {keys?.map((item) => {
                       return (
-                        <tr key={item.p_0.id}>
-                          <td>
-                            {item.p_0 && (
-                              <div
-                                className="d-flex align-items-center "
-                                style={{ height: "40px" }}
-                              >
-                                <input
-                                  className="form-check-input m-0 me-2"
-                                  type="checkbox"
-                                  checked={item.p_0.value}
-                                  onChange={() =>
-                                    handlecheckboxchange(item.p_0)
-                                  }
-                                />
-                                <h6 className="m-0">{item.p_0.name}</h6>
-                              </div>
-                            )}
-                          </td>
+                        <>
+                          <tr>
+                            <td className="text-danger" colSpan={5}>
+                              <strong>{item}</strong>
+                            </td>
+                          </tr>
 
-                          <td>
-                            {item.p_1 && (
-                              <div
-                                className="d-flex align-items-center "
-                                style={{ height: "40px" }}
-                              >
-                                <input
-                                  className="form-check-input m-0 me-2"
-                                  type="checkbox"
-                                  checked={item.p_1.value}
-                                  onChange={() =>
-                                    handlecheckboxchange(item.p_1)
-                                  }
-                                />
-                                <h6 className="m-0">{item.p_1.name}</h6>
-                              </div>
-                            )}
-                          </td>
-                        </tr>
+                          {Object.keys(all_jsonpermissions[item])?.map(
+                            (item2) => {
+                              return (
+                                <tr>
+                                  <td className="ps-4">{item2}</td>
+                                  {all_jsonpermissions[item][item2].map(
+                                    (item3) => {
+                                      return (
+                                        <td className="ps-4">
+                                          <input
+                                            className="form-check-input m-0 me-2"
+                                            type="checkbox"
+                                            onChange={(e) =>
+                                              handlechange(e, item3)
+                                            }
+                                          />
+                                        </td>
+                                      );
+                                    }
+                                  )}
+                                </tr>
+                              );
+                            }
+                          )}
+                        </>
                       );
                     })}
                   </tbody>

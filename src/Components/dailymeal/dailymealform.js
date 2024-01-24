@@ -19,8 +19,11 @@ function Dailymealform({
   setcolumn,
   table_data,
 }) {
-  
-  const [selected, setselected] = useState(column?.map((item,index)=>{return index+1}));
+  const [selected, setselected] = useState(
+    column?.map((item, index) => {
+      return item.id;
+    })
+  );
 
   const headerstyle = (column, colIndex, { sortElement }) => {
     return (
@@ -34,16 +37,16 @@ function Dailymealform({
     );
   };
 
-  const addproduct = (row,rowIndex) => {
+  const addproduct = (row, rowIndex) => {
     const optimize = column?.filter((item) => {
       return item.pot === row.id;
     });
-    setselected([...selected,rowIndex+1])
+    setselected([...selected, row.id]);
     if (optimize.length > 0) {
       Red_toast(`${row.name} pot already Added`);
       return false;
     } else {
-      setcolumn([...column, { ...row,pot: row.id, }]);
+      setcolumn([...column, { ...row, pot: row.id }]);
       const optimizetable = table_data.map((item) => {
         return {
           ...item,
@@ -75,7 +78,7 @@ function Dailymealform({
         Red_toast(`${row.name} pot already Added`);
         return false;
       } else {
-        newcolumn = [...newcolumn, { ...row,pot: row.id,}];
+        newcolumn = [...newcolumn, { ...row, pot: row.id }];
         newtabeldata = newtabeldata.map((item) => {
           return {
             ...item,
@@ -93,35 +96,36 @@ function Dailymealform({
         flag = true;
       }
     });
-    setselected(rows.map((item,index)=> index+1))
+    setselected(rows.map((item, index) => item.id));
     setcolumn(newcolumn);
     callback({ type: "Set_product_history", data: newtabeldata });
     return flag;
   };
 
-  const deleteproduct = (row,rowIndex) => {
-
-    setselected(selected.filter(item=>{return item!==rowIndex+1}))
+  const deleteproduct = (row, rowIndex) => {
+    setselected(
+      selected.filter((item) => {
+        return item !== row.id;
+      })
+    );
     const optimize = column?.filter((item) => {
       return item.pot !== row.id;
     });
     const optimizetable = table_data?.map((item) => {
-      const new_data=item.pot_details.filter(pot=>{
-        return pot.pot!==row.id
-      })
-      return {...item,pot_details:new_data}
-      
+      const new_data = item.pot_details.filter((pot) => {
+        return pot.pot !== row.id;
+      });
+      return { ...item, pot_details: new_data };
     });
     setcolumn(optimize);
     callback({ type: "Set_product_history", data: optimizetable });
     return true;
-    
   };
   const deleteallproduct = (rows) => {
     setcolumn([]);
-    setselected([])
+    setselected([]);
     const optimizetable = table_data?.map((item) => {
-      return {...item,pot_details:[]}
+      return { ...item, pot_details: [] };
     });
     callback({ type: "Set_product_history", data: optimizetable });
     return true;
@@ -145,16 +149,15 @@ function Dailymealform({
   const selectRow = {
     mode: "checkbox",
     clickToSelect: true,
-    selected:selected,
+    selected: selected,
     onSelect: (row, isSelect, rowIndex, e) => {
       if (isSelect) {
-        const response = addproduct(row,rowIndex);
+        const response = addproduct(row, rowIndex);
         if (response) {
           custom_toast(`${row.name} pot added`);
         }
-      }else{
-       
-        const response = deleteproduct(row,rowIndex);
+      } else {
+        const response = deleteproduct(row, rowIndex);
         if (response) {
           custom_toast(`${row.name} pot deleted`);
         }
@@ -166,7 +169,7 @@ function Dailymealform({
         if (response) {
           custom_toast("Pots added");
         }
-      }else{
+      } else {
         const response = deleteallproduct(rows);
         if (response) {
           custom_toast("Pots Deleted");
@@ -206,8 +209,6 @@ function Dailymealform({
               {/* <div className="d-flex flex-row-reverse justify-content-between align-items-center mt-3">
                 <SearchBar {...props.searchProps} />
               </div> */}
-
-              
 
               <div>
                 <BootstrapTable

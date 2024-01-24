@@ -37,7 +37,6 @@ export default function Area(props) {
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
-  const settings = props.state.Setcurrentinfo.settings;
   const { ExportCSVButton } = CSVExport;
   const [showmodel, setshowmodel] = useState(false);
   const [data, setdata] = useState("");
@@ -53,11 +52,7 @@ export default function Area(props) {
     const fetchWorkouts = async () => {
       dispatch({ type: "Set_table_history", data: [] });
 
-      if (current_user.profile.user_type === "user") {
-        var url = `${route}/api/area/?user_id=${current_user.profile.parent_user}`;
-      } else {
-        url = `${route}/api/area/?user_id=${current_user.id}`;
-      }
+      var url = `${route}/api/area/`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -77,7 +72,7 @@ export default function Area(props) {
     if (user) {
       fetchWorkouts();
     }
-  }, [user, selected_branch]);
+  }, []);
 
   const handleconfirm = (row) => {
     dispatch({ type: "Delete_table_history", data: { id: row } });

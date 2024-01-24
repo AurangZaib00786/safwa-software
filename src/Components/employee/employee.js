@@ -111,7 +111,7 @@ export default function CustomerType(props) {
     const fetchWorkouts = async () => {
       dispatch({ type: "Set_table_history", data: [] });
 
-      var url = `${route}/api/employee/`;
+      var url = `${route}/api/employee/?account_head=${selected_branch.id}`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -134,7 +134,7 @@ export default function CustomerType(props) {
     if (user) {
       fetchWorkouts();
     }
-  }, []);
+  }, [selected_branch]);
 
   useEffect(() => {
     dispatch({ type: "Set_menuitem", data: "employee" });
@@ -376,7 +376,7 @@ export default function CustomerType(props) {
 
     {
       dataField: "hiring_date",
-      text: t("Hire Date"),
+      text: t("Join Date"),
       sort: true,
       headerFormatter: headerstyle,
     },
@@ -952,7 +952,6 @@ export default function CustomerType(props) {
       const fileURL = URL.createObjectURL(item.file);
       window.open(fileURL, "_blank");
     } else {
-      console.log("updated version");
       window.open(item.url, "_blank");
     }
   };
@@ -1050,7 +1049,7 @@ export default function CustomerType(props) {
             </div>
           </div>
 
-          <div className="card-body pt-0" style={{ minHeight: "50vh" }}>
+          <div className="card-body pt-0" style={{ minHeight: "60vh" }}>
             <Tabs
               defaultActiveKey={"information"}
               transition={true}
@@ -1372,7 +1371,7 @@ export default function CustomerType(props) {
                       <TextField
                         type="Date"
                         className="form-control  mb-3"
-                        label={t("Hiring Date")}
+                        label={t("Joining Date")}
                         InputLabelProps={{ shrink: true }}
                         value={hiredate}
                         onChange={(e) => {
@@ -1387,7 +1386,7 @@ export default function CustomerType(props) {
                         <TextField
                           type="Date"
                           className="form-control  mb-3"
-                          label={t("Firing Date")}
+                          label={t("End Date")}
                           InputLabelProps={{ shrink: true }}
                           value={firedate}
                           onChange={(e) => {
@@ -1419,7 +1418,7 @@ export default function CustomerType(props) {
                         <TextField
                           type="Date"
                           className="form-control  mb-3"
-                          label={t("Firing Date")}
+                          label={t("End Date")}
                           InputLabelProps={{ shrink: true }}
                           value={firedate}
                           onChange={(e) => {
@@ -1447,7 +1446,7 @@ export default function CustomerType(props) {
               <Tab eventKey="documents" title="Documents">
                 <div className="row">
                   <div className="col-3 mb-3 ps-2 pe-2">
-                    <label>
+                    <label className="mb-3">
                       <input
                         type="checkbox"
                         checked={workpermitcheck}
@@ -1563,7 +1562,7 @@ export default function CustomerType(props) {
                     )}
                   </div>
                   <div className="col-3 mb-3">
-                    <label>
+                    <label className="mb-3">
                       <input
                         type="checkbox"
                         checked={passportcheck}
@@ -1679,7 +1678,7 @@ export default function CustomerType(props) {
                     )}
                   </div>
                   <div className="col-3 mb-3">
-                    <label>
+                    <label className="mb-3">
                       <input
                         type="checkbox"
                         checked={municipalnocheck}
@@ -1797,7 +1796,7 @@ export default function CustomerType(props) {
                     )}
                   </div>
                   <div className="col-3 mb-3">
-                    <label>
+                    <label className="mb-3">
                       <input
                         type="checkbox"
                         checked={drivinglicensecheck}

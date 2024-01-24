@@ -10,7 +10,13 @@ import Branch from "../../Container/branchesContainer";
 import { ToastContainer } from "react-toastify";
 
 function User_page() {
-  const tabs = ["User", "Role", "Group", "Assign Branch", "Branch"];
+  const tabs = [
+    "User",
+    "Assign Roles",
+    "Permissions",
+    "Assign Branch",
+    "Branch",
+  ];
   var current_tab = "User";
 
   const [activeTab, setActiveTab] = useState(current_tab);
@@ -41,13 +47,13 @@ function User_page() {
               setActiveTab={setActiveTab}
               setadditionalinfo={setadditionalinfo}
             />
-          ) : activeTab === "Role" ? (
+          ) : activeTab === "Assign Roles" ? (
             <Assign_role
               setActiveTab={setActiveTab}
               setadditionalinfo={setadditionalinfo}
               additionalinfo={additionalinfo}
             />
-          ) : activeTab === "Group" ? (
+          ) : activeTab === "Permissions" ? (
             <RolePermission
               setActiveTab={setActiveTab}
               setadditionalinfo={setadditionalinfo}

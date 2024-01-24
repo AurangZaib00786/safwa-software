@@ -268,7 +268,7 @@ function Assign_roles(props) {
               className="me-2"
               variant="outline-success"
               onClick={() => {
-                setActiveTab("Group");
+                setActiveTab("Permissions");
               }}
             >
               {" "}

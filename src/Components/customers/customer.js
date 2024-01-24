@@ -12,22 +12,21 @@ import ToolkitProvider, {
 } from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
 import success_toast from "../alerts/success_toast";
 import Save_button from "../buttons/save_button";
-import Select from "react-select";
 import TextField from "@mui/material/TextField";
 import custom_toast from "../alerts/custom_toast";
-
 import Spinner from "react-bootstrap/Spinner";
 import Alert_before_delete from "../../Container/alertContainer";
 import pdfMake from "pdfmake/build/pdfmake";
-
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
 import { useTranslation } from "react-i18next";
 import Red_toast from "../alerts/red_toast";
 import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
+import Select from "../alerts/select";
 
 export default function Customer(props) {
   const { t } = useTranslation();
@@ -51,8 +50,27 @@ export default function Customer(props) {
   const [contact, setcontact] = useState("");
   const [address, setaddress] = useState("");
   const [vatno, setvatno] = useState("");
-
   const [bankdetails, setbankdetails] = useState("");
+  const [email, setemail] = useState("");
+
+  const [area, setarea] = useState("");
+  const [allarea, setallarea] = useState([]);
+  const [notes, setnotes] = useState("");
+  const [allemployee, setallemployee] = useState([]);
+
+  const [contact_name, setcontact_name] = useState("");
+  const [contact_phone, setcontact_phone] = useState("");
+  const [contact_mobile, setcontact_mobile] = useState("");
+  const [contact_email, setcontact_email] = useState("");
+  const [contact_notes, setcontact_notes] = useState("");
+
+  const [saleman_start_date, setsaleman_start_date] = useState("");
+  const [saleman_saleman, setsaleman_saleman] = useState("");
+
+  const [client_date, setclient_date] = useState("");
+  const [client_limit, setclient_limit] = useState("");
+  const [client_period, setclient_period] = useState("");
+
   const [isloading, setisloading] = useState(false);
   const theme = createTheme({
     direction: "rtl", // Both here and <body dir="rtl">
@@ -81,11 +99,61 @@ export default function Customer(props) {
         setisloading(false);
       }
     };
+    const fetchemployees = async () => {
+      var url = `${route}/api/employee/?account_head=${selected_branch.id}`;
 
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        setisloading(false);
+        const optimize = json.map((item) => {
+          return { value: item.id, label: item.name };
+        });
+        setallemployee(optimize);
+      }
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
+        setisloading(false);
+      }
+    };
     if (user) {
       fetchWorkouts();
+      fetchemployees();
     }
   }, [selected_branch]);
+
+  useEffect(() => {
+    const fetchareas = async () => {
+      var url = `${route}/api/area/`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        setisloading(false);
+        const optimize = json.map((item) => {
+          return { value: item.id, label: item.name };
+        });
+        setallarea(optimize);
+      }
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
+        setisloading(false);
+      }
+    };
+    fetchareas();
+  }, []);
 
   const handleconfirm = (row) => {
     dispatch({ type: "Delete_table_history", data: { id: row } });
@@ -113,10 +181,28 @@ export default function Customer(props) {
             setarabicname(row.arabic_name);
             setcontact(row.contact);
             setvatno(row.vat_number);
-
             setaddress(row.address);
-
             setbankdetails(row.bank);
+            setemail(row.email);
+            setnotes(row.notes);
+            setarea({ value: row.area, label: row.area_name });
+
+            setclient_date(row.client_limits?.date);
+            setclient_limit(row.client_limits?.limit);
+            setclient_period(row.client_limits?.period);
+
+            setcontact_email(row.contact_details?.email);
+            setcontact_mobile(row.contact_details?.mobile);
+            setcontact_name(row.contact_details?.name);
+            setcontact_notes(row.contact_details?.notes);
+            setcontact_phone(row.contact_details?.phone);
+
+            setsaleman_saleman({
+              value: row.saleman_details?.sale_man,
+              label: row.saleman_details?.sale_man_name,
+            });
+            setsaleman_start_date(row.saleman_details?.start_date);
+
             setid(row.id);
             setcheck_update(false);
           }}
@@ -161,7 +247,7 @@ export default function Customer(props) {
 
     {
       dataField: "contact",
-      text: t("Cell"),
+      text: t("Contact"),
       sort: true,
       headerFormatter: headerstyle,
     },
@@ -182,6 +268,12 @@ export default function Customer(props) {
     {
       dataField: "address",
       text: t("address"),
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "notes",
+      text: t("Notes"),
       sort: true,
       headerFormatter: headerstyle,
     },
@@ -311,70 +403,139 @@ export default function Customer(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (check_update) {
-      if (!isloading) {
-        setisloading(true);
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("arabic_name", arabicname);
-        formData.append("contact", contact);
-        formData.append("vat_number", vatno);
 
-        formData.append("address", address);
-        formData.append("bank", bankdetails);
-        formData.append("type", "customer");
-        formData.append("account_head", selected_branch.id);
-
-        const response = await fetch(`${route}/api/parties/`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${user.access}`,
-          },
-          body: formData,
-        });
-        const json = await response.json();
-
-        if (!response.ok) {
-          setisloading(false);
-          var error = Object.keys(json);
-          if (error.length > 0) {
-            Red_toast(`${error[0]}:${json[error[0]]}`);
-          }
-        }
-
-        if (response.ok) {
-          dispatch({ type: "Create_table_history", data: json });
-          setisloading(false);
-          success_toast();
-
-          setname("");
-          setarabicname("");
-
-          setvatno("");
-
-          setaddress("");
-          setcontact("");
-          setbankdetails("");
-        }
-      }
-    } else {
-      handleSubmit_update();
-    }
-  };
-
-  const handleSubmit_update = async () => {
     if (!isloading) {
       setisloading(true);
       const formData = new FormData();
       formData.append("name", name);
       formData.append("arabic_name", arabicname);
-
       formData.append("contact", contact);
       formData.append("vat_number", vatno);
-
       formData.append("address", address);
       formData.append("bank", bankdetails);
       formData.append("type", "customer");
+      formData.append("area", area?.value);
+      formData.append("email", email);
+      formData.append("notes", notes);
+
+      formData.append("saleman_details.sale_man", saleman_saleman?.value);
+      if (saleman_start_date) {
+        formData.append("saleman_details.start_date", saleman_start_date);
+      }
+
+      formData.append("client_limits.limit", client_limit);
+      if (client_date) {
+        formData.append("client_limits.date", client_date);
+      }
+      if (client_period) {
+        formData.append("client_limits.period", client_period);
+      }
+
+      formData.append("contact_details.name", contact_name);
+      if (contact_email) {
+        formData.append("contact_details.email", contact_email);
+      }
+      if (contact_phone) {
+        formData.append("contact_details.phone", contact_phone);
+      }
+      if (contact_mobile) {
+        formData.append("contact_details.mobile", contact_mobile);
+      }
+      if (contact_notes) {
+        formData.append("contact_details.notes", contact_notes);
+      }
+
+      formData.append("account_head", selected_branch.id);
+
+      const response = await fetch(`${route}/api/parties/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user.access}`,
+        },
+        body: formData,
+      });
+      const json = await response.json();
+
+      if (!response.ok) {
+        setisloading(false);
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
+      }
+
+      if (response.ok) {
+        dispatch({ type: "Create_table_history", data: json });
+        setisloading(false);
+        success_toast();
+
+        setname("");
+        setarabicname("");
+        setvatno("");
+        setaddress("");
+        setcontact("");
+        setemail("");
+        setarea("");
+        setnotes("");
+        setbankdetails("");
+
+        setclient_date("");
+        setclient_limit("");
+        setclient_period("");
+
+        setsaleman_saleman("");
+        setsaleman_start_date("");
+
+        setcontact_email("");
+        setcontact_mobile("");
+        setcontact_name("");
+        setcontact_notes("");
+        setcontact_phone("");
+      }
+    }
+  };
+
+  const handleSubmit_update = async (e) => {
+    e.preventDefault();
+    if (!isloading) {
+      setisloading(true);
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("arabic_name", arabicname);
+      formData.append("contact", contact);
+      formData.append("vat_number", vatno);
+      formData.append("address", address);
+      formData.append("bank", bankdetails);
+      formData.append("area", area?.value);
+      formData.append("email", email);
+      formData.append("notes", notes);
+
+      formData.append("saleman_details.sale_man", saleman_saleman?.value);
+      if (saleman_start_date) {
+        formData.append("saleman_details.start_date", saleman_start_date);
+      }
+
+      formData.append("client_limits.limit", client_limit);
+      if (client_date) {
+        formData.append("client_limits.date", client_date);
+      }
+      if (client_period) {
+        formData.append("client_limits.period", client_period);
+      }
+
+      formData.append("contact_details.name", contact_name);
+      if (contact_email) {
+        formData.append("contact_details.email", contact_email);
+      }
+      if (contact_phone) {
+        formData.append("contact_details.phone", contact_phone);
+      }
+      if (contact_mobile) {
+        formData.append("contact_details.mobile", contact_mobile);
+      }
+      if (contact_notes) {
+        formData.append("contact_details.notes", contact_notes);
+      }
       const response = await fetch(`${route}/api/parties/${id}/`, {
         method: "PATCH",
         headers: {
@@ -399,12 +560,26 @@ export default function Customer(props) {
 
         setname("");
         setarabicname("");
-
         setvatno("");
-
         setaddress("");
         setcontact("");
+        setemail("");
+        setarea("");
+        setnotes("");
         setbankdetails("");
+
+        setclient_date("");
+        setclient_limit("");
+        setclient_period("");
+
+        setsaleman_saleman("");
+        setsaleman_start_date("");
+
+        setcontact_email("");
+        setcontact_mobile("");
+        setcontact_name("");
+        setcontact_notes("");
+        setcontact_phone("");
 
         setid("");
         setcheck_update(true);
@@ -412,17 +587,10 @@ export default function Customer(props) {
     }
   };
 
-  const selectStyles = {
-    menu: (base) => ({
-      ...base,
-      zIndex: 100,
-    }),
-  };
-
   return (
     <div className="p-3 pt-2">
       <div className="card">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={check_update ? handleSubmit : handleSubmit_update}>
           <div className="card-header d-flex justify-content-between bg-white">
             <h3 className="mt-2 me-2">Add Customer</h3>
             <div className="mt-2 me-2 d-flex flex-row-reverse">
@@ -431,98 +599,296 @@ export default function Customer(props) {
           </div>
 
           <div className="card-body pt-0">
-            <div className="mt-4">
-              <div className="row">
-                <div className="col-md-3">
-                  <TextField
-                    className="form-control   mb-3"
-                    label={"Name"}
-                    value={name}
-                    onChange={(e) => {
-                      setname(e.target.value);
-                    }}
-                    size="small"
-                    required
-                    autoFocus
-                  />
-                </div>
-                <MuiThemeProvider theme={theme}>
-                  <div dir="rtl" className="col-md-3">
-                    <TextField
-                      className="form-control  mb-3"
-                      label={"اسم"}
-                      value={arabicname}
-                      onChange={(e) => {
-                        setarabicname(e.target.value);
-                      }}
-                      size="small"
-                      required
-                    />
+            <Tabs
+              defaultActiveKey={"information"}
+              transition={true}
+              id="noanim-tab-example"
+              className="mb-3"
+            >
+              <Tab eventKey="information" title="Info">
+                <div className="mt-4">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <TextField
+                        className="form-control   mb-3"
+                        label={"Name"}
+                        value={name}
+                        onChange={(e) => {
+                          setname(e.target.value);
+                        }}
+                        size="small"
+                        required
+                        autoFocus
+                      />
+                    </div>
+                    <MuiThemeProvider theme={theme}>
+                      <div dir="rtl" className="col-md-3">
+                        <TextField
+                          className="form-control  mb-3"
+                          label={"اسم"}
+                          value={arabicname}
+                          onChange={(e) => {
+                            setarabicname(e.target.value);
+                          }}
+                          size="small"
+                          required
+                        />
+                      </div>
+                    </MuiThemeProvider>
+
+                    <div className="col-md-3">
+                      <TextField
+                        type="number"
+                        className="form-control  mb-3"
+                        label={"Mobile"}
+                        value={contact}
+                        onChange={(e) => {
+                          if (e.target.value.length < 11) {
+                            setcontact(e.target.value);
+                          } else {
+                            Red_toast("Mobile digits must be between 0~10");
+                          }
+                        }}
+                        size="small"
+                      />
+                    </div>
+
+                    <div className="col-md-3">
+                      <TextField
+                        type="number"
+                        className="form-control  mb-3"
+                        label={"VAT No"}
+                        value={vatno}
+                        onChange={(e) => {
+                          if (e.target.value.length < 16) {
+                            setvatno(e.target.value);
+                          } else {
+                            Red_toast("VAT no digits must be between 0~15");
+                          }
+                        }}
+                        size="small"
+                      />
+                    </div>
                   </div>
-                </MuiThemeProvider>
 
-                <div className="col-md-3">
-                  <TextField
-                    type="number"
-                    className="form-control  mb-3"
-                    label={"Mobile"}
-                    value={contact}
-                    onChange={(e) => {
-                      if (e.target.value.length < 11) {
-                        setcontact(e.target.value);
-                      } else {
-                        Red_toast("Mobile digits must be between 0~10");
-                      }
-                    }}
-                    size="small"
-                  />
-                </div>
+                  <div className="row">
+                    <div className="col-md-3">
+                      <Select
+                        options={allarea}
+                        value={area}
+                        placeholder={"Area"}
+                        funct={(e) => setarea(e)}
+                        required={true}
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <TextField
+                        type="email"
+                        className="form-control  mb-3"
+                        label={"Email"}
+                        value={email}
+                        onChange={(e) => {
+                          setemail(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
 
-                <div className="col-md-3">
-                  <TextField
-                    type="number"
-                    className="form-control  mb-3"
-                    label={"VAT No"}
-                    value={vatno}
-                    onChange={(e) => {
-                      if (e.target.value.length < 16) {
-                        setvatno(e.target.value);
-                      } else {
-                        Red_toast("VAT no digits must be between 0~15");
-                      }
-                    }}
-                    size="small"
-                  />
+                    <div className="col-md-3">
+                      <TextField
+                        multiline
+                        className="form-control   mb-3"
+                        label={"Bank Details"}
+                        value={bankdetails}
+                        onChange={(e) => {
+                          setbankdetails(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                    <div className=" col-md-3">
+                      <TextField
+                        multiline
+                        className="form-control  mb-3"
+                        label={t("address")}
+                        value={address}
+                        onChange={(e) => {
+                          setaddress(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                    <div className=" col-md-3">
+                      <TextField
+                        multiline
+                        className="form-control  mb-3"
+                        label={"Notes"}
+                        value={notes}
+                        onChange={(e) => {
+                          setnotes(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </Tab>
+              <Tab eventKey="contact" title="Contact">
+                <div className="mt-4">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <TextField
+                        className="form-control   mb-3"
+                        label={"Name"}
+                        value={contact_name}
+                        onChange={(e) => {
+                          setcontact_name(e.target.value);
+                        }}
+                        size="small"
+                        required
+                        autoFocus
+                      />
+                    </div>
 
-              <div className="row">
-                <div className="col-md-3">
-                  <TextField
-                    multiline
-                    className="form-control   mb-3"
-                    label={"Bank Details"}
-                    value={bankdetails}
-                    onChange={(e) => {
-                      setbankdetails(e.target.value);
-                    }}
-                    size="small"
-                  />
+                    <div className="col-md-3">
+                      <TextField
+                        className="form-control  mb-3"
+                        label={"Phone"}
+                        value={contact_phone}
+                        onChange={(e) => {
+                          if (e.target.value.length < 11) {
+                            setcontact_phone(e.target.value);
+                          } else {
+                            Red_toast("Mobile digits must be between 0~10");
+                          }
+                        }}
+                        size="small"
+                      />
+                    </div>
+
+                    <div className="col-md-3">
+                      <TextField
+                        type="number"
+                        className="form-control  mb-3"
+                        label={"Mobile"}
+                        value={contact_mobile}
+                        onChange={(e) => {
+                          if (e.target.value.length < 11) {
+                            setcontact_mobile(e.target.value);
+                          } else {
+                            Red_toast("Mobile digits must be between 0~10");
+                          }
+                        }}
+                        size="small"
+                      />
+                    </div>
+
+                    <div className="col-md-3">
+                      <TextField
+                        type="email"
+                        className="form-control  mb-3"
+                        label={"Email"}
+                        value={contact_email}
+                        onChange={(e) => {
+                          setcontact_email(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-md-3">
+                      <TextField
+                        multiline
+                        className="form-control   mb-3"
+                        label={"Notes"}
+                        value={contact_notes}
+                        onChange={(e) => {
+                          setcontact_notes(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className=" col-md-3">
-                  <TextField
-                    multiline
-                    className="form-control  mb-3"
-                    label={t("address")}
-                    value={address}
-                    onChange={(e) => {
-                      setaddress(e.target.value);
-                    }}
-                    size="small"
-                  />
+              </Tab>
+              <Tab eventKey="saleman" title="Saleman">
+                <div className="mt-4">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <TextField
+                        type="date"
+                        className="form-control   mb-3"
+                        label={"Start Date"}
+                        InputLabelProps={{ shrink: true }}
+                        value={saleman_start_date}
+                        onChange={(e) => {
+                          setsaleman_start_date(e.target.value);
+                        }}
+                        size="small"
+                        autoFocus
+                      />
+                    </div>
+
+                    <div className="col-md-3">
+                      <Select
+                        options={allemployee}
+                        value={saleman_saleman}
+                        placeholder={"Employees"}
+                        funct={(e) => setsaleman_saleman(e)}
+                        required={true}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </Tab>
+              <Tab eventKey="client_limit" title="Client Limits">
+                <div className="mt-4">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <TextField
+                        type="date"
+                        className="form-control   mb-3"
+                        label={"Date"}
+                        value={client_date}
+                        InputLabelProps={{ shrink: true }}
+                        onChange={(e) => {
+                          setclient_date(e.target.value);
+                        }}
+                        size="small"
+                        autoFocus
+                      />
+                    </div>
+
+                    <div className="col-md-3">
+                      <TextField
+                        type="number"
+                        className="form-control  mb-3"
+                        label={"Limit"}
+                        value={client_limit}
+                        onChange={(e) => {
+                          setclient_limit(e.target.value);
+                        }}
+                        size="small"
+                        required
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <TextField
+                        className="form-control  mb-3"
+                        label={"Period"}
+                        value={client_period}
+                        onChange={(e) => {
+                          setclient_period(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Tab>
+            </Tabs>
           </div>
         </form>
       </div>
