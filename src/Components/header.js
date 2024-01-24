@@ -61,10 +61,11 @@ function Header(props) {
       }
 
       if (response.ok) {
-        dispatch({
-          type: "SetCurrentUser",
-          data: json,
-        });
+        getpermission(json);
+        // dispatch({
+        //   type: "SetCurrentUser",
+        //   data: json,
+        // });
         if (!selected_branch && json.account_heads.length > 0) {
           getproject(json);
         }
@@ -89,6 +90,24 @@ function Header(props) {
     if (response.ok) {
       localStorage.setItem("selected_branch", JSON.stringify(json));
       dispatch({ type: "Set_Branch_first", data: json });
+    }
+  };
+
+  const getpermission = async (input) => {
+    var url = `${route}/api/user-permissions/${input.id}/`;
+
+    const response = await fetch(`${url}`, {
+      headers: { Authorization: `Bearer ${user.access}` },
+    });
+    const json = await response.json();
+    if (!response.ok) {
+    }
+
+    if (response.ok) {
+      dispatch({
+        type: "SetCurrentUser",
+        data: { ...input, permissions: json.permissions },
+      });
     }
   };
 

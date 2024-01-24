@@ -163,56 +163,60 @@ export default function Customer(props) {
   const Action = (cell, row, rowIndex, formatExtraData) => {
     return (
       <span className="action d-flex">
-        <IconButton
-          className="border border-danger rounded me-2"
-          onClick={() => {
-            setrow_id(row.id);
-            seturl_to_delete(`${route}/api/parties/${row.id}/`);
-            setdelete_user(true);
-          }}
-        >
-          <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
-        </IconButton>
+        {current_user?.permissions?.includes("delete_customer") && (
+          <IconButton
+            className="border border-danger rounded me-2"
+            onClick={() => {
+              setrow_id(row.id);
+              seturl_to_delete(`${route}/api/parties/${row.id}/`);
+              setdelete_user(true);
+            }}
+          >
+            <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
+          </IconButton>
+        )}
 
-        <IconButton
-          style={{ border: "1px solid #003049", borderRadius: "5px" }}
-          onClick={() => {
-            setname(row.name);
-            setarabicname(row.arabic_name);
-            setcontact(row.contact);
-            setvatno(row.vat_number);
-            setaddress(row.address);
-            setbankdetails(row.bank);
-            setemail(row.email);
-            setnotes(row.notes);
-            setarea({ value: row.area, label: row.area_name });
+        {current_user?.permissions?.includes("change_customer") && (
+          <IconButton
+            style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            onClick={() => {
+              setname(row.name);
+              setarabicname(row.arabic_name);
+              setcontact(row.contact);
+              setvatno(row.vat_number);
+              setaddress(row.address);
+              setbankdetails(row.bank);
+              setemail(row.email);
+              setnotes(row.notes);
+              setarea({ value: row.area, label: row.area_name });
 
-            setclient_date(row.client_limits?.date);
-            setclient_limit(row.client_limits?.limit);
-            setclient_period(row.client_limits?.period);
+              setclient_date(row.client_limits?.date);
+              setclient_limit(row.client_limits?.limit);
+              setclient_period(row.client_limits?.period);
 
-            setcontact_email(row.contact_details?.email);
-            setcontact_mobile(row.contact_details?.mobile);
-            setcontact_name(row.contact_details?.name);
-            setcontact_notes(row.contact_details?.notes);
-            setcontact_phone(row.contact_details?.phone);
+              setcontact_email(row.contact_details?.email);
+              setcontact_mobile(row.contact_details?.mobile);
+              setcontact_name(row.contact_details?.name);
+              setcontact_notes(row.contact_details?.notes);
+              setcontact_phone(row.contact_details?.phone);
 
-            setsaleman_saleman({
-              value: row.saleman_details?.sale_man,
-              label: row.saleman_details?.sale_man_name,
-            });
-            setsaleman_start_date(row.saleman_details?.start_date);
+              setsaleman_saleman({
+                value: row.saleman_details?.sale_man,
+                label: row.saleman_details?.sale_man_name,
+              });
+              setsaleman_start_date(row.saleman_details?.start_date);
 
-            setid(row.id);
-            setcheck_update(false);
-          }}
-        >
-          <EditOutlinedIcon
-            className="m-1"
-            style={{ color: "#003049" }}
-            fontSize="small"
-          />
-        </IconButton>
+              setid(row.id);
+              setcheck_update(false);
+            }}
+          >
+            <EditOutlinedIcon
+              className="m-1"
+              style={{ color: "#003049" }}
+              fontSize="small"
+            />
+          </IconButton>
+        )}
       </span>
     );
   };
@@ -589,368 +593,385 @@ export default function Customer(props) {
 
   return (
     <div className="p-3 pt-2">
-      <div className="card">
-        <form onSubmit={check_update ? handleSubmit : handleSubmit_update}>
-          <div className="card-header d-flex justify-content-between bg-white">
-            <h3 className="mt-2 me-2">Add Customer</h3>
-            <div className="mt-2 me-2 d-flex flex-row-reverse">
-              <Save_button isloading={isloading} />
+      {current_user?.permissions?.includes("add_customer") && (
+        <div className="card">
+          <form onSubmit={check_update ? handleSubmit : handleSubmit_update}>
+            <div className="card-header d-flex justify-content-between bg-white">
+              <h3 className="mt-2 me-2">Add Customer</h3>
+              <div className="mt-2 me-2 d-flex flex-row-reverse">
+                <Save_button isloading={isloading} />
+              </div>
             </div>
-          </div>
 
-          <div className="card-body pt-0">
-            <Tabs
-              defaultActiveKey={"information"}
-              transition={true}
-              id="noanim-tab-example"
-              className="mb-3"
-            >
-              <Tab eventKey="information" title="Info">
-                <div className="mt-4">
-                  <div className="row">
-                    <div className="col-md-3">
-                      <TextField
-                        className="form-control   mb-3"
-                        label={"Name"}
-                        value={name}
-                        onChange={(e) => {
-                          setname(e.target.value);
-                        }}
-                        size="small"
-                        required
-                        autoFocus
-                      />
+            <div className="card-body pt-0">
+              <Tabs
+                defaultActiveKey={"information"}
+                transition={true}
+                id="noanim-tab-example"
+                className="mb-3"
+              >
+                <Tab eventKey="information" title="Info">
+                  <div className="mt-4">
+                    <div className="row">
+                      <div className="col-md-3">
+                        <TextField
+                          className="form-control   mb-3"
+                          label={"Name"}
+                          value={name}
+                          onChange={(e) => {
+                            setname(e.target.value);
+                          }}
+                          size="small"
+                          required
+                          autoFocus
+                        />
+                      </div>
+                      <MuiThemeProvider theme={theme}>
+                        <div dir="rtl" className="col-md-3">
+                          <TextField
+                            className="form-control  mb-3"
+                            label={"اسم"}
+                            value={arabicname}
+                            onChange={(e) => {
+                              setarabicname(e.target.value);
+                            }}
+                            size="small"
+                            required
+                          />
+                        </div>
+                      </MuiThemeProvider>
+
+                      <div className="col-md-3">
+                        <TextField
+                          type="number"
+                          className="form-control  mb-3"
+                          label={"Mobile"}
+                          value={contact}
+                          onChange={(e) => {
+                            if (e.target.value.length < 11) {
+                              setcontact(e.target.value);
+                            } else {
+                              Red_toast("Mobile digits must be between 0~10");
+                            }
+                          }}
+                          size="small"
+                        />
+                      </div>
+
+                      <div className="col-md-3">
+                        <TextField
+                          type="number"
+                          className="form-control  mb-3"
+                          label={"VAT No"}
+                          value={vatno}
+                          onChange={(e) => {
+                            if (e.target.value.length < 16) {
+                              setvatno(e.target.value);
+                            } else {
+                              Red_toast("VAT no digits must be between 0~15");
+                            }
+                          }}
+                          size="small"
+                        />
+                      </div>
                     </div>
-                    <MuiThemeProvider theme={theme}>
-                      <div dir="rtl" className="col-md-3">
+
+                    <div className="row">
+                      <div className="col-md-3">
+                        <Select
+                          options={allarea}
+                          value={area}
+                          placeholder={"Area"}
+                          funct={(e) => setarea(e)}
+                          required={true}
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <TextField
+                          type="email"
+                          className="form-control  mb-3"
+                          label={"Email"}
+                          value={email}
+                          onChange={(e) => {
+                            setemail(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+
+                      <div className="col-md-3">
+                        <TextField
+                          multiline
+                          className="form-control   mb-3"
+                          label={"Bank Details"}
+                          value={bankdetails}
+                          onChange={(e) => {
+                            setbankdetails(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                      <div className=" col-md-3">
+                        <TextField
+                          multiline
+                          className="form-control  mb-3"
+                          label={t("address")}
+                          value={address}
+                          onChange={(e) => {
+                            setaddress(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                      <div className=" col-md-3">
+                        <TextField
+                          multiline
+                          className="form-control  mb-3"
+                          label={"Notes"}
+                          value={notes}
+                          onChange={(e) => {
+                            setnotes(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </Tab>
+                <Tab eventKey="contact" title="Contact">
+                  <div className="mt-4">
+                    <div className="row">
+                      <div className="col-md-3">
+                        <TextField
+                          className="form-control   mb-3"
+                          label={"Name"}
+                          value={contact_name}
+                          onChange={(e) => {
+                            setcontact_name(e.target.value);
+                          }}
+                          size="small"
+                          required
+                          autoFocus
+                        />
+                      </div>
+
+                      <div className="col-md-3">
                         <TextField
                           className="form-control  mb-3"
-                          label={"اسم"}
-                          value={arabicname}
+                          label={"Phone"}
+                          value={contact_phone}
                           onChange={(e) => {
-                            setarabicname(e.target.value);
+                            if (e.target.value.length < 11) {
+                              setcontact_phone(e.target.value);
+                            } else {
+                              Red_toast("Mobile digits must be between 0~10");
+                            }
+                          }}
+                          size="small"
+                        />
+                      </div>
+
+                      <div className="col-md-3">
+                        <TextField
+                          type="number"
+                          className="form-control  mb-3"
+                          label={"Mobile"}
+                          value={contact_mobile}
+                          onChange={(e) => {
+                            if (e.target.value.length < 11) {
+                              setcontact_mobile(e.target.value);
+                            } else {
+                              Red_toast("Mobile digits must be between 0~10");
+                            }
+                          }}
+                          size="small"
+                        />
+                      </div>
+
+                      <div className="col-md-3">
+                        <TextField
+                          type="email"
+                          className="form-control  mb-3"
+                          label={"Email"}
+                          value={contact_email}
+                          onChange={(e) => {
+                            setcontact_email(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="row">
+                      <div className="col-md-3">
+                        <TextField
+                          multiline
+                          className="form-control   mb-3"
+                          label={"Notes"}
+                          value={contact_notes}
+                          onChange={(e) => {
+                            setcontact_notes(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </Tab>
+                <Tab eventKey="saleman" title="Saleman">
+                  <div className="mt-4">
+                    <div className="row">
+                      <div className="col-md-3">
+                        <TextField
+                          type="date"
+                          className="form-control   mb-3"
+                          label={"Start Date"}
+                          InputLabelProps={{ shrink: true }}
+                          value={saleman_start_date}
+                          onChange={(e) => {
+                            setsaleman_start_date(e.target.value);
+                          }}
+                          size="small"
+                          autoFocus
+                        />
+                      </div>
+
+                      <div className="col-md-3">
+                        <Select
+                          options={allemployee}
+                          value={saleman_saleman}
+                          placeholder={"Employees"}
+                          funct={(e) => setsaleman_saleman(e)}
+                          required={true}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </Tab>
+                <Tab eventKey="client_limit" title="Client Limits">
+                  <div className="mt-4">
+                    <div className="row">
+                      <div className="col-md-3">
+                        <TextField
+                          type="date"
+                          className="form-control   mb-3"
+                          label={"Date"}
+                          value={client_date}
+                          InputLabelProps={{ shrink: true }}
+                          onChange={(e) => {
+                            setclient_date(e.target.value);
+                          }}
+                          size="small"
+                          autoFocus
+                        />
+                      </div>
+
+                      <div className="col-md-3">
+                        <TextField
+                          type="number"
+                          className="form-control  mb-3"
+                          label={"Limit"}
+                          value={client_limit}
+                          onChange={(e) => {
+                            setclient_limit(e.target.value);
                           }}
                           size="small"
                           required
                         />
                       </div>
-                    </MuiThemeProvider>
-
-                    <div className="col-md-3">
-                      <TextField
-                        type="number"
-                        className="form-control  mb-3"
-                        label={"Mobile"}
-                        value={contact}
-                        onChange={(e) => {
-                          if (e.target.value.length < 11) {
-                            setcontact(e.target.value);
-                          } else {
-                            Red_toast("Mobile digits must be between 0~10");
-                          }
-                        }}
-                        size="small"
-                      />
-                    </div>
-
-                    <div className="col-md-3">
-                      <TextField
-                        type="number"
-                        className="form-control  mb-3"
-                        label={"VAT No"}
-                        value={vatno}
-                        onChange={(e) => {
-                          if (e.target.value.length < 16) {
-                            setvatno(e.target.value);
-                          } else {
-                            Red_toast("VAT no digits must be between 0~15");
-                          }
-                        }}
-                        size="small"
-                      />
+                      <div className="col-md-3">
+                        <TextField
+                          className="form-control  mb-3"
+                          label={"Period"}
+                          value={client_period}
+                          onChange={(e) => {
+                            setclient_period(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      </div>
                     </div>
                   </div>
-
-                  <div className="row">
-                    <div className="col-md-3">
-                      <Select
-                        options={allarea}
-                        value={area}
-                        placeholder={"Area"}
-                        funct={(e) => setarea(e)}
-                        required={true}
-                      />
-                    </div>
-                    <div className="col-md-3">
-                      <TextField
-                        type="email"
-                        className="form-control  mb-3"
-                        label={"Email"}
-                        value={email}
-                        onChange={(e) => {
-                          setemail(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    </div>
-
-                    <div className="col-md-3">
-                      <TextField
-                        multiline
-                        className="form-control   mb-3"
-                        label={"Bank Details"}
-                        value={bankdetails}
-                        onChange={(e) => {
-                          setbankdetails(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    </div>
-                    <div className=" col-md-3">
-                      <TextField
-                        multiline
-                        className="form-control  mb-3"
-                        label={t("address")}
-                        value={address}
-                        onChange={(e) => {
-                          setaddress(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    </div>
-                    <div className=" col-md-3">
-                      <TextField
-                        multiline
-                        className="form-control  mb-3"
-                        label={"Notes"}
-                        value={notes}
-                        onChange={(e) => {
-                          setnotes(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </Tab>
-              <Tab eventKey="contact" title="Contact">
-                <div className="mt-4">
-                  <div className="row">
-                    <div className="col-md-3">
-                      <TextField
-                        className="form-control   mb-3"
-                        label={"Name"}
-                        value={contact_name}
-                        onChange={(e) => {
-                          setcontact_name(e.target.value);
-                        }}
-                        size="small"
-                        required
-                        autoFocus
-                      />
-                    </div>
-
-                    <div className="col-md-3">
-                      <TextField
-                        className="form-control  mb-3"
-                        label={"Phone"}
-                        value={contact_phone}
-                        onChange={(e) => {
-                          if (e.target.value.length < 11) {
-                            setcontact_phone(e.target.value);
-                          } else {
-                            Red_toast("Mobile digits must be between 0~10");
-                          }
-                        }}
-                        size="small"
-                      />
-                    </div>
-
-                    <div className="col-md-3">
-                      <TextField
-                        type="number"
-                        className="form-control  mb-3"
-                        label={"Mobile"}
-                        value={contact_mobile}
-                        onChange={(e) => {
-                          if (e.target.value.length < 11) {
-                            setcontact_mobile(e.target.value);
-                          } else {
-                            Red_toast("Mobile digits must be between 0~10");
-                          }
-                        }}
-                        size="small"
-                      />
-                    </div>
-
-                    <div className="col-md-3">
-                      <TextField
-                        type="email"
-                        className="form-control  mb-3"
-                        label={"Email"}
-                        value={contact_email}
-                        onChange={(e) => {
-                          setcontact_email(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="row">
-                    <div className="col-md-3">
-                      <TextField
-                        multiline
-                        className="form-control   mb-3"
-                        label={"Notes"}
-                        value={contact_notes}
-                        onChange={(e) => {
-                          setcontact_notes(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </Tab>
-              <Tab eventKey="saleman" title="Saleman">
-                <div className="mt-4">
-                  <div className="row">
-                    <div className="col-md-3">
-                      <TextField
-                        type="date"
-                        className="form-control   mb-3"
-                        label={"Start Date"}
-                        InputLabelProps={{ shrink: true }}
-                        value={saleman_start_date}
-                        onChange={(e) => {
-                          setsaleman_start_date(e.target.value);
-                        }}
-                        size="small"
-                        autoFocus
-                      />
-                    </div>
-
-                    <div className="col-md-3">
-                      <Select
-                        options={allemployee}
-                        value={saleman_saleman}
-                        placeholder={"Employees"}
-                        funct={(e) => setsaleman_saleman(e)}
-                        required={true}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </Tab>
-              <Tab eventKey="client_limit" title="Client Limits">
-                <div className="mt-4">
-                  <div className="row">
-                    <div className="col-md-3">
-                      <TextField
-                        type="date"
-                        className="form-control   mb-3"
-                        label={"Date"}
-                        value={client_date}
-                        InputLabelProps={{ shrink: true }}
-                        onChange={(e) => {
-                          setclient_date(e.target.value);
-                        }}
-                        size="small"
-                        autoFocus
-                      />
-                    </div>
-
-                    <div className="col-md-3">
-                      <TextField
-                        type="number"
-                        className="form-control  mb-3"
-                        label={"Limit"}
-                        value={client_limit}
-                        onChange={(e) => {
-                          setclient_limit(e.target.value);
-                        }}
-                        size="small"
-                        required
-                      />
-                    </div>
-                    <div className="col-md-3">
-                      <TextField
-                        className="form-control  mb-3"
-                        label={"Period"}
-                        value={client_period}
-                        onChange={(e) => {
-                          setclient_period(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </Tab>
-            </Tabs>
-          </div>
-        </form>
-      </div>
-
-      <div className="card mt-3">
-        <div className="card-body pt-0">
-          <ToolkitProvider
-            keyField="id"
-            data={all_customers}
-            columns={columns}
-            search
-            exportCSV
-          >
-            {(props) => (
-              <div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
-                    <ExportCSVButton
-                      {...props.csvProps}
-                      className="csvbutton  border bg-secondary text-light me-2 mb-2"
-                    >
-                      Export CSV
-                    </ExportCSVButton>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 me-2 mb-2"
-                      variant="outline-primary"
-                      onClick={download}
-                    >
-                      <PictureAsPdfIcon /> PDF
-                    </Button>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 mb-2"
-                      variant="outline-success"
-                      onClick={print}
-                    >
-                      <PrintIcon /> Print
-                    </Button>
-                  </div>
-                  <SearchBar {...props.searchProps} />
-                </div>
-                {isloading && (
-                  <div className="text-center">
-                    <Spinner animation="border" variant="primary" />
-                  </div>
-                )}
-                <hr />
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={paginationFactory(options)}
-                  rowStyle={rowstyle}
-                  striped
-                  bootstrap4
-                  condensed
-                  wrapperClasses="table-responsive"
-                />
-              </div>
-            )}
-          </ToolkitProvider>
+                </Tab>
+              </Tabs>
+            </div>
+          </form>
         </div>
-      </div>
+      )}
+
+      {current_user?.permissions?.includes("view_customer") ? (
+        <div className="card mt-3">
+          <div className="card-body pt-0">
+            <ToolkitProvider
+              keyField="id"
+              data={all_customers}
+              columns={columns}
+              search
+              exportCSV
+            >
+              {(props) => (
+                <div>
+                  <div className="d-sm-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <ExportCSVButton
+                        {...props.csvProps}
+                        className="csvbutton  border bg-secondary text-light me-2 mb-2"
+                      >
+                        Export CSV
+                      </ExportCSVButton>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 me-2 mb-2"
+                        variant="outline-primary"
+                        onClick={download}
+                      >
+                        <PictureAsPdfIcon /> PDF
+                      </Button>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 mb-2"
+                        variant="outline-success"
+                        onClick={print}
+                      >
+                        <PrintIcon /> Print
+                      </Button>
+                    </div>
+                    <SearchBar {...props.searchProps} />
+                  </div>
+                  {isloading && (
+                    <div className="text-center">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
+                  <hr />
+                  <BootstrapTable
+                    {...props.baseProps}
+                    pagination={paginationFactory(options)}
+                    rowStyle={rowstyle}
+                    striped
+                    bootstrap4
+                    condensed
+                    wrapperClasses="table-responsive"
+                  />
+                </div>
+              )}
+            </ToolkitProvider>
+          </div>
+        </div>
+      ) : (
+        <div
+          style={{
+            fontSize: "20px",
+            opacity: "0.6",
+            fontWeight: "bold",
+            height: "90vh",
+          }}
+          className="d-flex justify-content-center align-items-center"
+        >
+          {" "}
+          User has no permission to see customers.
+        </div>
+      )}
 
       {delete_user && (
         <Alert_before_delete

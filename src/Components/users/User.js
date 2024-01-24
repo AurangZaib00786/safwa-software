@@ -38,6 +38,8 @@ function User(props) {
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const setActiveTab = props.setActiveTab;
+  const current_user = props.state.Setcurrentinfo.current_user;
+  console.log(current_user);
   const setadditionalinfo = props.setadditionalinfo;
   const all_users = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
@@ -114,38 +116,42 @@ function User(props) {
           </IconButton>
         )}
 
-        <IconButton
-          style={{ border: "1px solid #003049", borderRadius: "5px" }}
-          className="me-2"
-          onClick={() => {
-            setusername(row.username);
-            setemail(row.email);
+        {current_user?.permissions?.includes("change_user") && (
+          <IconButton
+            style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            className="me-2"
+            onClick={() => {
+              setusername(row.username);
+              setemail(row.email);
 
-            setid(row.id);
-            setcheck_update(false);
-          }}
-        >
-          <EditOutlinedIcon
-            className="m-1"
-            style={{ color: "#003049" }}
-            fontSize="medium"
-          />
-        </IconButton>
+              setid(row.id);
+              setcheck_update(false);
+            }}
+          >
+            <EditOutlinedIcon
+              className="m-1"
+              style={{ color: "#003049" }}
+              fontSize="medium"
+            />
+          </IconButton>
+        )}
 
-        <IconButton
-          style={{ border: "1px solid #004099", borderRadius: "5px" }}
-          className="me-2"
-          onClick={() => {
-            setadditionalinfo(row);
-            setActiveTab("Assign Branch");
-          }}
-        >
-          <StoreIcon
-            className="m-1"
-            style={{ color: "#004099" }}
-            fontSize="medium"
-          />
-        </IconButton>
+        {current_user?.permissions?.includes("delete_user") && (
+          <IconButton
+            style={{ border: "1px solid #004099", borderRadius: "5px" }}
+            className="me-2"
+            onClick={() => {
+              setadditionalinfo(row);
+              setActiveTab("Assign Branch");
+            }}
+          >
+            <StoreIcon
+              className="m-1"
+              style={{ color: "#004099" }}
+              fontSize="medium"
+            />
+          </IconButton>
+        )}
 
         <IconButton
           style={{ border: "1px solid #007299", borderRadius: "5px" }}
@@ -286,8 +292,8 @@ function User(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("ok");
-    if (check_update) {
+
+    if (check_update && current_user?.permissions?.includes("add_user")) {
       if (!isloading) {
         console.log("ok");
         setisloading(true);
@@ -320,7 +326,7 @@ function User(props) {
           setpassword("");
         }
       }
-    } else {
+    } else if (current_user?.permissions?.includes("change_user")) {
       handleSubmit_update(e);
     }
   };
@@ -394,127 +400,148 @@ function User(props) {
                 {" "}
                 Permissions
               </Button>
-              <Save_button isloading={isloading} />
+              {(current_user?.permissions?.includes("add_user") ||
+                current_user?.permissions?.includes("change_user")) && (
+                <Save_button isloading={isloading} />
+              )}
             </div>
           </div>
 
-          <div className="card-body pt-0">
-            <div className="row mt-4">
-              <div className="col-md-3">
-                <TextField
-                  className="form-control   mb-3"
-                  label={t("username")}
-                  value={username}
-                  onChange={(e) => {
-                    setusername(e.target.value);
-                  }}
-                  size="small"
-                  required
-                  autoFocus
-                />
-              </div>
-              <div className="col-md-3">
-                <TextField
-                  type="email"
-                  className="form-control  mb-3"
-                  label={t("email")}
-                  value={email}
-                  onChange={(e) => {
-                    setemail(e.target.value);
-                  }}
-                  size="small"
-                />
-              </div>
-
-              <div className="col-md-3">
-                {check_update ? (
+          {(current_user?.permissions?.includes("add_user") ||
+            current_user?.permissions?.includes("change_user")) && (
+            <div className="card-body pt-0">
+              <div className="row mt-4">
+                <div className="col-md-3">
                   <TextField
-                    type="password"
-                    className="form-control  mb-3"
-                    label={t("password")}
-                    value={password}
+                    className="form-control   mb-3"
+                    label={t("username")}
+                    value={username}
                     onChange={(e) => {
-                      setpassword(e.target.value);
+                      setusername(e.target.value);
                     }}
                     size="small"
                     required
+                    autoFocus
                   />
-                ) : (
+                </div>
+                <div className="col-md-3">
                   <TextField
-                    type="password"
+                    type="email"
                     className="form-control  mb-3"
-                    label={t("password")}
-                    value={password}
+                    label={t("email")}
+                    value={email}
                     onChange={(e) => {
-                      setpassword(e.target.value);
+                      setemail(e.target.value);
                     }}
                     size="small"
                   />
-                )}
+                </div>
+
+                <div className="col-md-3">
+                  {check_update ? (
+                    <TextField
+                      type="password"
+                      className="form-control  mb-3"
+                      label={t("password")}
+                      value={password}
+                      onChange={(e) => {
+                        setpassword(e.target.value);
+                      }}
+                      size="small"
+                      required
+                    />
+                  ) : (
+                    <TextField
+                      type="password"
+                      className="form-control  mb-3"
+                      label={t("password")}
+                      value={password}
+                      onChange={(e) => {
+                        setpassword(e.target.value);
+                      }}
+                      size="small"
+                    />
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </form>
       </div>
 
-      <div className="card mt-3">
-        <div className="card-body pt-0">
-          <ToolkitProvider
-            keyField="id"
-            data={all_users}
-            columns={columns}
-            search
-            exportCSV
-          >
-            {(props) => (
-              <div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
-                    <ExportCSVButton
-                      {...props.csvProps}
-                      className="csvbutton  border bg-secondary text-light me-2 mb-2"
-                    >
-                      Export CSV
-                    </ExportCSVButton>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 me-2 mb-2"
-                      variant="outline-primary"
-                      onClick={download}
-                    >
-                      <PictureAsPdfIcon /> PDF
-                    </Button>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 mb-2"
-                      variant="outline-success"
-                      onClick={print}
-                    >
-                      <PrintIcon /> Print
-                    </Button>
+      {current_user?.permissions?.includes("view_user") ? (
+        <div className="card mt-3">
+          <div className="card-body pt-0">
+            <ToolkitProvider
+              keyField="id"
+              data={all_users}
+              columns={columns}
+              search
+              exportCSV
+            >
+              {(props) => (
+                <div>
+                  <div className="d-sm-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <ExportCSVButton
+                        {...props.csvProps}
+                        className="csvbutton  border bg-secondary text-light me-2 mb-2"
+                      >
+                        Export CSV
+                      </ExportCSVButton>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 me-2 mb-2"
+                        variant="outline-primary"
+                        onClick={download}
+                      >
+                        <PictureAsPdfIcon /> PDF
+                      </Button>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 mb-2"
+                        variant="outline-success"
+                        onClick={print}
+                      >
+                        <PrintIcon /> Print
+                      </Button>
+                    </div>
+                    <SearchBar {...props.searchProps} />
                   </div>
-                  <SearchBar {...props.searchProps} />
+                  {isloading && (
+                    <div className="text-center">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
+                  <hr />
+                  <BootstrapTable
+                    {...props.baseProps}
+                    pagination={paginationFactory(options)}
+                    rowStyle={rowstyle}
+                    striped
+                    bootstrap4
+                    condensed
+                    wrapperClasses="table-responsive"
+                  />
                 </div>
-                {isloading && (
-                  <div className="text-center">
-                    <Spinner animation="border" variant="primary" />
-                  </div>
-                )}
-                <hr />
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={paginationFactory(options)}
-                  rowStyle={rowstyle}
-                  striped
-                  bootstrap4
-                  condensed
-                  wrapperClasses="table-responsive"
-                />
-              </div>
-            )}
-          </ToolkitProvider>
+              )}
+            </ToolkitProvider>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div
+          style={{
+            fontSize: "20px",
+            opacity: "0.6",
+            fontWeight: "bold",
+            height: "90vh",
+          }}
+          className="d-flex justify-content-center align-items-center"
+        >
+          {" "}
+          User has no permission to see users.
+        </div>
+      )}
 
       {delete_user && (
         <Alert_before_delete

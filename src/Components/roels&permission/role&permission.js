@@ -199,7 +199,9 @@ function RolePermssion(props) {
         });
         return item;
       });
-      // setdata_to_send(data_to_send.filter(item=>return item.id))
+      setdata_to_send(
+        data_to_send.filter((item) => !dummydata.includes(item.id))
+      );
       setall_jsonpermissions(optimize);
     }
   };
@@ -311,7 +313,7 @@ function RolePermssion(props) {
                       <th>Delete</th>
                       <th>View</th>
                     </tr>
-                    {/* <tr>
+                    <tr>
                       <th>
                         <input
                           className="form-check-input m-0 me-2"
@@ -356,7 +358,7 @@ function RolePermssion(props) {
                           }}
                         />
                       </th>
-                    </tr> */}
+                    </tr>
                   </thead>
                   <tbody>
                     {all_jsonpermissions?.map((item, index) => {
