@@ -114,6 +114,7 @@ function Supplier(props) {
 
             setid(row.id);
             setcheck_update(false);
+            custom_toast("Data loaded");
           }}
         >
           <EditOutlinedIcon
@@ -429,6 +430,7 @@ function Supplier(props) {
                         setarabicname(e.target.value);
                       }}
                       size="small"
+                      required
                     />
                   </div>
                 </MuiThemeProvider>

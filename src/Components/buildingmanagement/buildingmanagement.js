@@ -237,7 +237,7 @@ export default function BuildingManagement(props) {
                   aria-hidden="true"
                 />
               )}
-              <FontAwesomeIcon icon={faRotate} /> Update
+              <FontAwesomeIcon icon={faRotate} /> Save
             </Button>
           </div>
         </div>

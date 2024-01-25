@@ -319,6 +319,7 @@ export default function CustomerType(props) {
                   }
                 })
               );
+              custom_toast("Data loaded");
             }}
           >
             <EditOutlinedIcon

@@ -13,7 +13,7 @@ function EmployeePrint(props) {
     bodyClass: "printclass",
     onAfterPrint: (e) => {
       // console.log(e)
-      window.close();
+      // window.close();
     },
   });
 

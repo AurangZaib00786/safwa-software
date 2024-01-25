@@ -193,23 +193,30 @@ export default function Customer(props) {
               setnotes(row.notes);
               setarea({ value: row.area, label: row.area_name });
 
-              setclient_date(row.client_limits?.date);
-              setclient_limit(row.client_limits?.limit);
-              setclient_period(row.client_limits?.period);
+              if (row.client_limits) {
+                setclient_date(row.client_limits?.date);
+                setclient_limit(row.client_limits?.limit);
+                setclient_period(row.client_limits?.period);
+              }
 
-              setcontact_email(row.contact_details?.email);
-              setcontact_mobile(row.contact_details?.mobile);
-              setcontact_name(row.contact_details?.name);
-              setcontact_notes(row.contact_details?.notes);
+              if (row.contact_details) {
+                setcontact_email(row.contact_details?.email);
+                setcontact_mobile(row.contact_details?.mobile);
+                setcontact_name(row.contact_details?.name);
+                setcontact_notes(row.contact_details?.notes);
+              }
 
-              setsaleman_saleman({
-                value: row.saleman_details?.sale_man,
-                label: row.saleman_details?.sale_man_name,
-              });
-              setsaleman_start_date(row.saleman_details?.start_date);
+              if (row.saleman_details) {
+                setsaleman_saleman({
+                  value: row.saleman_details?.sale_man,
+                  label: row.saleman_details?.sale_man_name,
+                });
+                setsaleman_start_date(row.saleman_details?.start_date);
+              }
 
               setid(row.id);
               setcheck_update(false);
+              custom_toast("Data loaded");
             }}
           >
             <EditOutlinedIcon
@@ -412,7 +419,6 @@ export default function Customer(props) {
     e.preventDefault();
 
     if (!isloading && current_user?.permissions?.includes("add_customer")) {
-      setisloading(true);
       const formData = new FormData();
       formData.append("name", name);
       formData.append("arabic_name", arabicname);
@@ -425,33 +431,52 @@ export default function Customer(props) {
       formData.append("email", email);
       formData.append("notes", notes);
 
-      formData.append("saleman_details.sale_man", saleman_saleman?.value);
-      if (saleman_start_date) {
+      if (saleman_saleman) {
+        formData.append("saleman_details.sale_man", saleman_saleman?.value);
+      }
+      if (saleman_start_date && saleman_saleman) {
         formData.append("saleman_details.start_date", saleman_start_date);
       }
+      if (saleman_start_date && !saleman_saleman) {
+        Red_toast("Select Employee also in Sale man tab ");
+        return;
+      }
 
-      formData.append("client_limits.limit", client_limit);
-      if (client_date) {
+      if (client_limit) {
+        formData.append("client_limits.limit", client_limit);
+      }
+      if (client_date && client_limit) {
         formData.append("client_limits.date", client_date);
       }
-      if (client_period) {
+      if (client_period && client_limit) {
         formData.append("client_limits.period", client_period);
       }
+      if (!client_limit && (client_date || client_period)) {
+        Red_toast("Select Client Limits also in Client Limit tab ");
+        return;
+      }
 
-      formData.append("contact_details.name", contact_name);
-      if (contact_email) {
+      if (contact_name) {
+        formData.append("contact_details.name", contact_name);
+      }
+      if (contact_email && contact_name) {
         formData.append("contact_details.email", contact_email);
       }
 
-      if (contact_mobile) {
+      if (contact_mobile && contact_name) {
         formData.append("contact_details.mobile", contact_mobile);
       }
-      if (contact_notes) {
+      if (contact_notes && contact_name) {
         formData.append("contact_details.notes", contact_notes);
+      }
+      if (!contact_name && (contact_email || contact_mobile || contact_notes)) {
+        Red_toast("Select Contact Name also in Contact Deails tab ");
+        return;
       }
 
       formData.append("account_head", selected_branch.id);
 
+      setisloading(true);
       const response = await fetch(`${route}/api/parties/`, {
         method: "POST",
         headers: {
@@ -502,7 +527,6 @@ export default function Customer(props) {
   const handleSubmit_update = async (e) => {
     e.preventDefault();
     if (!isloading && current_user?.permissions?.includes("change_customer")) {
-      setisloading(true);
       const formData = new FormData();
       formData.append("name", name);
       formData.append("arabic_name", arabicname);
@@ -514,30 +538,49 @@ export default function Customer(props) {
       formData.append("email", email);
       formData.append("notes", notes);
 
-      formData.append("saleman_details.sale_man", saleman_saleman?.value);
-      if (saleman_start_date) {
+      if (saleman_saleman) {
+        formData.append("saleman_details.sale_man", saleman_saleman?.value);
+      }
+      if (saleman_start_date && saleman_saleman) {
         formData.append("saleman_details.start_date", saleman_start_date);
       }
+      if (saleman_start_date && !saleman_saleman) {
+        Red_toast("Select Employee also in Sale man tab ");
+        return;
+      }
 
-      formData.append("client_limits.limit", client_limit);
-      if (client_date) {
+      if (client_limit) {
+        formData.append("client_limits.limit", client_limit);
+      }
+      if (client_date && client_limit) {
         formData.append("client_limits.date", client_date);
       }
-      if (client_period) {
+      if (client_period && client_limit) {
         formData.append("client_limits.period", client_period);
       }
+      if (!client_limit && (client_date || client_period)) {
+        Red_toast("Select Client Limits also in Client Limit tab ");
+        return;
+      }
 
-      formData.append("contact_details.name", contact_name);
-      if (contact_email) {
+      if (contact_name) {
+        formData.append("contact_details.name", contact_name);
+      }
+      if (contact_email && contact_name) {
         formData.append("contact_details.email", contact_email);
       }
 
-      if (contact_mobile) {
+      if (contact_mobile && contact_name) {
         formData.append("contact_details.mobile", contact_mobile);
       }
-      if (contact_notes) {
+      if (contact_notes && contact_name) {
         formData.append("contact_details.notes", contact_notes);
       }
+      if (!contact_name && (contact_email || contact_mobile || contact_notes)) {
+        Red_toast("Select Contact Name also in Contact Deails tab ");
+        return;
+      }
+      setisloading(true);
       const response = await fetch(`${route}/api/parties/${id}/`, {
         method: "PATCH",
         headers: {
@@ -736,7 +779,7 @@ export default function Customer(props) {
                     </div>
                   </div>
                 </Tab>
-                <Tab eventKey="contact" title="Contact">
+                <Tab eventKey="contact" title="Contact Details">
                   <div className="mt-4">
                     <div className="row">
                       <div className="col-md-3">
@@ -748,8 +791,6 @@ export default function Customer(props) {
                             setcontact_name(e.target.value);
                           }}
                           size="small"
-                          required
-                          autoFocus
                         />
                       </div>
 
@@ -817,7 +858,6 @@ export default function Customer(props) {
                             },
                           }}
                           size="small"
-                          autoFocus
                         />
                       </div>
 
@@ -827,7 +867,6 @@ export default function Customer(props) {
                           value={saleman_saleman}
                           placeholder={"Employees"}
                           funct={(e) => setsaleman_saleman(e)}
-                          required={true}
                         />
                       </div>
                     </div>
@@ -853,7 +892,6 @@ export default function Customer(props) {
                             },
                           }}
                           size="small"
-                          autoFocus
                         />
                       </div>
 
@@ -867,7 +905,6 @@ export default function Customer(props) {
                             setclient_limit(e.target.value);
                           }}
                           size="small"
-                          required
                         />
                       </div>
                       <div className="col-md-3">
