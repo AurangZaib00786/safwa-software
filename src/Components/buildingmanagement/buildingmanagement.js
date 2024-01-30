@@ -152,6 +152,7 @@ export default function BuildingManagement(props) {
 
   const handlebuildingchange = (e) => {
     setbuilding(e);
+    setclosing_date(e.value.closing_date);
     setdata(
       e.value.details.map((item) => {
         return {

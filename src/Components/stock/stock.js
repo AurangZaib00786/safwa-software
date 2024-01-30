@@ -307,7 +307,7 @@ export default function Stock_table({
               onClick={setview_stock}
             >
               <FontAwesomeIcon className="me-2" icon={faRotate} />
-              Update Stock
+              Save Stock
             </Button>
           </div>
         </div>

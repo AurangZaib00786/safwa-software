@@ -53,9 +53,9 @@ function User(props) {
   const [row_id, setrow_id] = useState("");
   const [isloading, setisloading] = useState(false);
 
-  const [username, setusername] = useState("");
+  const [name, setname] = useState("");
   const [email, setemail] = useState("");
-  const [password, setpassword] = useState("");
+  const [userpassword, setuserpassword] = useState("");
   const [allemployee, setallemployee] = useState([]);
   const [employee, setemployee] = useState("");
 
@@ -154,7 +154,7 @@ function User(props) {
             style={{ border: "1px solid #003049", borderRadius: "5px" }}
             className="me-2 tooltipclass"
             onClick={() => {
-              setusername(row.username);
+              setname(row.name);
               setid(row.id);
               setcheck_update(false);
               setemail(row.email);
@@ -265,7 +265,7 @@ function User(props) {
 
   const makepdf = () => {
     const body = all_users.map((item, index) => {
-      return [{ text: index + 1 }, { text: item.username }];
+      return [{ text: index + 1 }, { text: item.name }];
     });
     body.splice(0, 0, ["#", "Name", "Phone No.", "Address"]);
 
@@ -334,12 +334,11 @@ function User(props) {
 
     if (check_update && current_user?.permissions?.includes("add_user")) {
       if (!isloading) {
-        console.log("ok");
         setisloading(true);
         const formData = new FormData();
-        formData.append("username", username);
+        formData.append("username", name);
         formData.append("email", email);
-        formData.append("password", password);
+        formData.append("password", userpassword);
         formData.append("extended.employee", employee ? employee?.value : "");
 
         const response = await fetch(`${route}/api/users/`, {
@@ -361,10 +360,10 @@ function User(props) {
           dispatch({ type: "Create_table_history", data: json });
           setisloading(false);
           success_toast();
-          setusername("");
+          setname("");
           setemail("");
           setemployee("");
-          setpassword("");
+          setuserpassword("");
         }
       }
     } else if (
@@ -380,13 +379,13 @@ function User(props) {
     setisloading(true);
     const formData = new FormData();
 
-    if (password.length > 0) {
-      formData.append("username", username);
+    if (userpassword.length > 0) {
+      formData.append("username", name);
       formData.append("email", email);
-      formData.append("password", password);
+      formData.append("password", userpassword);
       formData.append("extended.employee", employee ? employee?.value : "");
     } else {
-      formData.append("username", username);
+      formData.append("username", name);
       formData.append("email", email);
       formData.append("extended.employee", employee ? employee?.value : "");
     }
@@ -410,10 +409,10 @@ function User(props) {
       setisloading(false);
       dispatch({ type: "Update_table_history", data: json });
       success_toast();
-      setusername("");
+      setname("");
       setemail("");
       setemployee("");
-      setpassword("");
+      setuserpassword("");
 
       setcheck_update(true);
     }
@@ -461,10 +460,10 @@ function User(props) {
                 <div className="col-md-3">
                   <TextField
                     className="form-control   mb-3"
-                    label={t("username")}
-                    value={username}
+                    label={t("Name")}
+                    value={name}
                     onChange={(e) => {
-                      setusername(e.target.value);
+                      setname(e.target.value);
                     }}
                     size="small"
                     required
@@ -489,10 +488,10 @@ function User(props) {
                     <TextField
                       type="password"
                       className="form-control  mb-3"
-                      label={t("password")}
-                      value={password}
+                      label={t("Password")}
+                      value={userpassword}
                       onChange={(e) => {
-                        setpassword(e.target.value);
+                        setuserpassword(e.target.value);
                       }}
                       size="small"
                       required
@@ -501,10 +500,10 @@ function User(props) {
                     <TextField
                       type="password"
                       className="form-control  mb-3"
-                      label={t("password")}
-                      value={password}
+                      label={t("Password")}
+                      value={userpassword}
                       onChange={(e) => {
-                        setpassword(e.target.value);
+                        setuserpassword(e.target.value);
                       }}
                       size="small"
                     />

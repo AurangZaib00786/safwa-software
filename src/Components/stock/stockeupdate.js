@@ -8,6 +8,7 @@ import success_toast from "../alerts/success_toast";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import TextField from "@mui/material/TextField";
 import Stock_table from "./stock";
+import Save_button from "../buttons/save_button";
 
 function StockUpdate(props) {
   const user = props.state.setuser.user;
@@ -290,7 +291,7 @@ function StockUpdate(props) {
                   <VisibilityIcon className="me-2" />
                   View
                 </Button>
-                <Update_button isloading={isloading} />
+                <Save_button isloading={isloading} />
               </div>
 
               <div className="card-body">

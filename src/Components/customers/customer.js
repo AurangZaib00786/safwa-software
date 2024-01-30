@@ -215,8 +215,8 @@ export default function Customer(props) {
                 row.saleman_details.map((item) => {
                   return {
                     id: item.id,
-                    start_date: item.start_date,
-                    end_date: item.end_date,
+                    start_date: item.start_date ? item.start_date : "",
+                    end_date: item.end_date ? item.end_date : "",
                     sale_man: {
                       value: item.sale_man,
                       label: item.sale_man_name,
@@ -225,17 +225,8 @@ export default function Customer(props) {
                 })
               );
 
-              if (row.saleman_details) {
-                setsaleman_saleman({
-                  value: row.saleman_details?.sale_man,
-                  label: row.saleman_details?.sale_man_name,
-                });
-                setsaleman_start_date(row.saleman_details?.start_date);
-              }
-
               setid(row.id);
               setcheck_update(false);
-              custom_toast("Data loaded");
             }}
           >
             <EditOutlinedIcon
@@ -515,7 +506,7 @@ export default function Customer(props) {
         dispatch({ type: "Create_table_history", data: json });
         setisloading(false);
         success_toast();
-
+        setall_saleman([]);
         setname("");
         setarabicname("");
         setvatno("");
@@ -620,7 +611,7 @@ export default function Customer(props) {
         dispatch({ type: "Update_table_history", data: json });
         setisloading(false);
         success_toast();
-
+        setall_saleman([]);
         setname("");
         setarabicname("");
         setvatno("");
@@ -969,23 +960,22 @@ export default function Customer(props) {
                           </td>
                           <td className="border-0 p-0">
                             <InputGroup>
-                              <div className="col-10   selector ">
-                                <MySelect
-                                  className={"form-control selector"}
-                                  styles={{
-                                    menu: (base) => ({
-                                      ...base,
-                                      zIndex: 100,
-                                    }),
-                                  }}
-                                  options={allemployee}
-                                  placeholder={"Sale Persons"}
-                                  value={saleman_saleman}
-                                  onChange={(e) => {
-                                    setsaleman_saleman(e);
-                                  }}
-                                ></MySelect>
-                              </div>
+                              <MySelect
+                                className={"form-control selector"}
+                                styles={{
+                                  menu: (base) => ({
+                                    ...base,
+                                    zIndex: 100,
+                                  }),
+                                }}
+                                options={allemployee}
+                                placeholder={"Sale Persons"}
+                                value={saleman_saleman}
+                                onChange={(e) => {
+                                  setsaleman_saleman(e);
+                                }}
+                              ></MySelect>
+
                               <IconButton
                                 className="p-0 ps-2 pe-2"
                                 style={{
