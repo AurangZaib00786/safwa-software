@@ -28,8 +28,8 @@
     font-size: 12px;
     }
 
-    .menu::after{
-        content: 'Menu';
+    .saleman::after{
+        content: 'Sale Persons';
         position: absolute;
         top: -9px;
         left: 9px;

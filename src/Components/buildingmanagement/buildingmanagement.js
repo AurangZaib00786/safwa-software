@@ -33,6 +33,7 @@ export default function BuildingManagement(props) {
   const [enddate, setenddate] = useState(null);
   const [isloading, setisloading] = useState(false);
   const [callagain, setcallagain] = useState(false);
+  const [closing_date, setclosing_date] = useState("");
 
   useEffect(() => {
     if (additionalinfo) {
@@ -122,6 +123,7 @@ export default function BuildingManagement(props) {
           },
           body: JSON.stringify({
             details: optimizedata,
+            closing_date: closing_date,
           }),
         }
       );
@@ -258,6 +260,26 @@ export default function BuildingManagement(props) {
                       placeholder={" Select Building..."}
                       value={building}
                       funct={handlebuildingchange}
+                    />
+                  </div>
+
+                  <div className="col-md-4 me-3 mb-3">
+                    <TextField
+                      type="date"
+                      className="form-control"
+                      label={"Closing Date"}
+                      InputLabelProps={{ shrink: true }}
+                      value={closing_date}
+                      onChange={(e) => {
+                        setclosing_date(e.target.value);
+                      }}
+                      InputProps={{
+                        inputProps: {
+                          min: `${selected_year.value}-01-01`,
+                          max: `${selected_year.value}-12-31`,
+                        },
+                      }}
+                      size="small"
                     />
                   </div>
                 </div>

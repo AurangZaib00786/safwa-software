@@ -319,6 +319,7 @@ export default function Dish(props) {
                     <tr>
                       <th className="d-flex align-items-center border-0 p-0">
                         <h6 className="col-3 p-2 ps-0 pb-0 ">Name</h6>
+
                         <h6 className=" col-3  p-2 pb-0 ">اسم الطبق</h6>
                       </th>
                     </tr>
@@ -336,11 +337,13 @@ export default function Dish(props) {
 
                             <div className="col-3">
                               <InputGroup>
-                                <TextField
-                                  className="form-control"
-                                  size="small"
-                                  value={item.arabic_name}
-                                />
+                                <div className="col-10" dir="rtl">
+                                  <TextField
+                                    className="form-control"
+                                    size="small"
+                                    value={item.arabic_name}
+                                  />
+                                </div>
 
                                 <IconButton
                                   className="p-0 ps-2 pe-2"
@@ -386,18 +389,21 @@ export default function Dish(props) {
                               required
                             />
                           </div>
+
                           <div className="col-3">
                             <InputGroup>
-                              <TextField
-                                placeholder={"اسم الطبق"}
-                                size="small"
-                                className="form-control"
-                                value={arabicname}
-                                onChange={(e) => {
-                                  setarabicname(e.target.value);
-                                }}
-                                required
-                              />
+                              <div className="col-10" dir="rtl">
+                                <TextField
+                                  placeholder={"اسم الطبق"}
+                                  size="small"
+                                  className="form-control"
+                                  value={arabicname}
+                                  onChange={(e) => {
+                                    setarabicname(e.target.value);
+                                  }}
+                                  required
+                                />
+                              </div>
 
                               <IconButton
                                 className="p-0 ps-2 pe-2"

@@ -27,6 +27,9 @@ import { useTranslation } from "react-i18next";
 import Red_toast from "../alerts/red_toast";
 import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
 import Select from "../alerts/select";
+import MySelect from "react-select";
+import InputGroup from "react-bootstrap/InputGroup";
+import AddIcon from "@material-ui/icons/Add";
 
 export default function Customer(props) {
   const { t } = useTranslation();
@@ -66,7 +69,9 @@ export default function Customer(props) {
   const [contact_notes, setcontact_notes] = useState("");
 
   const [saleman_start_date, setsaleman_start_date] = useState("");
+  const [saleman_end_date, setsaleman_end_date] = useState("");
   const [saleman_saleman, setsaleman_saleman] = useState("");
+  const [all_saleman, setall_saleman] = useState([]);
 
   const [client_date, setclient_date] = useState("");
   const [client_limit, setclient_limit] = useState("");
@@ -205,6 +210,20 @@ export default function Customer(props) {
                 setcontact_name(row.contact_details?.name);
                 setcontact_notes(row.contact_details?.notes);
               }
+
+              setall_saleman(
+                row.saleman_details.map((item) => {
+                  return {
+                    id: item.id,
+                    start_date: item.start_date,
+                    end_date: item.end_date,
+                    sale_man: {
+                      value: item.sale_man,
+                      label: item.sale_man_name,
+                    },
+                  };
+                })
+              );
 
               if (row.saleman_details) {
                 setsaleman_saleman({
@@ -431,16 +450,14 @@ export default function Customer(props) {
       formData.append("email", email);
       formData.append("notes", notes);
 
-      if (saleman_saleman) {
-        formData.append("saleman_details.sale_man", saleman_saleman?.value);
-      }
-      if (saleman_start_date && saleman_saleman) {
-        formData.append("saleman_details.start_date", saleman_start_date);
-      }
-      if (saleman_start_date && !saleman_saleman) {
-        Red_toast("Select Employee also in Sale man tab ");
-        return;
-      }
+      all_saleman.map((item, index) => {
+        formData.append(
+          `saleman_details[${index}]sale_man`,
+          item.sale_man.value
+        );
+        formData.append(`saleman_details[${index}]start_date`, item.start_date);
+        formData.append(`saleman_details[${index}]end_date`, item.end_date);
+      });
 
       if (client_limit) {
         formData.append("client_limits.limit", client_limit);
@@ -538,16 +555,17 @@ export default function Customer(props) {
       formData.append("email", email);
       formData.append("notes", notes);
 
-      if (saleman_saleman) {
-        formData.append("saleman_details.sale_man", saleman_saleman?.value);
-      }
-      if (saleman_start_date && saleman_saleman) {
-        formData.append("saleman_details.start_date", saleman_start_date);
-      }
-      if (saleman_start_date && !saleman_saleman) {
-        Red_toast("Select Employee also in Sale man tab ");
-        return;
-      }
+      all_saleman.map((item, index) => {
+        formData.append(
+          `saleman_details[${index}]sale_man`,
+          item.sale_man.value
+        );
+        formData.append(`saleman_details[${index}]start_date`, item.start_date);
+        formData.append(`saleman_details[${index}]end_date`, item.end_date);
+        if (item.id) {
+          formData.append(`saleman_details[${index}]id`, item.id);
+        }
+      });
 
       if (client_limit) {
         formData.append("client_limits.limit", client_limit);
@@ -628,6 +646,29 @@ export default function Customer(props) {
         setid("");
         setcheck_update(true);
       }
+    }
+  };
+
+  const handleaddsaleman = (e) => {
+    if (saleman_saleman) {
+      const check = all_saleman.filter(
+        (item) => item.sale_man.value === saleman_saleman.value
+      );
+      if (check.length === 0) {
+        setall_saleman([
+          {
+            start_date: saleman_start_date,
+            end_date: saleman_end_date,
+            sale_man: saleman_saleman,
+          },
+          ...all_saleman,
+        ]);
+        setsaleman_saleman("");
+      } else {
+        Red_toast("Employee Already Selected");
+      }
+    } else {
+      Red_toast("Select Saleman First");
     }
   };
 
@@ -839,37 +880,133 @@ export default function Customer(props) {
                   </div>
                 </Tab>
                 <Tab eventKey="saleman" title="Saleman">
-                  <div className="mt-4">
-                    <div className="row">
-                      <div className="col-md-3">
-                        <TextField
-                          type="date"
-                          className="form-control   mb-3"
-                          label={"Start Date"}
-                          InputLabelProps={{ shrink: true }}
-                          value={saleman_start_date}
-                          onChange={(e) => {
-                            setsaleman_start_date(e.target.value);
-                          }}
-                          InputProps={{
-                            inputProps: {
-                              min: `${selected_year.value}-01-01`,
-                              max: `${selected_year.value}-12-31`,
-                            },
-                          }}
-                          size="small"
-                        />
-                      </div>
+                  <div className="mt-4 col-6">
+                    <table className="table border-0">
+                      <thead className="border-0">
+                        <tr className="border-0">
+                          <th className="border-0 p-0">
+                            <h6>Start Date</h6>
+                          </th>
+                          <th className="border-0 p-0">
+                            <h6> End Date</h6>
+                          </th>
+                          <th className="border-0 p-0">
+                            <h6>Employee</h6>
+                          </th>
+                        </tr>
+                        {all_saleman.map((item) => {
+                          return (
+                            <tr className="border-0" key={item.sale_man?.value}>
+                              <th className="border-0 p-0">
+                                <TextField
+                                  className="form-control"
+                                  value={item.start_date}
+                                  size="small"
+                                />
+                              </th>
 
-                      <div className="col-md-3">
-                        <Select
-                          options={allemployee}
-                          value={saleman_saleman}
-                          placeholder={"Employees"}
-                          funct={(e) => setsaleman_saleman(e)}
-                        />
-                      </div>
-                    </div>
+                              <th className="border-0 p-0">
+                                <TextField
+                                  className="form-control"
+                                  value={item.end_date}
+                                  size="small"
+                                />
+                              </th>
+                              <th className="border-0 p-0">
+                                <TextField
+                                  className="form-control"
+                                  value={item.sale_man?.label}
+                                  size="small"
+                                />
+                              </th>
+                            </tr>
+                          );
+                        })}
+                      </thead>
+                      <tbody>
+                        <tr className="border-0">
+                          <td className="border-0 p-0">
+                            <div>
+                              <TextField
+                                type="date"
+                                className="form-control"
+                                label={""}
+                                InputLabelProps={{ shrink: true }}
+                                value={saleman_start_date}
+                                onChange={(e) => {
+                                  setsaleman_start_date(e.target.value);
+                                }}
+                                InputProps={{
+                                  inputProps: {
+                                    min: `${selected_year.value}-01-01`,
+                                    max: `${selected_year.value}-12-31`,
+                                  },
+                                }}
+                                size="small"
+                              />
+                            </div>
+                          </td>
+                          <td className="border-0 p-0">
+                            <div>
+                              <TextField
+                                type="date"
+                                className="form-control"
+                                label={""}
+                                InputLabelProps={{ shrink: true }}
+                                value={saleman_end_date}
+                                onChange={(e) => {
+                                  setsaleman_end_date(e.target.value);
+                                }}
+                                InputProps={{
+                                  inputProps: {
+                                    min: `${selected_year.value}-01-01`,
+                                    max: `${selected_year.value}-12-31`,
+                                  },
+                                }}
+                                size="small"
+                              />
+                            </div>
+                          </td>
+                          <td className="border-0 p-0">
+                            <InputGroup>
+                              <div className="col-10   selector ">
+                                <MySelect
+                                  className={"form-control selector"}
+                                  styles={{
+                                    menu: (base) => ({
+                                      ...base,
+                                      zIndex: 100,
+                                    }),
+                                  }}
+                                  options={allemployee}
+                                  placeholder={"Sale Persons"}
+                                  value={saleman_saleman}
+                                  onChange={(e) => {
+                                    setsaleman_saleman(e);
+                                  }}
+                                ></MySelect>
+                              </div>
+                              <IconButton
+                                className="p-0 ps-2 pe-2"
+                                style={{
+                                  backgroundColor: "#0d6efd",
+                                  borderRadius: "0",
+                                }}
+                                onClick={handleaddsaleman}
+                              >
+                                <AddIcon
+                                  style={{
+                                    color: "white",
+                                    height: "fit-content",
+                                  }}
+                                  fontSize="medium"
+                                />
+                              </IconButton>
+                            </InputGroup>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </Tab>
                 <Tab eventKey="client_limit" title="Client Limits">

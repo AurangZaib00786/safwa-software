@@ -1,14 +1,13 @@
 import { connect } from "react-redux";
 import Layout from "../Pages/home";
-import { setuser } from "../Service/Actions/action";
+import { Setcurrentinfo } from "../Service/Actions/action";
 
-const dispatchpart=dispatch=>({
-  
-})
+const dispatchpart = (dispatch) => ({
+  Setinfo_ofuser: (data) => dispatch(Setcurrentinfo(data)),
+});
 
-const getpart=state=>({
-    state
+const getpart = (state) => ({
+  state,
+});
 
-})
-
-export default connect(getpart,dispatchpart)(Layout)
+export default connect(getpart, dispatchpart)(Layout);

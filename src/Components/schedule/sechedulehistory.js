@@ -163,7 +163,7 @@ export default function Sechule_History({
               onClick={setview_stock}
             >
               <FontAwesomeIcon className="me-2" icon={faRotate} />
-              Update Schedule
+              Save Schedule
             </Button>
           </div>
         </div>

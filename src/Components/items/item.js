@@ -584,7 +584,7 @@ export default function Item(props) {
                   required
                 />
               </div>
-              <div className="col-md-3">
+              <div dir="rtl" className="col-md-3">
                 <TextField
                   type="text"
                   className="form-control  mb-3"

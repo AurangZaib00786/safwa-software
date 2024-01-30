@@ -21,15 +21,16 @@ import TurnedInIcon from "@material-ui/icons/TurnedIn";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
 import StoreIcon from "@material-ui/icons/Store";
 import { useTranslation } from "react-i18next";
-import BusinessIcon from "@material-ui/icons/Business";
+import Select_Branch from "./branchmodel";
 
 function Layout(props) {
   const { t } = useTranslation();
   const user = props.state.setuser.user;
+  const route = props.state.setuser.route;
   const menu_status = props.state.Settablehistory.menu_status;
-
   const current_user = props.state.Setcurrentinfo.current_user;
-
+  const selected_branch = props.state.Setcurrentinfo.selected_branch;
+  const dispatch = props.Setinfo_ofuser;
   const { collapseSidebar, toggleSidebar, broken, collapsed } = useProSidebar();
   const [checkcollapse, setcheckcollapse] = useState(true);
 
@@ -127,6 +128,15 @@ function Layout(props) {
               Employees
             </MenuItem>
 
+            <MenuItem
+              active={menu_status === "building"}
+              icon={<StoreIcon />}
+              component={<Link to="/building_page" />}
+              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+            >
+              Building
+            </MenuItem>
+
             <SubMenu
               active={
                 menu_status === "dish" ||
@@ -163,6 +173,23 @@ function Layout(props) {
               </MenuItem>
             </SubMenu>
 
+            <MenuItem
+              active={menu_status === "order"}
+              icon={<StoreIcon />}
+              component={<Link to="/order" />}
+              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+            >
+              Order
+            </MenuItem>
+
+            <MenuItem
+              active={menu_status === "purchase"}
+              icon={<ShoppingBasketIcon />}
+              component={<Link to="/daily_meal" />}
+              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+            >
+              Daily Meal
+            </MenuItem>
             <SubMenu
               active={menu_status === "item" || menu_status === "store"}
               icon={<StoreIcon />}
@@ -186,33 +213,6 @@ function Layout(props) {
                 Stock
               </MenuItem>
             </SubMenu>
-
-            <MenuItem
-              active={menu_status === "building"}
-              icon={<StoreIcon />}
-              component={<Link to="/building_page" />}
-              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
-            >
-              Building
-            </MenuItem>
-
-            <MenuItem
-              active={menu_status === "order"}
-              icon={<StoreIcon />}
-              component={<Link to="/order" />}
-              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
-            >
-              Order
-            </MenuItem>
-
-            <MenuItem
-              active={menu_status === "purchase"}
-              icon={<ShoppingBasketIcon />}
-              component={<Link to="/daily_meal" />}
-              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
-            >
-              Daily Meal
-            </MenuItem>
 
             {/* {current_user?.permissions?.includes("view_payments") && (
               <MenuItem
@@ -315,6 +315,16 @@ function Layout(props) {
 
         <div className="footer">{user && <Footer />}</div>
       </div>
+      {!selected_branch && user && (
+        <Select_Branch
+          show={!selected_branch}
+          route={route}
+          user={user}
+          current_user={current_user}
+          selected_branch={selected_branch}
+          dispatch={dispatch}
+        />
+      )}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import Modal from "react-bootstrap/Modal";
 import TextField from "@mui/material/TextField";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPen } from "@fortawesome/free-solid-svg-icons";
-import Update_button from "../buttons/update_button";
+import Save_button from "../buttons/save_button";
 import Red_toast from "../alerts/red_toast";
 import { useTranslation } from "react-i18next";
 
@@ -82,7 +82,7 @@ function Storeformupdate({ show, onHide, data, user, route, fun, callback }) {
 
           <hr></hr>
           <div className="d-flex flex-row-reverse mt-2 me-2">
-            <Update_button isloading={isloading} />
+            <Save_button isloading={isloading} />
           </div>
         </form>
       </Modal.Body>

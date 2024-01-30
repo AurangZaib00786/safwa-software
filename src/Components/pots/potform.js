@@ -92,7 +92,8 @@ function Areaform({
               required
             />
           </div>
-          <div className="col-md-12">
+
+          <div dir="rtl" className="col-md-12">
             <TextField
               className="form-control   mb-3"
               id="outlined-basic"

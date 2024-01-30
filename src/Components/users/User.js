@@ -422,7 +422,7 @@ function User(props) {
   return (
     <div className="p-3 pt-2">
       <div className="card">
-        <form onSubmit={handleSubmit}>
+        <form autoComplete="off" onSubmit={handleSubmit}>
           <div className="card-header d-flex justify-content-between bg-white">
             <h3 className="mt-2 me-2">Add User</h3>
             <div className="mt-2 me-2 d-flex ">
@@ -516,6 +516,7 @@ function User(props) {
                     value={employee}
                     placeholder={"Employee"}
                     funct={(e) => setemployee(e)}
+                    required={true}
                   />
                 </div>
               </div>

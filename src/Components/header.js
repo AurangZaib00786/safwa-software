@@ -25,7 +25,7 @@ function Header(props) {
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
-  const selected_year = props.state.Setcurrentinfo.selected_year;
+
   const current_user = props.state.Setcurrentinfo.current_user;
   const invoice_type = props.state.Setcurrentinfo.invoice_type;
   const dispatch = props.Setinfo_ofuser;
@@ -35,11 +35,7 @@ function Header(props) {
   const [data, setdata] = useState("");
   const [showmodelupdate, setshowmodelupdate] = useState(false);
   const ref = useRef(null);
-  const [user_settings, setuser_settings] = useState(null);
-  const years_list = [
-    { value: "2024", label: "Year 2024" },
-    { value: "2023", label: "Year 2023" },
-  ];
+
   const decodedToken = jwtDecode(user.access);
   const userId = decodedToken.user_id;
 
@@ -66,13 +62,6 @@ function Header(props) {
 
       if (response.ok) {
         getpermission(json);
-        // dispatch({
-        //   type: "SetCurrentUser",
-        //   data: json,
-        // });
-        if (!selected_branch && json.account_heads.length > 0) {
-          getproject(json);
-        }
       }
     };
 
@@ -80,22 +69,6 @@ function Header(props) {
       getuser();
     }
   }, [user]);
-
-  const getproject = async (input) => {
-    var url = `${route}/api/account-heads/${input?.account_heads[0].id}/`;
-
-    const response = await fetch(`${url}`, {
-      headers: { Authorization: `Bearer ${user.access}` },
-    });
-    const json = await response.json();
-    if (!response.ok) {
-    }
-
-    if (response.ok) {
-      localStorage.setItem("selected_branch", JSON.stringify(json));
-      dispatch({ type: "Set_Branch_first", data: json });
-    }
-  };
 
   const getpermission = async (input) => {
     var url = `${route}/api/user-permissions/${input.id}/`;
@@ -125,20 +98,6 @@ function Header(props) {
     props.statefun();
   };
 
-  const handledropdown = async (id) => {
-    const response = await fetch(`${route}/api/account-heads/${id}/`, {
-      headers: { Authorization: `Bearer ${user.access}` },
-    });
-    const json = await response.json();
-    if (!response.ok) {
-    }
-
-    if (response.ok) {
-      localStorage.setItem("selected_branch", JSON.stringify(json));
-      dispatch({ type: "Set_Branch_first", data: json });
-    }
-  };
-
   const handlesignout = (e) => {
     e.preventDefault();
     dispatch({ type: "Set_Branch_first", data: null });
@@ -160,10 +119,6 @@ function Header(props) {
     document.getElementById("dropdown-autoclose-true").click();
   };
 
-  const handledropdownyear = (item) => {
-    dispatch({ type: "Set_year", data: item });
-  };
-
   return (
     <div>
       <div className="d-flex border-bottom justify-content-between header">
@@ -177,44 +132,9 @@ function Header(props) {
           </IconButton>
         )}
         <div className="d-flex align-items-center  ">
-          <span>{selected_year.label}</span>
-          <Dropdown className="me-3">
-            <Dropdown.Toggle split variant="" id="dropdown-split-basic-year" />
-
-            <Dropdown.Menu>
-              {years_list.map((item) => (
-                <Dropdown.Item
-                  key={item.value}
-                  className={
-                    selected_year.value === item.value ? "text-primary" : ""
-                  }
-                  onClick={() => handledropdownyear(item)}
-                >
-                  {item.label}
-                </Dropdown.Item>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown>
-
-          {selected_branch && <span>{selected_branch.name}</span>}
-          <Dropdown className="me-3">
-            <Dropdown.Toggle split variant="" id="dropdown-split-basic" />
-
-            <Dropdown.Menu>
-              {current_user &&
-                current_user.account_heads?.map((item) => (
-                  <Dropdown.Item
-                    key={item.id}
-                    onClick={() => handledropdown(item.id)}
-                    className={
-                      selected_branch.id === item.id ? "text-primary" : ""
-                    }
-                  >
-                    {item.name}
-                  </Dropdown.Item>
-                ))}
-            </Dropdown.Menu>
-          </Dropdown>
+          {selected_branch && (
+            <span className="me-2">{selected_branch.name}</span>
+          )}
 
           <div
             ref={ref}

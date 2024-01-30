@@ -319,7 +319,6 @@ export default function CustomerType(props) {
                   }
                 })
               );
-              custom_toast("Data loaded");
             }}
           >
             <EditOutlinedIcon
@@ -1214,6 +1213,12 @@ export default function CustomerType(props) {
                               value={transportallowance}
                               onChange={(e) => {
                                 settransportallowance(e.target.value);
+                                settransportallowancepercenage(
+                                  (
+                                    (Number(e.target.value) / Number(salary)) *
+                                    100
+                                  )?.toFixed(2)
+                                );
                               }}
                               size="small"
                             />
@@ -1249,6 +1254,12 @@ export default function CustomerType(props) {
                               value={foodallowance}
                               onChange={(e) => {
                                 setfoodallowance(e.target.value);
+                                setfoodallowancepercenage(
+                                  (
+                                    (Number(e.target.value) / Number(salary)) *
+                                    100
+                                  )?.toFixed(2)
+                                );
                               }}
                               size="small"
                             />
@@ -1284,6 +1295,12 @@ export default function CustomerType(props) {
                               value={accomallowance}
                               onChange={(e) => {
                                 setaccomallowance(e.target.value);
+                                setaccomallowancepercenage(
+                                  (
+                                    (Number(e.target.value) / Number(salary)) *
+                                    100
+                                  )?.toFixed(2)
+                                );
                               }}
                               size="small"
                             />
@@ -1319,6 +1336,12 @@ export default function CustomerType(props) {
                               value={prallowance}
                               onChange={(e) => {
                                 setprallowance(e.target.value);
+                                setprallowancepercenage(
+                                  (
+                                    (Number(e.target.value) / Number(salary)) *
+                                    100
+                                  )?.toFixed(2)
+                                );
                               }}
                               size="small"
                             />
@@ -1354,6 +1377,12 @@ export default function CustomerType(props) {
                               value={extraallowance}
                               onChange={(e) => {
                                 setextraallowance(e.target.value);
+                                setextraallowancepercenage(
+                                  (
+                                    (Number(e.target.value) / Number(salary)) *
+                                    100
+                                  )?.toFixed(2)
+                                );
                               }}
                               size="small"
                             />
@@ -1458,6 +1487,17 @@ export default function CustomerType(props) {
                           size="small"
                         />
                       </div>
+                      {type?.value !== "Monthly Wage" && type && (
+                        <div className="col-6 col-md-3">
+                          <TextField
+                            type="number"
+                            className="form-control  mb-3"
+                            label={t("Total Days")}
+                            value={Number(remainingdays) - Number(absentdays)}
+                            size="small"
+                          />
+                        </div>
+                      )}
                       {type?.value !== "Monthly Wage" && type && (
                         <div className="col-6 col-md-3">
                           <TextField

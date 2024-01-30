@@ -19,3 +19,12 @@
     display: none;
 }
 
+.branch_list{
+ margin-bottom: 5px;
+}
+.branch_list:hover{
+    cursor: pointer;
+    color:royalblue;
+    text-decoration: underline;
+}
+
