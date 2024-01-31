@@ -32,6 +32,7 @@ export default function Submenu(props) {
   const { t } = useTranslation();
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
+  const current_user = props.state.Setcurrentinfo.current_user;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const setActiveTab = props.setActiveTab;
   const all_customers = props.state.Settablehistory.table_history;
@@ -122,33 +123,37 @@ export default function Submenu(props) {
   const Action = (cell, row, rowIndex, formatExtraData) => {
     return (
       <span className="action d-flex">
-        <IconButton
-          className="border border-danger rounded me-2 tooltipclass"
-          onClick={() => {
-            setrow_id(row.id);
-            seturl_to_delete(`${route}/api/sub-menu/${row.id}/`);
-            setdelete_user(true);
-          }}
-        >
-          <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
-          <span className="tooltip-textclass">Delete</span>
-        </IconButton>
+        {current_user?.permissions?.includes("delete_submenu") && (
+          <IconButton
+            className="border border-danger rounded me-2 tooltipclass"
+            onClick={() => {
+              setrow_id(row.id);
+              seturl_to_delete(`${route}/api/sub-menu/${row.id}/`);
+              setdelete_user(true);
+            }}
+          >
+            <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
+            <span className="tooltip-textclass">Delete</span>
+          </IconButton>
+        )}
 
-        <IconButton
-          style={{ border: "1px solid #003049", borderRadius: "5px" }}
-          className="tooltipclass"
-          onClick={() => {
-            setdata(row);
-            setshowmodelupdate(true);
-          }}
-        >
-          <EditOutlinedIcon
-            className="m-1"
-            style={{ color: "#003049" }}
-            fontSize="small"
-          />
-          <span className="tooltip-textclass">Edit</span>
-        </IconButton>
+        {current_user?.permissions?.includes("change_submenu") && (
+          <IconButton
+            style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            className="tooltipclass"
+            onClick={() => {
+              setdata(row);
+              setshowmodelupdate(true);
+            }}
+          >
+            <EditOutlinedIcon
+              className="m-1"
+              style={{ color: "#003049" }}
+              fontSize="small"
+            />
+            <span className="tooltip-textclass">Edit</span>
+          </IconButton>
+        )}
       </span>
     );
   };
@@ -307,84 +312,88 @@ export default function Submenu(props) {
               {" "}
               Menu
             </Button>
-            <Button
-              type="button"
-              className="mb-2"
-              variant="outline-primary"
-              onClick={() => setshowmodel(!showmodel)}
-            >
-              <FontAwesomeIcon icon={faUserPlus} className="me-2" />
-              {t("Add Submenu")}
-            </Button>
+            {current_user?.permissions?.includes("add_submenu") && (
+              <Button
+                type="button"
+                className="mb-2"
+                variant="outline-primary"
+                onClick={() => setshowmodel(!showmodel)}
+              >
+                <FontAwesomeIcon icon={faUserPlus} className="me-2" />
+                {t("Add Submenu")}
+              </Button>
+            )}
           </div>
         </div>
 
-        <div className="card-body pt-0">
-          <ToolkitProvider
-            keyField="id"
-            data={all_customers}
-            columns={columns}
-            search
-            exportCSV
-          >
-            {(props) => (
-              <div>
-                <div className="col-md-2 mt-3">
-                  <Select
-                    options={[{ value: "all", label: "All" }, ...menulist]}
-                    placeholder="Menu"
-                    value={menu}
-                    funct={(e) => setmenu(e)}
-                    required={true}
+        {current_user?.permissions?.includes("view_submenu") && (
+          <div className="card-body pt-0">
+            <ToolkitProvider
+              keyField="id"
+              data={all_customers}
+              columns={columns}
+              search
+              exportCSV
+            >
+              {(props) => (
+                <div>
+                  <div className="col-md-2 mt-3">
+                    <Select
+                      options={[{ value: "all", label: "All" }, ...menulist]}
+                      placeholder="Menu"
+                      value={menu}
+                      funct={(e) => setmenu(e)}
+                      required={true}
+                    />
+                  </div>
+                  <div className="d-sm-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <ExportCSVButton
+                        {...props.csvProps}
+                        className="csvbutton  border bg-secondary text-light me-2 mb-2"
+                      >
+                        Export CSV
+                      </ExportCSVButton>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 me-2 mb-2"
+                        variant="outline-primary"
+                        onClick={download}
+                      >
+                        <PictureAsPdfIcon /> PDF
+                      </Button>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 mb-2"
+                        variant="outline-success"
+                        onClick={print}
+                      >
+                        <PrintIcon /> Print
+                      </Button>
+                    </div>
+                    <SearchBar {...props.searchProps} />
+                  </div>
+                  {isloading && (
+                    <div className="text-center">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
+
+                  <hr />
+                  <BootstrapTable
+                    {...props.baseProps}
+                    pagination={paginationFactory(options)}
+                    rowStyle={rowstyle}
+                    striped
+                    bootstrap4
+                    condensed
+                    wrapperClasses="table-responsive"
                   />
                 </div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
-                    <ExportCSVButton
-                      {...props.csvProps}
-                      className="csvbutton  border bg-secondary text-light me-2 mb-2"
-                    >
-                      Export CSV
-                    </ExportCSVButton>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 me-2 mb-2"
-                      variant="outline-primary"
-                      onClick={download}
-                    >
-                      <PictureAsPdfIcon /> PDF
-                    </Button>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 mb-2"
-                      variant="outline-success"
-                      onClick={print}
-                    >
-                      <PrintIcon /> Print
-                    </Button>
-                  </div>
-                  <SearchBar {...props.searchProps} />
-                </div>
-                {isloading && (
-                  <div className="text-center">
-                    <Spinner animation="border" variant="primary" />
-                  </div>
-                )}
-
-                <hr />
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={paginationFactory(options)}
-                  rowStyle={rowstyle}
-                  striped
-                  bootstrap4
-                  condensed
-                  wrapperClasses="table-responsive"
-                />
-              </div>
-            )}
-          </ToolkitProvider>
-        </div>
+              )}
+            </ToolkitProvider>
+          </div>
+        )}
       </div>
 
       {showmodel && (

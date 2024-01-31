@@ -37,15 +37,19 @@ function Dailymeal_page({ current_user }) {
         id="noanim-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="dailymeal" title="Daily Meal">
-          {activeTab === "dailymeal" && <Dailymeal />}
-        </Tab>
+        {current_user?.permissions?.includes("add_daily_meal") && (
+          <Tab eventKey="dailymeal" title="Daily Meal">
+            {activeTab === "dailymeal" && <Dailymeal />}
+          </Tab>
+        )}
 
-        <Tab eventKey="dailymeal_history" title="Meal History">
-          {activeTab === "dailymeal_history" && (
-            <Dailymeal_history setActiveTab={setActiveTab} />
-          )}
-        </Tab>
+        {current_user?.permissions?.includes("view_daily_meal") && (
+          <Tab eventKey="dailymeal_history" title="Meal History">
+            {activeTab === "dailymeal_history" && (
+              <Dailymeal_history setActiveTab={setActiveTab} />
+            )}
+          </Tab>
+        )}
 
         {activeTab === "dailymeal_Edit" && (
           <Tab eventKey="dailymeal_Edit" title="Meal Edit">

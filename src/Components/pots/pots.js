@@ -37,7 +37,7 @@ export default function Pots(props) {
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
-  const settings = props.state.Setcurrentinfo.settings;
+
   const { ExportCSVButton } = CSVExport;
   const [showmodel, setshowmodel] = useState(false);
   const [data, setdata] = useState("");
@@ -86,33 +86,37 @@ export default function Pots(props) {
   const Action = (cell, row, rowIndex, formatExtraData) => {
     return (
       <span className="action d-flex">
-        <IconButton
-          className="border border-danger rounded me-2 tooltipclass"
-          onClick={() => {
-            setrow_id(row.id);
-            seturl_to_delete(`${route}/api/pots/${row.id}/`);
-            setdelete_user(true);
-          }}
-        >
-          <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
-          <span className="tooltip-textclass">Delete</span>
-        </IconButton>
+        {current_user?.permissions?.includes("delete_pots") && (
+          <IconButton
+            className="border border-danger rounded me-2 tooltipclass"
+            onClick={() => {
+              setrow_id(row.id);
+              seturl_to_delete(`${route}/api/pots/${row.id}/`);
+              setdelete_user(true);
+            }}
+          >
+            <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
+            <span className="tooltip-textclass">Delete</span>
+          </IconButton>
+        )}
 
-        <IconButton
-          style={{ border: "1px solid #003049", borderRadius: "5px" }}
-          className="tooltipclass"
-          onClick={() => {
-            setdata(row);
-            setshowmodelupdate(true);
-          }}
-        >
-          <EditOutlinedIcon
-            className="m-1 "
-            style={{ color: "#003049" }}
-            fontSize="small"
-          />
-          <span className="tooltip-textclass">Edit</span>
-        </IconButton>
+        {current_user?.permissions?.includes("change_pots") && (
+          <IconButton
+            style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            className="tooltipclass"
+            onClick={() => {
+              setdata(row);
+              setshowmodelupdate(true);
+            }}
+          >
+            <EditOutlinedIcon
+              className="m-1 "
+              style={{ color: "#003049" }}
+              fontSize="small"
+            />
+            <span className="tooltip-textclass">Edit</span>
+          </IconButton>
+        )}
       </span>
     );
   };
@@ -249,83 +253,87 @@ export default function Pots(props) {
   return (
     <div className="p-3">
       <div className="card">
-        <div className="card-header bg-white  d-flex justify-content-between ">
-          <h1
-            className="mb-3"
-            style={{ fontSize: "1.3rem", fontWeight: "normal" }}
-          >
-            Pots
-          </h1>
-          <Button
-            type="button"
-            className="mb-2"
-            variant="outline-success"
-            onClick={() => setshowmodel(!showmodel)}
-          >
-            <FontAwesomeIcon className="me-2" icon={faUserPlus} />
-            Add
-          </Button>
-        </div>
+        {current_user?.permissions?.includes("add_pots") && (
+          <div className="card-header bg-white  d-flex justify-content-between ">
+            <h1
+              className="mb-3"
+              style={{ fontSize: "1.3rem", fontWeight: "normal" }}
+            >
+              Pots
+            </h1>
+            <Button
+              type="button"
+              className="mb-2"
+              variant="outline-success"
+              onClick={() => setshowmodel(!showmodel)}
+            >
+              <FontAwesomeIcon className="me-2" icon={faUserPlus} />
+              Add
+            </Button>
+          </div>
+        )}
 
-        <div className="card-body pt-0">
-          <ToolkitProvider
-            keyField="id"
-            data={all_customers}
-            columns={columns}
-            search
-            exportCSV
-          >
-            {(props) => (
-              <div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
-                    <ExportCSVButton
-                      {...props.csvProps}
-                      className="csvbutton  border bg-secondary text-light me-2 mb-2"
-                    >
-                      Export CSV
-                    </ExportCSVButton>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 me-2 mb-2"
-                      variant="outline-primary"
-                      onClick={download}
-                    >
-                      <PictureAsPdfIcon /> PDF
-                    </Button>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 mb-2"
-                      variant="outline-success"
-                      onClick={print}
-                    >
-                      <PrintIcon /> Print
-                    </Button>
+        {current_user?.permissions?.includes("view_pots") && (
+          <div className="card-body pt-0">
+            <ToolkitProvider
+              keyField="id"
+              data={all_customers}
+              columns={columns}
+              search
+              exportCSV
+            >
+              {(props) => (
+                <div>
+                  <div className="d-sm-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <ExportCSVButton
+                        {...props.csvProps}
+                        className="csvbutton  border bg-secondary text-light me-2 mb-2"
+                      >
+                        Export CSV
+                      </ExportCSVButton>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 me-2 mb-2"
+                        variant="outline-primary"
+                        onClick={download}
+                      >
+                        <PictureAsPdfIcon /> PDF
+                      </Button>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 mb-2"
+                        variant="outline-success"
+                        onClick={print}
+                      >
+                        <PrintIcon /> Print
+                      </Button>
+                    </div>
+                    <SearchBar {...props.searchProps} />
                   </div>
-                  <SearchBar {...props.searchProps} />
-                </div>
-                {isloading && (
-                  <div className="text-center">
-                    <Spinner animation="border" variant="primary" />
-                  </div>
-                )}
+                  {isloading && (
+                    <div className="text-center">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
 
-                <hr />
-                <div style={{ zoom: ".9" }}>
-                  <BootstrapTable
-                    {...props.baseProps}
-                    pagination={paginationFactory(options)}
-                    rowStyle={rowstyle}
-                    striped
-                    bootstrap4
-                    condensed
-                    wrapperClasses="table-responsive"
-                  />
+                  <hr />
+                  <div style={{ zoom: ".9" }}>
+                    <BootstrapTable
+                      {...props.baseProps}
+                      pagination={paginationFactory(options)}
+                      rowStyle={rowstyle}
+                      striped
+                      bootstrap4
+                      condensed
+                      wrapperClasses="table-responsive"
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
-          </ToolkitProvider>
-        </div>
+              )}
+            </ToolkitProvider>
+          </div>
+        )}
       </div>
 
       {showmodel && (

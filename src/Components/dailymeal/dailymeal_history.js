@@ -50,7 +50,7 @@ function Dailymeal_history(props) {
   const { ExportCSVButton } = CSVExport;
   const invoice_type = props.state.Setcurrentinfo.invoice_type;
   const setActiveTab = props.setActiveTab;
-
+  const current_user = props.state.Setcurrentinfo.current_user;
   const [delete_user, setdelete_user] = useState(false);
   const [url_to_delete, seturl_to_delete] = useState("");
   const [row_id, setrow_id] = useState("");
@@ -147,34 +147,43 @@ function Dailymeal_history(props) {
         >
           <PrintRoundedIcon className="m-1" color="primary" fontSize="medium" />
         </IconButton>
-        <IconButton
-          className="border border-danger rounded me-2"
-          onClick={() => {
-            setrow_id(row.id);
-            seturl_to_delete(`${route}/api/daily-meals/${row.id}/`);
-            setdelete_user(true);
-          }}
-        >
-          <DeleteRoundedIcon className="m-1" color="error" fontSize="medium" />
-        </IconButton>
 
-        <IconButton
-          className="p-0"
-          style={{ border: "1px solid #003049", borderRadius: "5px" }}
-          onClick={() => {
-            const data = history.filter((item) => {
-              return item.id === row.id;
-            });
-            localStorage.setItem("data", JSON.stringify(row));
-            setActiveTab("dailymeal_Edit");
-          }}
-        >
-          <EditOutlinedIcon
-            className="m-1"
-            style={{ color: "#003049" }}
-            fontSize="medium"
-          />
-        </IconButton>
+        {current_user?.permissions?.includes("delete_daily_meal") && (
+          <IconButton
+            className="border border-danger rounded me-2"
+            onClick={() => {
+              setrow_id(row.id);
+              seturl_to_delete(`${route}/api/daily-meals/${row.id}/`);
+              setdelete_user(true);
+            }}
+          >
+            <DeleteRoundedIcon
+              className="m-1"
+              color="error"
+              fontSize="medium"
+            />
+          </IconButton>
+        )}
+
+        {current_user?.permissions?.includes("change_daily_meal") && (
+          <IconButton
+            className="p-0"
+            style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            onClick={() => {
+              const data = history.filter((item) => {
+                return item.id === row.id;
+              });
+              localStorage.setItem("data", JSON.stringify(row));
+              setActiveTab("dailymeal_Edit");
+            }}
+          >
+            <EditOutlinedIcon
+              className="m-1"
+              style={{ color: "#003049" }}
+              fontSize="medium"
+            />
+          </IconButton>
+        )}
       </span>
     );
   };

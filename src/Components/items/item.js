@@ -181,43 +181,51 @@ export default function Item(props) {
   const Action = (cell, row, rowIndex, formatExtraData) => {
     return (
       <span className="action d-flex">
-        <IconButton
-          className="border border-danger rounded me-2"
-          onClick={() => {
-            setrow_id(row.id);
-            seturl_to_delete(`${route}/api/products/${row.id}/`);
-            setdelete_user(true);
-          }}
-        >
-          <DeleteRoundedIcon className="m-1" color="error" fontSize="medium" />
-        </IconButton>
+        {current_user?.permissions?.includes("delete_item") && (
+          <IconButton
+            className="border border-danger rounded me-2"
+            onClick={() => {
+              setrow_id(row.id);
+              seturl_to_delete(`${route}/api/products/${row.id}/`);
+              setdelete_user(true);
+            }}
+          >
+            <DeleteRoundedIcon
+              className="m-1"
+              color="error"
+              fontSize="medium"
+            />
+          </IconButton>
+        )}
 
-        <IconButton
-          style={{ border: "1px solid #003049", borderRadius: "5px" }}
-          onClick={() => {
-            setname(row.name);
-            setarabicname(row.arabic_name);
+        {current_user?.permissions?.includes("change_item") && (
+          <IconButton
+            style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            onClick={() => {
+              setname(row.name);
+              setarabicname(row.arabic_name);
 
-            setmenu({
-              value: row.category,
-              label: row.category_name,
-            });
-            setsubmenu({
-              value: row.sub_category,
-              label: row.sub_category_name,
-            });
-            setunits({ value: row.unit, label: row.unit_name });
+              setmenu({
+                value: row.category,
+                label: row.category_name,
+              });
+              setsubmenu({
+                value: row.sub_category,
+                label: row.sub_category_name,
+              });
+              setunits({ value: row.unit, label: row.unit_name });
 
-            setid(row.id);
-            setcheck_update(true);
-          }}
-        >
-          <EditOutlinedIcon
-            className="m-1"
-            style={{ color: "#003049" }}
-            fontSize="small"
-          />
-        </IconButton>
+              setid(row.id);
+              setcheck_update(true);
+            }}
+          >
+            <EditOutlinedIcon
+              className="m-1"
+              style={{ color: "#003049" }}
+              fontSize="small"
+            />
+          </IconButton>
+        )}
       </span>
     );
   };
@@ -391,85 +399,83 @@ export default function Item(props) {
   const handlesubmit = async (e) => {
     e.preventDefault();
 
-    setisloading(true);
-    const formData = new FormData();
+    if (!isloading && current_user?.permissions?.includes("add_item")) {
+      const formData = new FormData();
 
-    formData.append("name", name);
-    formData.append("arabic_name", arabicname);
+      formData.append("name", name);
+      formData.append("arabic_name", arabicname);
 
-    formData.append("unit", units.value);
-    formData.append("category", menu.value);
-    formData.append("sub_category", submenu.value);
-
-    const response = await fetch(`${route}/api/products/`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${user.access}`,
-      },
-      body: formData,
-    });
-    const json = await response.json();
-
-    if (!response.ok) {
+      formData.append("unit", units.value);
+      formData.append("category", menu.value);
+      formData.append("sub_category", submenu.value);
+      setisloading(true);
+      const response = await fetch(`${route}/api/products/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user.access}`,
+        },
+        body: formData,
+      });
+      const json = await response.json();
       setisloading(false);
-      var error = Object.keys(json);
-      if (error.length > 0) {
-        Red_toast(`${error[0]}:${json[error[0]]}`);
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
       }
-    }
 
-    if (response.ok) {
-      setisloading(false);
-      dispatch({ type: "Create_table_history", data: json });
-      success_toast();
-      setname("");
-      setarabicname("");
-      setmenu("");
-      setsubmenu("");
-      setunits("");
+      if (response.ok) {
+        dispatch({ type: "Create_table_history", data: json });
+        success_toast();
+        setname("");
+        setarabicname("");
+        setmenu("");
+        setsubmenu("");
+        setunits("");
+      }
     }
   };
 
   const handleupdate = async (e) => {
     e.preventDefault();
 
-    setisloading(true);
-    const formData = new FormData();
+    if (!isloading && current_user?.permissions?.includes("change_item")) {
+      const formData = new FormData();
 
-    formData.append("name", name);
-    formData.append("arabic_name", arabicname);
+      formData.append("name", name);
+      formData.append("arabic_name", arabicname);
 
-    formData.append("unit", units.value);
-    formData.append("category", menu.value);
-    formData.append("sub_category", submenu.value);
-
-    const response = await fetch(`${route}/api/products/${id}/`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${user.access}`,
-      },
-      body: formData,
-    });
-    const json = await response.json();
-
-    if (!response.ok) {
+      formData.append("unit", units.value);
+      formData.append("category", menu.value);
+      formData.append("sub_category", submenu.value);
+      setisloading(true);
+      const response = await fetch(`${route}/api/products/${id}/`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${user.access}`,
+        },
+        body: formData,
+      });
+      const json = await response.json();
       setisloading(false);
-      var error = Object.keys(json);
-      if (error.length > 0) {
-        Red_toast(`${error[0]}:${json[error[0]]}`);
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
       }
-    }
 
-    if (response.ok) {
-      setisloading(false);
-      dispatch({ type: "Update_table_history", data: json });
-      success_toast();
-      setname("");
-      setarabicname("");
-      setmenu("");
-      setsubmenu("");
-      setunits("");
-      setcheck_update(false);
+      if (response.ok) {
+        dispatch({ type: "Update_table_history", data: json });
+        success_toast();
+        setname("");
+        setarabicname("");
+        setmenu("");
+        setsubmenu("");
+        setunits("");
+        setcheck_update(false);
+      }
     }
   };
   const onButtonClick = () => {
@@ -547,7 +553,10 @@ export default function Item(props) {
                 {" "}
                 Units
               </Button>
-              <Save_button isloading={isloading} />
+              {(current_user?.permissions?.includes("add_item") ||
+                current_user?.permissions?.includes("change_item")) && (
+                <Save_button isloading={isloading} />
+              )}
 
               {/* <div>
                 <input
@@ -570,125 +579,130 @@ export default function Item(props) {
             </div>
           </div>
 
-          <div className="card-body pt-0">
-            <div className="row mt-4">
-              <div className="col-md-3">
-                <TextField
-                  className="form-control   mb-3"
-                  label={"Name"}
-                  value={name}
-                  onChange={(e) => {
-                    setname(e.target.value);
-                  }}
-                  size="small"
-                  required
-                />
+          {(current_user?.permissions?.includes("add_item") ||
+            current_user?.permissions?.includes("change_item")) && (
+            <div className="card-body pt-0">
+              <div className="row mt-4">
+                <div className="col-md-3">
+                  <TextField
+                    className="form-control   mb-3"
+                    label={"Name"}
+                    value={name}
+                    onChange={(e) => {
+                      setname(e.target.value);
+                    }}
+                    size="small"
+                    required
+                  />
+                </div>
+                <div dir="rtl" className="col-md-3">
+                  <TextField
+                    type="text"
+                    className="form-control  mb-3"
+                    label={"	اسم الطبق"}
+                    value={arabicname}
+                    onChange={(e) => {
+                      setarabicname(e.target.value);
+                    }}
+                    size="small"
+                    required
+                  />
+                </div>
+                <div className="col-md-3">
+                  <Select
+                    options={allmenu}
+                    placeholder={"Category"}
+                    value={menu}
+                    funct={(e) => setmenu(e)}
+                    required={true}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <Select
+                    options={allsubmenu}
+                    placeholder={"Sub Category"}
+                    value={submenu}
+                    funct={(e) => setsubmenu(e)}
+                    required={true}
+                  />
+                </div>
               </div>
-              <div dir="rtl" className="col-md-3">
-                <TextField
-                  type="text"
-                  className="form-control  mb-3"
-                  label={"	اسم الطبق"}
-                  value={arabicname}
-                  onChange={(e) => {
-                    setarabicname(e.target.value);
-                  }}
-                  size="small"
-                  required
-                />
-              </div>
-              <div className="col-md-3">
-                <Select
-                  options={allmenu}
-                  placeholder={"Category"}
-                  value={menu}
-                  funct={(e) => setmenu(e)}
-                  required={true}
-                />
-              </div>
-              <div className="col-md-3">
-                <Select
-                  options={allsubmenu}
-                  placeholder={"Sub Category"}
-                  value={submenu}
-                  funct={(e) => setsubmenu(e)}
-                  required={true}
-                />
+              <div className="row ">
+                <div className="col-md-3">
+                  <Select
+                    options={allunits}
+                    placeholder={"Units"}
+                    value={units}
+                    funct={(e) => setunits(e)}
+                    required={true}
+                  />
+                </div>
               </div>
             </div>
-            <div className="row ">
-              <div className="col-md-3">
-                <Select
-                  options={allunits}
-                  placeholder={"Units"}
-                  value={units}
-                  funct={(e) => setunits(e)}
-                  required={true}
-                />
-              </div>
-            </div>
-          </div>
+          )}
         </form>
       </div>
 
-      <div className="card mt-3">
-        <div className="card-body pt-0">
-          <ToolkitProvider
-            keyField="id"
-            data={all_products}
-            columns={columns}
-            search
-            exportCSV
-          >
-            {(props) => (
-              <div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
-                    <ExportCSVButton
-                      {...props.csvProps}
-                      className="csvbutton  border bg-secondary text-light me-2 mb-2"
-                    >
-                      Export CSV
-                    </ExportCSVButton>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 me-2 mb-2"
-                      variant="outline-primary"
-                      onClick={download}
-                    >
-                      <PictureAsPdfIcon /> PDF
-                    </Button>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 mb-2"
-                      variant="outline-success"
-                      onClick={print}
-                    >
-                      <PrintIcon /> Print
-                    </Button>
+      {current_user?.permissions?.includes("view_item") && (
+        <div className="card mt-3">
+          <div className="card-body pt-0">
+            <ToolkitProvider
+              keyField="id"
+              data={all_products}
+              columns={columns}
+              search
+              exportCSV
+            >
+              {(props) => (
+                <div>
+                  <div className="d-sm-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <ExportCSVButton
+                        {...props.csvProps}
+                        className="csvbutton  border bg-secondary text-light me-2 mb-2"
+                      >
+                        Export CSV
+                      </ExportCSVButton>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 me-2 mb-2"
+                        variant="outline-primary"
+                        onClick={download}
+                      >
+                        <PictureAsPdfIcon /> PDF
+                      </Button>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 mb-2"
+                        variant="outline-success"
+                        onClick={print}
+                      >
+                        <PrintIcon /> Print
+                      </Button>
+                    </div>
+                    <SearchBar {...props.searchProps} />
                   </div>
-                  <SearchBar {...props.searchProps} />
+                  {isloading && (
+                    <div className="text-center">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
+                  <hr />
+                  <BootstrapTable
+                    {...props.baseProps}
+                    pagination={paginationFactory(options)}
+                    rowStyle={rowstyle}
+                    striped
+                    bootstrap4
+                    condensed
+                    wrapperClasses="table-responsive"
+                  />
                 </div>
-                {isloading && (
-                  <div className="text-center">
-                    <Spinner animation="border" variant="primary" />
-                  </div>
-                )}
-                <hr />
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={paginationFactory(options)}
-                  rowStyle={rowstyle}
-                  striped
-                  bootstrap4
-                  condensed
-                  wrapperClasses="table-responsive"
-                />
-              </div>
-            )}
-          </ToolkitProvider>
+              )}
+            </ToolkitProvider>
+          </div>
         </div>
-      </div>
+      )}
 
       {delete_user && (
         <Alert_before_delete

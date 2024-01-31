@@ -32,6 +32,7 @@ function Supplier(props) {
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const all_customers = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
+  const current_user = props.state.Setcurrentinfo.current_user;
   const { SearchBar } = Search;
   const { ExportCSVButton } = CSVExport;
   const [id, setid] = useState("");
@@ -89,41 +90,45 @@ function Supplier(props) {
   const Action = (cell, row, rowIndex, formatExtraData) => {
     return (
       <span className="action d-flex">
-        <IconButton
-          className="border border-danger rounded me-2 tooltipclass"
-          onClick={() => {
-            setrow_id(row.id);
-            seturl_to_delete(`${route}/api/parties/${row.id}/`);
-            setdelete_user(true);
-          }}
-        >
-          <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
-          <span className="tooltip-textclass">Delete</span>
-        </IconButton>
+        {current_user?.permissions?.includes("delete_vendor") && (
+          <IconButton
+            className="border border-danger rounded me-2 tooltipclass"
+            onClick={() => {
+              setrow_id(row.id);
+              seturl_to_delete(`${route}/api/parties/${row.id}/`);
+              setdelete_user(true);
+            }}
+          >
+            <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
+            <span className="tooltip-textclass">Delete</span>
+          </IconButton>
+        )}
 
-        <IconButton
-          style={{ border: "1px solid #003049", borderRadius: "5px" }}
-          className="tooltipclass"
-          onClick={() => {
-            setname(row.name);
-            setarabicname(row.arabic_name);
-            setcontact(row.contact);
-            setvatno(row.vat_number);
-            setbankdetails(row.bank);
-            setaddress(row.address);
+        {current_user?.permissions?.includes("change_vendor") && (
+          <IconButton
+            style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            className="tooltipclass"
+            onClick={() => {
+              setname(row.name);
+              setarabicname(row.arabic_name);
+              setcontact(row.contact);
+              setvatno(row.vat_number);
+              setbankdetails(row.bank);
+              setaddress(row.address);
 
-            setid(row.id);
-            setcheck_update(false);
-            custom_toast("Data loaded");
-          }}
-        >
-          <EditOutlinedIcon
-            className="m-1"
-            style={{ color: "#003049" }}
-            fontSize="small"
-          />
-          <span className="tooltip-textclass">Edit</span>
-        </IconButton>
+              setid(row.id);
+              setcheck_update(false);
+              custom_toast("Data loaded");
+            }}
+          >
+            <EditOutlinedIcon
+              className="m-1"
+              style={{ color: "#003049" }}
+              fontSize="small"
+            />
+            <span className="tooltip-textclass">Edit</span>
+          </IconButton>
+        )}
       </span>
     );
   };
@@ -301,7 +306,7 @@ function Supplier(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (check_update) {
+    if (check_update && current_user?.permissions?.includes("add_vendor")) {
       if (!isloading) {
         setisloading(true);
         const formData = new FormData();
@@ -344,7 +349,7 @@ function Supplier(props) {
           setbankdetails("");
         }
       }
-    } else {
+    } else if (current_user?.permissions?.includes("change_vendor")) {
       handleSubmit_update();
     }
   };
@@ -398,167 +403,176 @@ function Supplier(props) {
     <div className="p-3 pt-2">
       <div className="card">
         <form onSubmit={handleSubmit}>
-          <div className="card-header d-flex justify-content-between bg-white">
-            <h3 className="mt-2 me-2">Add Vendors</h3>
-            <div className="mt-2 me-2 d-flex flex-row-reverse">
-              <Save_button isloading={isloading} />
-            </div>
-          </div>
+          {(current_user?.permissions?.includes("add_vendor") ||
+            current_user?.permissions?.includes("change_vendor")) && (
+            <div className="card-header d-flex justify-content-between bg-white">
+              <h3 className="mt-2 me-2">Add Vendors</h3>
 
-          <div className="card-body pt-0">
-            <div className="row mt-4">
-              <div className="row">
-                <div className="col-md-3">
-                  <TextField
-                    className="form-control   mb-3"
-                    label={"Name"}
-                    value={name}
-                    onChange={(e) => {
-                      setname(e.target.value);
-                    }}
-                    size="small"
-                    required
-                  />
-                </div>
-                <MuiThemeProvider theme={theme}>
-                  <div dir="rtl" className="col-md-3">
+              <div className="mt-2 me-2 d-flex flex-row-reverse">
+                <Save_button isloading={isloading} />
+              </div>
+            </div>
+          )}
+
+          {(current_user?.permissions?.includes("add_vendor") ||
+            current_user?.permissions?.includes("change_vendor")) && (
+            <div className="card-body pt-0">
+              <div className="row mt-4">
+                <div className="row">
+                  <div className="col-md-3">
                     <TextField
-                      className="form-control  mb-3"
-                      label={"اسم"}
-                      value={arabicname}
+                      className="form-control   mb-3"
+                      label={"Name"}
+                      value={name}
                       onChange={(e) => {
-                        setarabicname(e.target.value);
+                        setname(e.target.value);
                       }}
                       size="small"
                       required
                     />
                   </div>
-                </MuiThemeProvider>
+                  <MuiThemeProvider theme={theme}>
+                    <div dir="rtl" className="col-md-3">
+                      <TextField
+                        className="form-control  mb-3"
+                        label={"اسم"}
+                        value={arabicname}
+                        onChange={(e) => {
+                          setarabicname(e.target.value);
+                        }}
+                        size="small"
+                        required
+                      />
+                    </div>
+                  </MuiThemeProvider>
 
-                <div className="col-md-3">
-                  <TextField
-                    type="number"
-                    className="form-control  mb-3"
-                    label={"Mobile"}
-                    value={contact}
-                    onChange={(e) => {
-                      if (e.target.value.length < 11) {
-                        setcontact(e.target.value);
-                      } else {
-                        Red_toast("Mobile digits must be between 0~10");
-                      }
-                    }}
-                    size="small"
-                  />
-                </div>
-                <div className="col-md-3">
-                  <TextField
-                    type="number"
-                    className="form-control  mb-3"
-                    label={"VAT No"}
-                    value={vatno}
-                    onChange={(e) => {
-                      if (e.target.value.length < 16) {
-                        setvatno(e.target.value);
-                      } else {
-                        Red_toast("VAT no digits must be between 0~15");
-                      }
-                    }}
-                    size="small"
-                  />
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="col-md-3">
-                  <TextField
-                    multiline
-                    className="form-control   mb-3"
-                    label={"Bank Details"}
-                    value={bankdetails}
-                    onChange={(e) => {
-                      setbankdetails(e.target.value);
-                    }}
-                    size="small"
-                  />
+                  <div className="col-md-3">
+                    <TextField
+                      type="number"
+                      className="form-control  mb-3"
+                      label={"Mobile"}
+                      value={contact}
+                      onChange={(e) => {
+                        if (e.target.value.length < 11) {
+                          setcontact(e.target.value);
+                        } else {
+                          Red_toast("Mobile digits must be between 0~10");
+                        }
+                      }}
+                      size="small"
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <TextField
+                      type="number"
+                      className="form-control  mb-3"
+                      label={"VAT No"}
+                      value={vatno}
+                      onChange={(e) => {
+                        if (e.target.value.length < 16) {
+                          setvatno(e.target.value);
+                        } else {
+                          Red_toast("VAT no digits must be between 0~15");
+                        }
+                      }}
+                      size="small"
+                    />
+                  </div>
                 </div>
 
-                <div className="col-md-3">
-                  <TextField
-                    multiline
-                    className="form-control   mb-3"
-                    label={"Address"}
-                    value={address}
-                    onChange={(e) => {
-                      setaddress(e.target.value);
-                    }}
-                    size="small"
-                  />
+                <div className="row">
+                  <div className="col-md-3">
+                    <TextField
+                      multiline
+                      className="form-control   mb-3"
+                      label={"Bank Details"}
+                      value={bankdetails}
+                      onChange={(e) => {
+                        setbankdetails(e.target.value);
+                      }}
+                      size="small"
+                    />
+                  </div>
+
+                  <div className="col-md-3">
+                    <TextField
+                      multiline
+                      className="form-control   mb-3"
+                      label={"Address"}
+                      value={address}
+                      onChange={(e) => {
+                        setaddress(e.target.value);
+                      }}
+                      size="small"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </form>
       </div>
 
-      <div className="card mt-3">
-        <div className="card-body pt-0">
-          <ToolkitProvider
-            keyField="id"
-            data={all_customers}
-            columns={columns}
-            search
-            exportCSV
-          >
-            {(props) => (
-              <div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
-                    <ExportCSVButton
-                      {...props.csvProps}
-                      className="csvbutton  border bg-secondary text-light me-2 mb-2"
-                    >
-                      Export CSV
-                    </ExportCSVButton>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 me-2 mb-2"
-                      variant="outline-primary"
-                      onClick={download}
-                    >
-                      <PictureAsPdfIcon /> PDF
-                    </Button>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 mb-2"
-                      variant="outline-success"
-                      onClick={print}
-                    >
-                      <PrintIcon /> Print
-                    </Button>
+      {current_user?.permissions?.includes("view_vendor") && (
+        <div className="card mt-3">
+          <div className="card-body pt-0">
+            <ToolkitProvider
+              keyField="id"
+              data={all_customers}
+              columns={columns}
+              search
+              exportCSV
+            >
+              {(props) => (
+                <div>
+                  <div className="d-sm-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <ExportCSVButton
+                        {...props.csvProps}
+                        className="csvbutton  border bg-secondary text-light me-2 mb-2"
+                      >
+                        Export CSV
+                      </ExportCSVButton>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 me-2 mb-2"
+                        variant="outline-primary"
+                        onClick={download}
+                      >
+                        <PictureAsPdfIcon /> PDF
+                      </Button>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 mb-2"
+                        variant="outline-success"
+                        onClick={print}
+                      >
+                        <PrintIcon /> Print
+                      </Button>
+                    </div>
+                    <SearchBar {...props.searchProps} />
                   </div>
-                  <SearchBar {...props.searchProps} />
+                  {isloading && (
+                    <div className="text-center">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
+                  <hr />
+                  <BootstrapTable
+                    {...props.baseProps}
+                    pagination={paginationFactory(options)}
+                    rowStyle={rowstyle}
+                    striped
+                    bootstrap4
+                    condensed
+                    wrapperClasses="table-responsive"
+                  />
                 </div>
-                {isloading && (
-                  <div className="text-center">
-                    <Spinner animation="border" variant="primary" />
-                  </div>
-                )}
-                <hr />
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={paginationFactory(options)}
-                  rowStyle={rowstyle}
-                  striped
-                  bootstrap4
-                  condensed
-                  wrapperClasses="table-responsive"
-                />
-              </div>
-            )}
-          </ToolkitProvider>
+              )}
+            </ToolkitProvider>
+          </div>
         </div>
-      </div>
+      )}
 
       {delete_user && (
         <Alert_before_delete

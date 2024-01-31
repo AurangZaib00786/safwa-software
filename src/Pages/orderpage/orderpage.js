@@ -32,14 +32,18 @@ function Items_page({ current_user }) {
         id="noanim-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="order" title="Order">
-          {activeTab === "order" && <Order setActiveTab={setActiveTab} />}
-        </Tab>
-        <Tab eventKey={"assignorderhistory"} title="Order History">
-          {activeTab === "assignorderhistory" && (
-            <Assignorderhistory setActiveTab={setActiveTab} />
-          )}
-        </Tab>
+        {current_user?.permissions?.includes("add_order") && (
+          <Tab eventKey="order" title="Order">
+            {activeTab === "order" && <Order setActiveTab={setActiveTab} />}
+          </Tab>
+        )}
+        {current_user?.permissions?.includes("view_order") && (
+          <Tab eventKey={"assignorderhistory"} title="Order History">
+            {activeTab === "assignorderhistory" && (
+              <Assignorderhistory setActiveTab={setActiveTab} />
+            )}
+          </Tab>
+        )}
         {activeTab === "assignorder" && (
           <Tab eventKey={"assignorder"} title="Assign Order">
             <Assignorder setActiveTab={setActiveTab} />

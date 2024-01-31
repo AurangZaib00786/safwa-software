@@ -87,30 +87,34 @@ export default function Unit(props) {
   const Action = (cell, row, rowIndex, formatExtraData) => {
     return (
       <span className="action d-flex">
-        <IconButton
-          className="border border-danger rounded me-2"
-          onClick={() => {
-            setrow_id(row.id);
-            seturl_to_delete(`${route}/api/units/${row.id}/`);
-            setdelete_user(true);
-          }}
-        >
-          <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
-        </IconButton>
+        {current_user?.permissions?.includes("delete_units") && (
+          <IconButton
+            className="border border-danger rounded me-2"
+            onClick={() => {
+              setrow_id(row.id);
+              seturl_to_delete(`${route}/api/units/${row.id}/`);
+              setdelete_user(true);
+            }}
+          >
+            <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
+          </IconButton>
+        )}
 
-        <IconButton
-          style={{ border: "1px solid #003049", borderRadius: "5px" }}
-          onClick={() => {
-            setdata(row);
-            setshowmodelupdate(true);
-          }}
-        >
-          <EditOutlinedIcon
-            className="m-1"
-            style={{ color: "#003049" }}
-            fontSize="small"
-          />
-        </IconButton>
+        {current_user?.permissions?.includes("change_units") && (
+          <IconButton
+            style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            onClick={() => {
+              setdata(row);
+              setshowmodelupdate(true);
+            }}
+          >
+            <EditOutlinedIcon
+              className="m-1"
+              style={{ color: "#003049" }}
+              fontSize="small"
+            />
+          </IconButton>
+        )}
       </span>
     );
   };
@@ -279,77 +283,81 @@ export default function Unit(props) {
               {" "}
               Subcategory
             </Button>
-            <Button
-              type="button"
-              className="mb-2"
-              variant="outline-success"
-              onClick={() => setshowmodel(!showmodel)}
-            >
-              <FontAwesomeIcon className="me-2" icon={faUserPlus} />
-              Add
-            </Button>
+            {current_user?.permissions?.includes("add_units") && (
+              <Button
+                type="button"
+                className="mb-2"
+                variant="outline-success"
+                onClick={() => setshowmodel(!showmodel)}
+              >
+                <FontAwesomeIcon className="me-2" icon={faUserPlus} />
+                Add
+              </Button>
+            )}
           </div>
         </div>
 
-        <div className="card-body pt-0">
-          <ToolkitProvider
-            keyField="id"
-            data={all_customers}
-            columns={columns}
-            search
-            exportCSV
-          >
-            {(props) => (
-              <div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
-                    <ExportCSVButton
-                      {...props.csvProps}
-                      className="csvbutton  border bg-secondary text-light me-2 mb-2"
-                    >
-                      Export CSV
-                    </ExportCSVButton>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 me-2 mb-2"
-                      variant="outline-primary"
-                      onClick={download}
-                    >
-                      <PictureAsPdfIcon /> PDF
-                    </Button>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 mb-2"
-                      variant="outline-success"
-                      onClick={print}
-                    >
-                      <PrintIcon /> Print
-                    </Button>
+        {current_user?.permissions?.includes("view_units") && (
+          <div className="card-body pt-0">
+            <ToolkitProvider
+              keyField="id"
+              data={all_customers}
+              columns={columns}
+              search
+              exportCSV
+            >
+              {(props) => (
+                <div>
+                  <div className="d-sm-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <ExportCSVButton
+                        {...props.csvProps}
+                        className="csvbutton  border bg-secondary text-light me-2 mb-2"
+                      >
+                        Export CSV
+                      </ExportCSVButton>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 me-2 mb-2"
+                        variant="outline-primary"
+                        onClick={download}
+                      >
+                        <PictureAsPdfIcon /> PDF
+                      </Button>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 mb-2"
+                        variant="outline-success"
+                        onClick={print}
+                      >
+                        <PrintIcon /> Print
+                      </Button>
+                    </div>
+                    <SearchBar {...props.searchProps} />
                   </div>
-                  <SearchBar {...props.searchProps} />
-                </div>
-                {isloading && (
-                  <div className="text-center">
-                    <Spinner animation="border" variant="primary" />
-                  </div>
-                )}
+                  {isloading && (
+                    <div className="text-center">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
 
-                <hr />
-                <div style={{ zoom: ".9" }}>
-                  <BootstrapTable
-                    {...props.baseProps}
-                    pagination={paginationFactory(options)}
-                    rowStyle={rowstyle}
-                    striped
-                    bootstrap4
-                    condensed
-                    wrapperClasses="table-responsive"
-                  />
+                  <hr />
+                  <div style={{ zoom: ".9" }}>
+                    <BootstrapTable
+                      {...props.baseProps}
+                      pagination={paginationFactory(options)}
+                      rowStyle={rowstyle}
+                      striped
+                      bootstrap4
+                      condensed
+                      wrapperClasses="table-responsive"
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
-          </ToolkitProvider>
-        </div>
+              )}
+            </ToolkitProvider>
+          </div>
+        )}
       </div>
 
       {showmodel && (

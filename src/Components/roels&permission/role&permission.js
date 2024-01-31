@@ -350,7 +350,10 @@ function RolePermssion(props) {
                 />
               </label>
 
-              <div className="table-responsive">
+              <div
+                style={{ overflow: "auto", height: "62vh" }}
+                className="table-responsive"
+              >
                 <table className="table table-bordered ">
                   <thead>
                     <tr>

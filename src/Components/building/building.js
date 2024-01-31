@@ -90,38 +90,42 @@ export default function Building(props) {
   const Action = (cell, row, rowIndex, formatExtraData) => {
     return (
       <span className="action d-flex">
-        <IconButton
-          className="border border-danger rounded me-2 tooltipclass"
-          onClick={() => {
-            setrow_id(row.id);
-            seturl_to_delete(`${route}/api/buildings/${row.id}/`);
-            setdelete_user(true);
-          }}
-        >
-          <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
-          <span className="tooltip-textclass">Delete</span>
-        </IconButton>
+        {current_user?.permissions?.includes("delete_building") && (
+          <IconButton
+            className="border border-danger rounded me-2 tooltipclass"
+            onClick={() => {
+              setrow_id(row.id);
+              seturl_to_delete(`${route}/api/buildings/${row.id}/`);
+              setdelete_user(true);
+            }}
+          >
+            <DeleteRoundedIcon className="m-1" color="error" fontSize="small" />
+            <span className="tooltip-textclass">Delete</span>
+          </IconButton>
+        )}
 
-        <IconButton
-          style={{ border: "1px solid #003049", borderRadius: "5px" }}
-          className="me-2 tooltipclass"
-          onClick={() => {
-            setbuilding_number(row.building_number);
-            setcapacity(row.capacity);
-            setopening_date(row.opening_date);
-            setclosing_date(row.closing_date ? row.closing_date : "");
+        {current_user?.permissions?.includes("change_building") && (
+          <IconButton
+            style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            className="me-2 tooltipclass"
+            onClick={() => {
+              setbuilding_number(row.building_number);
+              setcapacity(row.capacity);
+              setopening_date(row.opening_date);
+              setclosing_date(row.closing_date ? row.closing_date : "");
 
-            setid(row.id);
-            setcheck_update(true);
-          }}
-        >
-          <EditOutlinedIcon
-            className="m-1"
-            style={{ color: "#003049" }}
-            fontSize="small"
-          />
-          <span className="tooltip-textclass">Edit</span>
-        </IconButton>
+              setid(row.id);
+              setcheck_update(true);
+            }}
+          >
+            <EditOutlinedIcon
+              className="m-1"
+              style={{ color: "#003049" }}
+              fontSize="small"
+            />
+            <span className="tooltip-textclass">Edit</span>
+          </IconButton>
+        )}
 
         <IconButton
           style={{ border: "1px solid #002000", borderRadius: "5px" }}
@@ -308,7 +312,7 @@ export default function Building(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isloading) {
+    if (!isloading && current_user?.permissions?.includes("add_building")) {
       setisloading(true);
       const formData = new FormData();
       formData.append("building_number", building_number);
@@ -348,7 +352,7 @@ export default function Building(props) {
 
   const handleSubmit_update = async (e) => {
     e.preventDefault();
-    if (!isloading) {
+    if (!isloading && current_user?.permissions?.includes("change_building")) {
       setisloading(true);
       const formData = new FormData();
       formData.append("building_number", building_number);
@@ -387,158 +391,159 @@ export default function Building(props) {
     }
   };
 
-  const selectStyles = {
-    menu: (base) => ({
-      ...base,
-      zIndex: 100,
-    }),
-  };
-
   return (
     <div className="p-3 pt-2">
       <div className="card">
         <form onSubmit={check_update ? handleSubmit_update : handleSubmit}>
-          <div className="card-header d-flex justify-content-between bg-white">
-            <h3 className="mt-2 me-2">Add Buildings</h3>
-            <div className="mt-2 me-2 d-flex flex-row-reverse">
-              <Save_button isloading={isloading} />
+          {(current_user?.permissions?.includes("add_building") ||
+            current_user?.permissions?.includes("change_building")) && (
+            <div className="card-header d-flex justify-content-between bg-white">
+              <h3 className="mt-2 me-2">Add Buildings</h3>
+              <div className="mt-2 me-2 d-flex flex-row-reverse">
+                <Save_button isloading={isloading} />
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="card-body pt-0">
-            <div className="mt-4">
-              <div className="row">
-                <div className="col-md-3">
-                  <TextField
-                    className="form-control   mb-3"
-                    label={"Building / Name"}
-                    value={building_number}
-                    onChange={(e) => {
-                      setbuilding_number(e.target.value);
-                    }}
-                    size="small"
-                    required
-                    autoFocus
-                  />
-                </div>
-                <div className="col-md-3">
-                  <TextField
-                    type="number"
-                    className="form-control  mb-3"
-                    label={"Capacity"}
-                    value={capacity}
-                    onChange={(e) => {
-                      setcapacity(e.target.value);
-                    }}
-                    size="small"
-                    required
-                  />
-                </div>
+          {(current_user?.permissions?.includes("add_building") ||
+            current_user?.permissions?.includes("change_building")) && (
+            <div className="card-body pt-0">
+              <div className="mt-4">
+                <div className="row">
+                  <div className="col-md-3">
+                    <TextField
+                      className="form-control   mb-3"
+                      label={"Building / Name"}
+                      value={building_number}
+                      onChange={(e) => {
+                        setbuilding_number(e.target.value);
+                      }}
+                      size="small"
+                      required
+                      autoFocus
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <TextField
+                      type="number"
+                      className="form-control  mb-3"
+                      label={"Capacity"}
+                      value={capacity}
+                      onChange={(e) => {
+                        setcapacity(e.target.value);
+                      }}
+                      size="small"
+                      required
+                    />
+                  </div>
 
-                <div className="col-md-3">
-                  <TextField
-                    type="date"
-                    className="form-control  mb-3"
-                    label={"Opening date"}
-                    value={opening_date}
-                    InputProps={{
-                      inputProps: {
-                        min: `${selected_year.value}-01-01`,
-                        max: `${selected_year.value}-12-31`,
-                      },
-                    }}
-                    InputLabelProps={{ shrink: true }}
-                    onChange={(e) => {
-                      setopening_date(e.target.value);
-                    }}
-                    size="small"
-                    required
-                  />
-                </div>
+                  <div className="col-md-3">
+                    <TextField
+                      type="date"
+                      className="form-control  mb-3"
+                      label={"Opening date"}
+                      value={opening_date}
+                      InputProps={{
+                        inputProps: {
+                          min: `${selected_year.value}-01-01`,
+                          max: `${selected_year.value}-12-31`,
+                        },
+                      }}
+                      InputLabelProps={{ shrink: true }}
+                      onChange={(e) => {
+                        setopening_date(e.target.value);
+                      }}
+                      size="small"
+                      required
+                    />
+                  </div>
 
-                <div className="col-md-3">
-                  <TextField
-                    type="date"
-                    className="form-control  mb-3"
-                    label={"Closing date"}
-                    InputProps={{
-                      inputProps: {
-                        min: `${selected_year.value}-01-01`,
-                        max: `${selected_year.value}-12-31`,
-                      },
-                    }}
-                    InputLabelProps={{ shrink: true }}
-                    value={closing_date}
-                    onChange={(e) => {
-                      setclosing_date(e.target.value);
-                    }}
-                    size="small"
-                  />
+                  <div className="col-md-3">
+                    <TextField
+                      type="date"
+                      className="form-control  mb-3"
+                      label={"Closing date"}
+                      InputProps={{
+                        inputProps: {
+                          min: `${selected_year.value}-01-01`,
+                          max: `${selected_year.value}-12-31`,
+                        },
+                      }}
+                      InputLabelProps={{ shrink: true }}
+                      value={closing_date}
+                      onChange={(e) => {
+                        setclosing_date(e.target.value);
+                      }}
+                      size="small"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </form>
       </div>
 
-      <div className="card mt-3">
-        <div className="card-body pt-0">
-          <ToolkitProvider
-            keyField="id"
-            data={all_customers}
-            columns={columns}
-            search
-            exportCSV
-          >
-            {(props) => (
-              <div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
-                    <ExportCSVButton
-                      {...props.csvProps}
-                      className="csvbutton  border bg-secondary text-light me-2 mb-2"
-                    >
-                      Export CSV
-                    </ExportCSVButton>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 me-2 mb-2"
-                      variant="outline-primary"
-                      onClick={download}
-                    >
-                      <PictureAsPdfIcon /> PDF
-                    </Button>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 mb-2"
-                      variant="outline-success"
-                      onClick={print}
-                    >
-                      <PrintIcon /> Print
-                    </Button>
+      {current_user?.permissions?.includes("view_building") && (
+        <div className="card mt-3">
+          <div className="card-body pt-0">
+            <ToolkitProvider
+              keyField="id"
+              data={all_customers}
+              columns={columns}
+              search
+              exportCSV
+            >
+              {(props) => (
+                <div>
+                  <div className="d-sm-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <ExportCSVButton
+                        {...props.csvProps}
+                        className="csvbutton  border bg-secondary text-light me-2 mb-2"
+                      >
+                        Export CSV
+                      </ExportCSVButton>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 me-2 mb-2"
+                        variant="outline-primary"
+                        onClick={download}
+                      >
+                        <PictureAsPdfIcon /> PDF
+                      </Button>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 mb-2"
+                        variant="outline-success"
+                        onClick={print}
+                      >
+                        <PrintIcon /> Print
+                      </Button>
+                    </div>
+                    <SearchBar {...props.searchProps} />
                   </div>
-                  <SearchBar {...props.searchProps} />
+                  {isloading && (
+                    <div className="text-center">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
+                  <hr />
+                  <BootstrapTable
+                    {...props.baseProps}
+                    pagination={paginationFactory(options)}
+                    rowStyle={rowstyle}
+                    striped
+                    bootstrap4
+                    condensed
+                    wrapperClasses="table-responsive"
+                  />
                 </div>
-                {isloading && (
-                  <div className="text-center">
-                    <Spinner animation="border" variant="primary" />
-                  </div>
-                )}
-                <hr />
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={paginationFactory(options)}
-                  rowStyle={rowstyle}
-                  striped
-                  bootstrap4
-                  condensed
-                  wrapperClasses="table-responsive"
-                />
-              </div>
-            )}
-          </ToolkitProvider>
+              )}
+            </ToolkitProvider>
+          </div>
         </div>
-      </div>
+      )}
 
       {delete_user && (
         <Alert_before_delete

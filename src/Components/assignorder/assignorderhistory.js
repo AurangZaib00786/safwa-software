@@ -42,7 +42,7 @@ function Assignorderhistory(props) {
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const setActiveTab = props.setActiveTab;
-
+  const current_user = props.state.Setcurrentinfo.current_user;
   const all_users = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
@@ -141,33 +141,41 @@ function Assignorderhistory(props) {
           <SwapHorizIcon className="m-1 text-success" fontSize="medium" />
         </IconButton>
 
-        <IconButton
-          className="me-2 border border-danger rounded"
-          onClick={() => {
-            setrow_id(row.id);
-            seturl_to_delete(`${route}/api/orders/${row.id}/`);
-            setdelete_user(true);
-          }}
-        >
-          <DeleteRoundedIcon className="m-1" color="error" fontSize="medium" />
-        </IconButton>
+        {current_user?.permissions?.includes("delete_order") && (
+          <IconButton
+            className="me-2 border border-danger rounded"
+            onClick={() => {
+              setrow_id(row.id);
+              seturl_to_delete(`${route}/api/orders/${row.id}/`);
+              setdelete_user(true);
+            }}
+          >
+            <DeleteRoundedIcon
+              className="m-1"
+              color="error"
+              fontSize="medium"
+            />
+          </IconButton>
+        )}
 
-        <IconButton
-          style={{ border: "1px solid #003049", borderRadius: "5px" }}
-          onClick={() => {
-            localStorage.setItem(
-              "data",
-              JSON.stringify({ data: row, order: true })
-            );
-            setActiveTab("order");
-          }}
-        >
-          <EditOutlinedIcon
-            className="m-1"
-            style={{ color: "#003049" }}
-            fontSize="medium"
-          />
-        </IconButton>
+        {current_user?.permissions?.includes("change_order") && (
+          <IconButton
+            style={{ border: "1px solid #003049", borderRadius: "5px" }}
+            onClick={() => {
+              localStorage.setItem(
+                "data",
+                JSON.stringify({ data: row, order: true })
+              );
+              setActiveTab("order");
+            }}
+          >
+            <EditOutlinedIcon
+              className="m-1"
+              style={{ color: "#003049" }}
+              fontSize="medium"
+            />
+          </IconButton>
+        )}
       </span>
     );
   };
