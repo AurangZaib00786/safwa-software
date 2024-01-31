@@ -15,7 +15,7 @@ import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import success_toast from "../alerts/success_toast";
-import Save_button from "../buttons/save_button";
+import SaveIcon from "@material-ui/icons/Save";
 import TextField from "@mui/material/TextField";
 import custom_toast from "../alerts/custom_toast";
 import Spinner from "react-bootstrap/Spinner";
@@ -429,6 +429,14 @@ export default function Customer(props) {
     e.preventDefault();
 
     if (!isloading && current_user?.permissions?.includes("add_customer")) {
+      if (!name || !arabicname || !area) {
+        Red_toast(
+          `Check ${!name ? "Name," : ""} ${!arabicname ? "Arabic Name," : ""} ${
+            !area ? "Area" : ""
+          } and Select them!`
+        );
+        return;
+      }
       const formData = new FormData();
       formData.append("name", name);
       formData.append("arabic_name", arabicname);
@@ -535,6 +543,14 @@ export default function Customer(props) {
   const handleSubmit_update = async (e) => {
     e.preventDefault();
     if (!isloading && current_user?.permissions?.includes("change_customer")) {
+      if (!name || !arabicname || !area) {
+        Red_toast(
+          `Check ${!name ? "Name," : ""} ${!arabicname ? "Arabic Name," : ""} ${
+            !area ? "Area" : ""
+          } and Select them!`
+        );
+        return;
+      }
       const formData = new FormData();
       formData.append("name", name);
       formData.append("arabic_name", arabicname);
@@ -641,26 +657,39 @@ export default function Customer(props) {
   };
 
   const handleaddsaleman = (e) => {
-    if (saleman_saleman) {
-      const check = all_saleman.filter(
-        (item) => item.sale_man.value === saleman_saleman.value
-      );
-      if (check.length === 0) {
-        setall_saleman([
-          {
-            start_date: saleman_start_date,
-            end_date: saleman_end_date,
-            sale_man: saleman_saleman,
-          },
-          ...all_saleman,
-        ]);
-        setsaleman_saleman("");
-      } else {
-        Red_toast("Employee Already Selected");
-      }
+    e.preventDefault();
+
+    const check = all_saleman.filter(
+      (item) => item.sale_man.value === saleman_saleman.value
+    );
+    if (check.length === 0) {
+      setall_saleman([
+        ...all_saleman,
+        {
+          start_date: saleman_start_date,
+          end_date: saleman_end_date,
+          sale_man: saleman_saleman,
+        },
+      ]);
+      setsaleman_saleman("");
     } else {
-      Red_toast("Select Saleman First");
+      Red_toast("Employee Already Selected");
     }
+  };
+
+  const handledatechange = (value, row, text) => {
+    setall_saleman(
+      all_saleman.map((item) => {
+        if (item.sale_man.value == row.sale_man.value) {
+          if (text === "start") {
+            item["start_date"] = value;
+          } else if (text === "end") {
+            item["end_date"] = value;
+          }
+        }
+        return item;
+      })
+    );
   };
 
   return (
@@ -668,210 +697,224 @@ export default function Customer(props) {
       {(current_user?.permissions?.includes("add_customer") ||
         current_user?.permissions?.includes("change_customer")) && (
         <div className="card">
-          <form onSubmit={check_update ? handleSubmit : handleSubmit_update}>
-            <div className="card-header d-flex justify-content-between bg-white">
-              <h3 className="mt-2 me-2">Add Customer</h3>
-              <div className="mt-2 me-2 d-flex flex-row-reverse">
-                <Save_button isloading={isloading} />
-              </div>
-            </div>
-
-            <div className="card-body pt-0" style={{ minHeight: "45vh" }}>
-              <Tabs
-                defaultActiveKey={"information"}
-                transition={true}
-                id="noanim-tab-example"
-                className="mb-3"
+          <div className="card-header d-flex justify-content-between bg-white">
+            <h3 className="mt-2 me-2">Add Customer</h3>
+            <div className="mt-2 me-2 d-flex flex-row-reverse">
+              <Button
+                variant="outline-primary"
+                onClick={check_update ? handleSubmit : handleSubmit_update}
               >
-                <Tab eventKey="information" title="Info">
-                  <div className="mt-4">
-                    <div className="row">
-                      <div className="col-md-3">
+                {isloading && (
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                )}
+                <SaveIcon /> {t("save")}
+              </Button>
+            </div>
+          </div>
+
+          <div className="card-body pt-0" style={{ minHeight: "45vh" }}>
+            <Tabs
+              defaultActiveKey={"information"}
+              transition={true}
+              id="noanim-tab-example"
+              className="mb-3"
+            >
+              <Tab eventKey="information" title="Info">
+                <div className="mt-4">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <TextField
+                        className="form-control   mb-3"
+                        label={"Name"}
+                        value={name}
+                        onChange={(e) => {
+                          setname(e.target.value);
+                        }}
+                        size="small"
+                        required
+                        autoFocus
+                      />
+                    </div>
+                    <MuiThemeProvider theme={theme}>
+                      <div dir="rtl" className="col-md-3">
                         <TextField
-                          className="form-control   mb-3"
-                          label={"Name"}
-                          value={name}
+                          className="form-control  mb-3"
+                          label={"اسم"}
+                          value={arabicname}
                           onChange={(e) => {
-                            setname(e.target.value);
+                            setarabicname(e.target.value);
                           }}
                           size="small"
                           required
-                          autoFocus
                         />
                       </div>
-                      <MuiThemeProvider theme={theme}>
-                        <div dir="rtl" className="col-md-3">
-                          <TextField
-                            className="form-control  mb-3"
-                            label={"اسم"}
-                            value={arabicname}
-                            onChange={(e) => {
-                              setarabicname(e.target.value);
-                            }}
-                            size="small"
-                            required
-                          />
-                        </div>
-                      </MuiThemeProvider>
+                    </MuiThemeProvider>
 
-                      <div className="col-md-3">
-                        <TextField
-                          type="number"
-                          className="form-control  mb-3"
-                          label={"Mobile"}
-                          value={contact}
-                          onChange={(e) => {
-                            if (e.target.value.length < 11) {
-                              setcontact(e.target.value);
-                            } else {
-                              Red_toast("Mobile digits must be between 0~10");
-                            }
-                          }}
-                          size="small"
-                        />
-                      </div>
-
-                      <div className="col-md-3">
-                        <TextField
-                          type="number"
-                          className="form-control  mb-3"
-                          label={"VAT No"}
-                          value={vatno}
-                          onChange={(e) => {
-                            if (e.target.value.length < 16) {
-                              setvatno(e.target.value);
-                            } else {
-                              Red_toast("VAT no digits must be between 0~15");
-                            }
-                          }}
-                          size="small"
-                        />
-                      </div>
+                    <div className="col-md-3">
+                      <TextField
+                        type="number"
+                        className="form-control  mb-3"
+                        label={"Mobile"}
+                        value={contact}
+                        onChange={(e) => {
+                          if (e.target.value.length < 11) {
+                            setcontact(e.target.value);
+                          } else {
+                            Red_toast("Mobile digits must be between 0~10");
+                          }
+                        }}
+                        size="small"
+                      />
                     </div>
 
-                    <div className="row">
-                      <div className="col-md-3">
-                        <Select
-                          options={allarea}
-                          value={area}
-                          placeholder={"Area"}
-                          funct={(e) => setarea(e)}
-                          required={true}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <TextField
-                          type="email"
-                          className="form-control  mb-3"
-                          label={"Email"}
-                          value={email}
-                          onChange={(e) => {
-                            setemail(e.target.value);
-                          }}
-                          size="small"
-                        />
-                      </div>
-
-                      <div className="col-md-3">
-                        <TextField
-                          multiline
-                          className="form-control   mb-3"
-                          label={"Bank Details"}
-                          value={bankdetails}
-                          onChange={(e) => {
-                            setbankdetails(e.target.value);
-                          }}
-                          size="small"
-                        />
-                      </div>
-                      <div className=" col-md-3">
-                        <TextField
-                          multiline
-                          className="form-control  mb-3"
-                          label={t("address")}
-                          value={address}
-                          onChange={(e) => {
-                            setaddress(e.target.value);
-                          }}
-                          size="small"
-                        />
-                      </div>
-                      <div className=" col-md-3">
-                        <TextField
-                          multiline
-                          className="form-control  mb-3"
-                          label={"Notes"}
-                          value={notes}
-                          onChange={(e) => {
-                            setnotes(e.target.value);
-                          }}
-                          size="small"
-                        />
-                      </div>
+                    <div className="col-md-3">
+                      <TextField
+                        type="number"
+                        className="form-control  mb-3"
+                        label={"VAT No"}
+                        value={vatno}
+                        onChange={(e) => {
+                          if (e.target.value.length < 16) {
+                            setvatno(e.target.value);
+                          } else {
+                            Red_toast("VAT no digits must be between 0~15");
+                          }
+                        }}
+                        size="small"
+                      />
                     </div>
                   </div>
-                </Tab>
-                <Tab eventKey="contact" title="Contact Details">
-                  <div className="mt-4">
-                    <div className="row">
-                      <div className="col-md-3">
-                        <TextField
-                          className="form-control   mb-3"
-                          label={"Name"}
-                          value={contact_name}
-                          onChange={(e) => {
-                            setcontact_name(e.target.value);
-                          }}
-                          size="small"
-                        />
-                      </div>
 
-                      <div className="col-md-3">
-                        <TextField
-                          type="number"
-                          className="form-control  mb-3"
-                          label={"Mobile"}
-                          value={contact_mobile}
-                          onChange={(e) => {
-                            if (e.target.value.length < 11) {
-                              setcontact_mobile(e.target.value);
-                            } else {
-                              Red_toast("Mobile digits must be between 0~10");
-                            }
-                          }}
-                          size="small"
-                        />
-                      </div>
+                  <div className="row">
+                    <div className="col-md-3">
+                      <Select
+                        options={allarea}
+                        value={area}
+                        placeholder={"Area"}
+                        funct={(e) => setarea(e)}
+                        required={true}
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <TextField
+                        type="email"
+                        className="form-control  mb-3"
+                        label={"Email"}
+                        value={email}
+                        onChange={(e) => {
+                          setemail(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
 
-                      <div className="col-md-3">
-                        <TextField
-                          type="email"
-                          className="form-control  mb-3"
-                          label={"Email"}
-                          value={contact_email}
-                          onChange={(e) => {
-                            setcontact_email(e.target.value);
-                          }}
-                          size="small"
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <TextField
-                          multiline
-                          className="form-control   mb-3"
-                          label={"Notes"}
-                          value={contact_notes}
-                          onChange={(e) => {
-                            setcontact_notes(e.target.value);
-                          }}
-                          size="small"
-                        />
-                      </div>
+                    <div className="col-md-3">
+                      <TextField
+                        multiline
+                        className="form-control   mb-3"
+                        label={"Bank Details"}
+                        value={bankdetails}
+                        onChange={(e) => {
+                          setbankdetails(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                    <div className=" col-md-3">
+                      <TextField
+                        multiline
+                        className="form-control  mb-3"
+                        label={t("address")}
+                        value={address}
+                        onChange={(e) => {
+                          setaddress(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                    <div className=" col-md-3">
+                      <TextField
+                        multiline
+                        className="form-control  mb-3"
+                        label={"Notes"}
+                        value={notes}
+                        onChange={(e) => {
+                          setnotes(e.target.value);
+                        }}
+                        size="small"
+                      />
                     </div>
                   </div>
-                </Tab>
-                <Tab eventKey="saleman" title="Saleman">
-                  <div className="mt-4 col-6">
+                </div>
+              </Tab>
+              <Tab eventKey="contact" title="Contact Details">
+                <div className="mt-4">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <TextField
+                        className="form-control   mb-3"
+                        label={"Name"}
+                        value={contact_name}
+                        onChange={(e) => {
+                          setcontact_name(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+
+                    <div className="col-md-3">
+                      <TextField
+                        type="number"
+                        className="form-control  mb-3"
+                        label={"Mobile"}
+                        value={contact_mobile}
+                        onChange={(e) => {
+                          if (e.target.value.length < 11) {
+                            setcontact_mobile(e.target.value);
+                          } else {
+                            Red_toast("Mobile digits must be between 0~10");
+                          }
+                        }}
+                        size="small"
+                      />
+                    </div>
+
+                    <div className="col-md-3">
+                      <TextField
+                        type="email"
+                        className="form-control  mb-3"
+                        label={"Email"}
+                        value={contact_email}
+                        onChange={(e) => {
+                          setcontact_email(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <TextField
+                        multiline
+                        className="form-control   mb-3"
+                        label={"Notes"}
+                        value={contact_notes}
+                        onChange={(e) => {
+                          setcontact_notes(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Tab>
+              <Tab eventKey="saleman" title="Saleman">
+                <div className="mt-4 col-6">
+                  <form onSubmit={handleaddsaleman}>
                     <table className="table border-0">
                       <thead className="border-0">
                         <tr className="border-0">
@@ -890,16 +933,48 @@ export default function Customer(props) {
                             <tr className="border-0" key={item.sale_man?.value}>
                               <th className="border-0 p-0">
                                 <TextField
+                                  type="date"
                                   className="form-control"
+                                  label={""}
+                                  InputLabelProps={{ shrink: true }}
                                   value={item.start_date}
+                                  onChange={(e) => {
+                                    handledatechange(
+                                      e.target.value,
+                                      item,
+                                      "start"
+                                    );
+                                  }}
+                                  InputProps={{
+                                    inputProps: {
+                                      min: `${selected_year.value}-01-01`,
+                                      max: `${selected_year.value}-12-31`,
+                                    },
+                                  }}
                                   size="small"
                                 />
                               </th>
 
                               <th className="border-0 p-0">
                                 <TextField
+                                  type="date"
                                   className="form-control"
+                                  label={""}
+                                  InputLabelProps={{ shrink: true }}
                                   value={item.end_date}
+                                  onChange={(e) => {
+                                    handledatechange(
+                                      e.target.value,
+                                      item,
+                                      "end"
+                                    );
+                                  }}
+                                  InputProps={{
+                                    inputProps: {
+                                      min: `${selected_year.value}-01-01`,
+                                      max: `${selected_year.value}-12-31`,
+                                    },
+                                  }}
                                   size="small"
                                 />
                               </th>
@@ -974,6 +1049,7 @@ export default function Customer(props) {
                                 onChange={(e) => {
                                   setsaleman_saleman(e);
                                 }}
+                                required={true}
                               ></MySelect>
 
                               <IconButton
@@ -982,7 +1058,7 @@ export default function Customer(props) {
                                   backgroundColor: "#0d6efd",
                                   borderRadius: "0",
                                 }}
-                                onClick={handleaddsaleman}
+                                type="submit"
                               >
                                 <AddIcon
                                   style={{
@@ -997,60 +1073,60 @@ export default function Customer(props) {
                         </tr>
                       </tbody>
                     </table>
-                  </div>
-                </Tab>
-                <Tab eventKey="client_limit" title="Client Limits">
-                  <div className="mt-4">
-                    <div className="row">
-                      <div className="col-md-3">
-                        <TextField
-                          type="date"
-                          className="form-control   mb-3"
-                          label={"Date"}
-                          value={client_date}
-                          InputLabelProps={{ shrink: true }}
-                          onChange={(e) => {
-                            setclient_date(e.target.value);
-                          }}
-                          InputProps={{
-                            inputProps: {
-                              min: `${selected_year.value}-01-01`,
-                              max: `${selected_year.value}-12-31`,
-                            },
-                          }}
-                          size="small"
-                        />
-                      </div>
+                  </form>
+                </div>
+              </Tab>
+              <Tab eventKey="client_limit" title="Client Limits">
+                <div className="mt-4">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <TextField
+                        type="date"
+                        className="form-control   mb-3"
+                        label={"Date"}
+                        value={client_date}
+                        InputLabelProps={{ shrink: true }}
+                        onChange={(e) => {
+                          setclient_date(e.target.value);
+                        }}
+                        InputProps={{
+                          inputProps: {
+                            min: `${selected_year.value}-01-01`,
+                            max: `${selected_year.value}-12-31`,
+                          },
+                        }}
+                        size="small"
+                      />
+                    </div>
 
-                      <div className="col-md-3">
-                        <TextField
-                          type="number"
-                          className="form-control  mb-3"
-                          label={"Limit"}
-                          value={client_limit}
-                          onChange={(e) => {
-                            setclient_limit(e.target.value);
-                          }}
-                          size="small"
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <TextField
-                          className="form-control  mb-3"
-                          label={"Period"}
-                          value={client_period}
-                          onChange={(e) => {
-                            setclient_period(e.target.value);
-                          }}
-                          size="small"
-                        />
-                      </div>
+                    <div className="col-md-3">
+                      <TextField
+                        type="number"
+                        className="form-control  mb-3"
+                        label={"Limit"}
+                        value={client_limit}
+                        onChange={(e) => {
+                          setclient_limit(e.target.value);
+                        }}
+                        size="small"
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <TextField
+                        className="form-control  mb-3"
+                        label={"Period"}
+                        value={client_period}
+                        onChange={(e) => {
+                          setclient_period(e.target.value);
+                        }}
+                        size="small"
+                      />
                     </div>
                   </div>
-                </Tab>
-              </Tabs>
-            </div>
-          </form>
+                </div>
+              </Tab>
+            </Tabs>
+          </div>
         </div>
       )}
 

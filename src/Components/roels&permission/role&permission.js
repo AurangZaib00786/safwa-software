@@ -15,13 +15,11 @@ function RolePermssion(props) {
   const { t } = useTranslation();
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
-  const selected_branch = props.state.Setcurrentinfo.selected_branch;
+  const header_dispatch = props.Setinfo_ofuser;
   const current_user = props.state.Setcurrentinfo.current_user;
   const setActiveTab = props.setActiveTab;
-  const dispatch = props.Settable_history;
   const [selected_role, setselected_role] = useState("");
   const setadditionalinfo = props.setadditionalinfo;
-  const [allpermissions, setallpermissions] = useState([]);
   const [all_jsonpermissions, setall_jsonpermissions] = useState([]);
   const [showmodel, setshowmodel] = useState(false);
 
@@ -36,6 +34,24 @@ function RolePermssion(props) {
   const [changecheck, setchangecheck] = useState(false);
   const [deletecheck, setdeletecheck] = useState(false);
   const [viewcheck, setviewcheck] = useState(false);
+
+  const getpermission = async (input) => {
+    var url = `${route}/api/user-permissions/${input}/`;
+
+    const response = await fetch(`${url}`, {
+      headers: { Authorization: `Bearer ${user.access}` },
+    });
+    const json = await response.json();
+    if (!response.ok) {
+    }
+
+    if (response.ok) {
+      header_dispatch({
+        type: "SetCurrentUser",
+        data: { ...current_user, permissions: json.permissions },
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchallbraches = async () => {
@@ -69,8 +85,8 @@ function RolePermssion(props) {
         setkeys(Object.keys(json));
 
         setall_jsonpermissions(Object.values(json));
-        setallpermissions(json);
-        setallpermissions_copy(json);
+
+        setallpermissions_copy(Object.values(json));
       }
     };
 
@@ -134,11 +150,16 @@ function RolePermssion(props) {
       setisloading(false);
       success_toast();
       setstatus(!status);
+      getpermission(current_user.id);
     }
   };
 
   const handleselect = (selected_option) => {
     setselected_role(selected_option);
+    var addflag = true;
+    var changeflag = true;
+    var deleteflag = true;
+    var viewflag = true;
     const dummydata = [];
     const permissions = selected_option.value.permissions;
     const optimize = all_jsonpermissions.map((item) => {
@@ -149,6 +170,20 @@ function RolePermssion(props) {
             dummydata.push(item3);
           } else {
             item3["value"] = false;
+            switch (item3.name) {
+              case "add":
+                addflag = false;
+                return;
+              case "view":
+                viewflag = false;
+                return;
+              case "change":
+                changeflag = false;
+                return;
+              case "delete":
+                deleteflag = false;
+                return;
+            }
           }
           return item3;
         });
@@ -156,8 +191,14 @@ function RolePermssion(props) {
       });
       return item;
     });
+
+    setaddcheck(addflag);
+    setchangecheck(changeflag);
+    setdeletecheck(deleteflag);
+    setviewcheck(viewflag);
     setdata_to_send(dummydata);
     setall_jsonpermissions(optimize);
+    setallpermissions_copy(optimize);
   };
 
   const userlist = allroles.map((item) => {
@@ -174,8 +215,10 @@ function RolePermssion(props) {
         Object.keys(item)?.map((item2) => {
           item[item2]?.map((item3) => {
             if (item3.name === text) {
-              item3["value"] = true;
-              dummydata.push(item3);
+              if (!item3.value) {
+                item3["value"] = true;
+                dummydata.push(item3);
+              }
             }
             return item3;
           });
@@ -184,8 +227,9 @@ function RolePermssion(props) {
         return item;
       });
       setdata_to_send([...data_to_send, ...dummydata]);
-      console.log([...data_to_send, ...dummydata]);
+
       setall_jsonpermissions(optimize);
+      setallpermissions_copy(optimize);
     } else {
       const optimize = all_jsonpermissions.map((item) => {
         Object.keys(item)?.map((item2) => {
@@ -203,8 +247,9 @@ function RolePermssion(props) {
       setdata_to_send(
         data_to_send.filter((item) => !dummydata.includes(item.id))
       );
-      console.log(data_to_send.filter((item) => !dummydata.includes(item.id)));
+
       setall_jsonpermissions(optimize);
+      setallpermissions_copy(optimize);
     }
   };
 
@@ -212,19 +257,18 @@ function RolePermssion(props) {
     const value = e.target.value;
     setsearch(value);
     if (value) {
-      const sortout = allpermissions_copy.filter((item) => {
-        if (
-          item.p_0?.name.toLowerCase().includes(value) ||
-          item.p_0?.name.includes(value) ||
-          item.p_1?.name.toLowerCase().includes(value) ||
-          item.p_1?.name.includes(value)
-        ) {
-          return item;
+      var sortout = [];
+      keys.map((item, index) => {
+        if (item.toLowerCase().includes(value)) {
+          sortout.push(index);
         }
       });
-      setallpermissions(sortout);
+      const optimize = sortout.map((item) => {
+        return allpermissions_copy[item];
+      });
+      setall_jsonpermissions(optimize);
     } else {
-      setallpermissions(allpermissions_copy);
+      setall_jsonpermissions(allpermissions_copy);
     }
   };
 
@@ -301,7 +345,7 @@ function RolePermssion(props) {
                   label="Search"
                   variant="outlined"
                   value={search}
-                  onChange={handlesearch}
+                  // onChange={handlesearch}
                   size="small"
                 />
               </label>

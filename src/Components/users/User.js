@@ -465,6 +465,7 @@ function User(props) {
                     onChange={(e) => {
                       setname(e.target.value);
                     }}
+                    inputProps={{ autoComplete: "off" }}
                     size="small"
                     required
                     autoFocus
@@ -475,6 +476,7 @@ function User(props) {
                     type="email"
                     className="form-control  mb-3"
                     label={t("email")}
+                    inputProps={{ autoComplete: "off" }}
                     value={email}
                     onChange={(e) => {
                       setemail(e.target.value);
@@ -489,6 +491,7 @@ function User(props) {
                       type="password"
                       className="form-control  mb-3"
                       label={t("Password")}
+                      inputProps={{ autoComplete: "off" }}
                       value={userpassword}
                       onChange={(e) => {
                         setuserpassword(e.target.value);

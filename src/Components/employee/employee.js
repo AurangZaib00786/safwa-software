@@ -53,7 +53,20 @@ export default function CustomerType(props) {
   const inputFileliecence = useRef(null);
   const inputFilemunicipality = useRef(null);
 
-  const [all_files, setall_files] = useState([]);
+  const [all_files, setall_files] = useState([
+    {
+      document_name: "Id Card",
+    },
+    {
+      document_name: "passport",
+    },
+    {
+      document_name: "municipality",
+    },
+    {
+      document_name: "liecence",
+    },
+  ]);
   const [name, setname] = useState("");
   const [arabicname, setarabicname] = useState("");
   const [contact, setcontact] = useState("");
@@ -271,7 +284,9 @@ export default function CustomerType(props) {
                     case "Id Card":
                       setworkpermit(item.document_number);
                       setworkpermitcheck(true);
-                      setworkpermitdate(item.expiry_date);
+                      setworkpermitdate(
+                        item.expiry_date ? item.expiry_date : ""
+                      );
                       return {
                         id: item.id,
                         picture: { name: item.file.split("/").pop() },
@@ -283,7 +298,7 @@ export default function CustomerType(props) {
                     case "passport":
                       setpassport(item.document_number);
                       setpassportcheck(true);
-                      setpassportdate(item.expiry_date);
+                      setpassportdate(item.expiry_date ? item.expiry_date : "");
                       return {
                         id: item.id,
                         picture: { name: item.file.split("/").pop() },
@@ -295,7 +310,9 @@ export default function CustomerType(props) {
                     case "municipality":
                       setmunicipalno(item.document_number);
                       setmunicipalnocheck(true);
-                      setmunicipaldate(item.expiry_date);
+                      setmunicipaldate(
+                        item.expiry_date ? item.expiry_date : ""
+                      );
                       return {
                         id: item.id,
                         picture: { name: item.file.split("/").pop() },
@@ -307,7 +324,9 @@ export default function CustomerType(props) {
                     case "liecence":
                       setdrivinglicense(item.document_number);
                       setdrivinglicensecheck(true);
-                      setdrivinglicensedate(item.expiry_date);
+                      setdrivinglicensedate(
+                        item.expiry_date ? item.expiry_date : ""
+                      );
                       return {
                         id: item.id,
                         picture: { name: item.file.split("/").pop() },
@@ -497,7 +516,7 @@ export default function CustomerType(props) {
 
   const handleSubmit = async (e) => {
     if (!isloading && current_user?.permissions?.includes("add_employee")) {
-      setisloading(true);
+      var flag = false;
       const formData = new FormData();
 
       formData.append("name", name);
@@ -537,19 +556,28 @@ export default function CustomerType(props) {
       all_files.forEach((item, index) => {
         switch (item.document_name) {
           case "Id Card":
-            if (workpermitcheck) {
-              formData.append(`documents[${index}]file`, item.picture);
-              formData.append(`documents[${index}]type`, item.type);
+            if (workpermitcheck && item.picture) {
+              formData.append(
+                `documents[${index}]file`,
+                item.picture ? item.picture : ""
+              );
+              formData.append(
+                `documents[${index}]type`,
+                item.type ? item.type : ""
+              );
               formData.append(
                 `documents[${index}]document_name`,
                 item.document_name
               );
               formData.append(`documents[${index}]document_number`, workpermit);
               formData.append(`documents[${index}]expiry_date`, workpermitdate);
+            } else if (!item.picture && workpermitcheck) {
+              Red_toast("Please select Id Card document !");
+              flag = true;
             }
             return;
           case "passport":
-            if (passportcheck) {
+            if (passportcheck && item.picture) {
               formData.append(`documents[${index}]file`, item.picture);
               formData.append(`documents[${index}]type`, item.type);
               formData.append(
@@ -558,10 +586,13 @@ export default function CustomerType(props) {
               );
               formData.append(`documents[${index}]document_number`, passport);
               formData.append(`documents[${index}]expiry_date`, passportdate);
+            } else if (!item.picture && passportcheck) {
+              Red_toast("Please select Passport document !");
+              flag = true;
             }
             return;
           case "municipality":
-            if (municipalnocheck) {
+            if (municipalnocheck && item.picture) {
               formData.append(`documents[${index}]file`, item.picture);
               formData.append(`documents[${index}]type`, item.type);
               formData.append(
@@ -573,10 +604,13 @@ export default function CustomerType(props) {
                 municipalno
               );
               formData.append(`documents[${index}]expiry_date`, municipaldate);
+            } else if (!item.picture && municipalnocheck) {
+              Red_toast("Please select Municipality document !");
+              flag = true;
             }
             return;
           case "liecence":
-            if (drivinglicensecheck) {
+            if (drivinglicensecheck && item.picture) {
               formData.append(`documents[${index}]file`, item.picture);
               formData.append(`documents[${index}]type`, item.type);
               formData.append(
@@ -591,11 +625,18 @@ export default function CustomerType(props) {
                 `documents[${index}]expiry_date`,
                 drivinglicensedate
               );
+            } else if (!item.picture && drivinglicensecheck) {
+              Red_toast("Please select Driving Liecence document !");
+              flag = true;
             }
             return;
         }
       });
 
+      if (flag) {
+        return;
+      }
+      setisloading(true);
       const response = await fetch(`${route}/api/employee/`, {
         method: "POST",
         headers: {
@@ -663,7 +704,7 @@ export default function CustomerType(props) {
 
   const handleSubmit_update = async (e) => {
     if (!isloading && current_user?.permissions?.includes("change_employee")) {
-      setisloading(true);
+      var flag = false;
       const formData = new FormData();
 
       formData.append("name", name);
@@ -702,27 +743,30 @@ export default function CustomerType(props) {
       all_files.forEach((item, index) => {
         switch (item.document_name) {
           case "Id Card":
-            if (workpermitcheck) {
+            if (workpermitcheck && item.picture) {
               if (item.id) {
                 formData.append(`documents[${index}]id`, item.id);
               }
               if (item.file) {
                 formData.append(`documents[${index}]file`, item.file);
               }
-              formData.append(`documents[${index}]type`, item.type);
+              formData.append(
+                `documents[${index}]type`,
+                item.type ? item.type : ""
+              );
               formData.append(
                 `documents[${index}]document_name`,
                 item.document_name
               );
               formData.append(`documents[${index}]document_number`, workpermit);
-              formData.append(
-                `documents[${index}]expiry_date`,
-                workpermitdate ? workpermitdate : ""
-              );
+              formData.append(`documents[${index}]expiry_date`, workpermitdate);
+            } else if (!item.picture && workpermitcheck) {
+              Red_toast("Please select Id Card document !");
+              flag = true;
             }
             return;
           case "passport":
-            if (passportcheck) {
+            if (passportcheck && item.picture) {
               if (item.id) {
                 formData.append(`documents[${index}]id`, item.id);
               }
@@ -735,14 +779,14 @@ export default function CustomerType(props) {
                 item.document_name
               );
               formData.append(`documents[${index}]document_number`, passport);
-              formData.append(
-                `documents[${index}]expiry_date`,
-                passportdate ? passportdate : ""
-              );
+              formData.append(`documents[${index}]expiry_date`, passportdate);
+            } else if (!item.picture && passportcheck) {
+              Red_toast("Please select Passport document !");
+              flag = true;
             }
             return;
           case "municipality":
-            if (municipalnocheck) {
+            if (municipalnocheck && item.picture) {
               if (item.id) {
                 formData.append(`documents[${index}]id`, item.id);
               }
@@ -758,14 +802,14 @@ export default function CustomerType(props) {
                 `documents[${index}]document_number`,
                 municipalno
               );
-              formData.append(
-                `documents[${index}]expiry_date`,
-                municipaldate ? municipaldate : ""
-              );
+              formData.append(`documents[${index}]expiry_date`, municipaldate);
+            } else if (!item.picture && municipalnocheck) {
+              Red_toast("Please select Municipality document !");
+              flag = true;
             }
             return;
           case "liecence":
-            if (drivinglicensecheck) {
+            if (drivinglicensecheck && item.picture) {
               if (item.id) {
                 formData.append(`documents[${index}]id`, item.id);
               }
@@ -783,12 +827,20 @@ export default function CustomerType(props) {
               );
               formData.append(
                 `documents[${index}]expiry_date`,
-                drivinglicensedate ? drivinglicensedate : ""
+                drivinglicensedate
               );
+            } else if (!item.picture && drivinglicensecheck) {
+              Red_toast("Please select Driving Liecence document !");
+              flag = true;
             }
             return;
         }
       });
+
+      if (flag) {
+        return;
+      }
+      setisloading(true);
 
       const response = await fetch(`${route}/api/employee/${id}/`, {
         method: "PATCH",
@@ -883,73 +935,48 @@ export default function CustomerType(props) {
       const item_present = all_files.filter((item) => {
         return item.document_name === text;
       });
-      if (item_present.length === 0) {
-        if (type === "application") {
-          setall_files([
-            ...all_files,
-            {
-              picture: file,
-              type: type,
-              url: file,
-              file: file,
-              document_name: text,
-            },
-          ]);
-        } else if (type === "image") {
-          const reader = new FileReader();
-          reader.onload = () => {
-            setall_files([
-              ...all_files,
-              {
-                picture: file,
-                type: type,
-                url: reader.result,
-                file: file,
-                document_name: text,
-              },
-            ]);
-          };
-          reader.readAsDataURL(file);
-        }
-      } else {
-        if (type === "application") {
+
+      if (type === "application") {
+        setall_files(
+          all_files.map((item) => {
+            if (item.document_name === item_present[0].document_name) {
+              item["picture"] = file;
+              item["url"] = file;
+              item["file"] = file;
+              item["type"] = type;
+            }
+            return item;
+          })
+        );
+      } else if (type === "image") {
+        const reader = new FileReader();
+        reader.onload = () => {
           setall_files(
             all_files.map((item) => {
               if (item.document_name === item_present[0].document_name) {
                 item["picture"] = file;
-                item["url"] = file;
+                item["url"] = reader.result;
                 item["file"] = file;
                 item["type"] = type;
               }
               return item;
             })
           );
-        } else if (type === "image") {
-          const reader = new FileReader();
-          reader.onload = () => {
-            setall_files(
-              all_files.map((item) => {
-                if (item.document_name === item_present[0].document_name) {
-                  item["picture"] = file;
-                  item["url"] = file;
-                  item["file"] = file;
-                  item["type"] = type;
-                }
-                return item;
-              })
-            );
-          };
-          reader.readAsDataURL(file);
-        }
+        };
+        reader.readAsDataURL(file);
       }
     }
   };
 
   const handledeleteClick = (file) => {
-    const optimize = all_files.filter((item) => {
-      return item.document_name !== file.document_name;
+    console.log(file);
+    const optimize = all_files.map((item) => {
+      if (item.document_name === file.document_name) {
+        return { document_name: item.document_name };
+      }
+      return item;
     });
-
+    console.log(optimize);
     setall_files(optimize);
   };
 
@@ -1538,6 +1565,7 @@ export default function CustomerType(props) {
                               setworkpermit(e.target.value);
                             }}
                             size="small"
+                            required
                           />
                           <TextField
                             type="date"
@@ -1581,57 +1609,61 @@ export default function CustomerType(props) {
                             .map((item) => {
                               return (
                                 <>
-                                  {item.type !== "image" ? (
-                                    <span className="d-flex mt-3">
-                                      <span
-                                        className="col-1 mb-2"
-                                        style={{ width: "fit-content" }}
-                                        onClick={() => {
-                                          handleimageclick(item);
-                                        }}
-                                        key={item.document_name}
-                                      >
-                                        <span className="file p-2">
-                                          {item.picture.name}
+                                  {item.picture && (
+                                    <>
+                                      {item.type !== "image" ? (
+                                        <span className="d-flex mt-3">
+                                          <span
+                                            className="col-1 mb-2"
+                                            style={{ width: "fit-content" }}
+                                            onClick={() => {
+                                              handleimageclick(item);
+                                            }}
+                                            key={item.document_name}
+                                          >
+                                            <span className="file p-2">
+                                              {item.picture.name}
+                                            </span>
+                                          </span>
+                                          <Badge
+                                            color="error"
+                                            className="me-3 badgee pointer"
+                                            overlap="circular"
+                                            badgeContent="X"
+                                            onClick={() => {
+                                              handledeleteClick(item);
+                                            }}
+                                          ></Badge>
                                         </span>
-                                      </span>
-                                      <Badge
-                                        color="error"
-                                        className="me-3 badgee pointer"
-                                        overlap="circular"
-                                        badgeContent="X"
-                                        onClick={() => {
-                                          handledeleteClick(item);
-                                        }}
-                                      ></Badge>
-                                    </span>
-                                  ) : (
-                                    <div
-                                      className="col-1 mb-2 me-3 mt-3 d-flex claas-images"
-                                      key={item.document_name}
-                                    >
-                                      <Avatar
-                                        src={item.url}
-                                        className="avatar"
-                                        style={{
-                                          width: "100px",
-                                          height: "100px",
-                                        }}
-                                        alt="image"
-                                        onClick={() => {
-                                          handleimageclick(item);
-                                        }}
-                                      />
-                                      <Badge
-                                        color="error"
-                                        overlap="circular"
-                                        className="badgeepic me-3 badgee pointer"
-                                        badgeContent="X"
-                                        onClick={() => {
-                                          handledeleteClick(item);
-                                        }}
-                                      ></Badge>
-                                    </div>
+                                      ) : (
+                                        <div
+                                          className="col-1 mb-2 me-3 mt-3 d-flex claas-images"
+                                          key={item.document_name}
+                                        >
+                                          <Avatar
+                                            src={item.url}
+                                            className="avatar"
+                                            style={{
+                                              width: "100px",
+                                              height: "100px",
+                                            }}
+                                            alt="image"
+                                            onClick={() => {
+                                              handleimageclick(item);
+                                            }}
+                                          />
+                                          <Badge
+                                            color="error"
+                                            overlap="circular"
+                                            className="badgeepic me-3 badgee pointer"
+                                            badgeContent="X"
+                                            onClick={() => {
+                                              handledeleteClick(item);
+                                            }}
+                                          ></Badge>
+                                        </div>
+                                      )}
+                                    </>
                                   )}
                                 </>
                               );
@@ -1660,6 +1692,7 @@ export default function CustomerType(props) {
                               setpassport(e.target.value);
                             }}
                             size="small"
+                            required
                           />
                           <TextField
                             type="date"
@@ -1703,57 +1736,61 @@ export default function CustomerType(props) {
                             .map((item) => {
                               return (
                                 <>
-                                  {item.type !== "image" ? (
-                                    <span className="d-flex mt-3">
-                                      <span
-                                        className="col-1 mb-2"
-                                        style={{ width: "fit-content" }}
-                                        onClick={() => {
-                                          handleimageclick(item);
-                                        }}
-                                        key={item.document_name}
-                                      >
-                                        <span className="file p-2">
-                                          {item.picture.name}
+                                  {item.picture && (
+                                    <>
+                                      {item.type !== "image" ? (
+                                        <span className="d-flex mt-3">
+                                          <span
+                                            className="col-1 mb-2"
+                                            style={{ width: "fit-content" }}
+                                            onClick={() => {
+                                              handleimageclick(item);
+                                            }}
+                                            key={item.document_name}
+                                          >
+                                            <span className="file p-2">
+                                              {item.picture.name}
+                                            </span>
+                                          </span>
+                                          <Badge
+                                            color="error"
+                                            className="me-3 badgee pointer"
+                                            overlap="circular"
+                                            badgeContent="X"
+                                            onClick={() => {
+                                              handledeleteClick(item);
+                                            }}
+                                          ></Badge>
                                         </span>
-                                      </span>
-                                      <Badge
-                                        color="error"
-                                        className="me-3 badgee pointer"
-                                        overlap="circular"
-                                        badgeContent="X"
-                                        onClick={() => {
-                                          handledeleteClick(item);
-                                        }}
-                                      ></Badge>
-                                    </span>
-                                  ) : (
-                                    <div
-                                      className="col-1 mb-2 me-3 mt-3 d-flex claas-images"
-                                      key={item.document_name}
-                                    >
-                                      <Avatar
-                                        src={item.url}
-                                        className="avatar"
-                                        style={{
-                                          width: "100px",
-                                          height: "100px",
-                                        }}
-                                        alt="image"
-                                        onClick={() => {
-                                          handleimageclick(item);
-                                        }}
-                                      />
-                                      <Badge
-                                        color="error"
-                                        overlap="circular"
-                                        className="badgeepic me-3 badgee pointer"
-                                        badgeContent="X"
-                                        onClick={() => {
-                                          handledeleteClick(item);
-                                        }}
-                                      ></Badge>
-                                    </div>
+                                      ) : (
+                                        <div
+                                          className="col-1 mb-2 me-3 mt-3 d-flex claas-images"
+                                          key={item.document_name}
+                                        >
+                                          <Avatar
+                                            src={item.url}
+                                            className="avatar"
+                                            style={{
+                                              width: "100px",
+                                              height: "100px",
+                                            }}
+                                            alt="image"
+                                            onClick={() => {
+                                              handleimageclick(item);
+                                            }}
+                                          />
+                                          <Badge
+                                            color="error"
+                                            overlap="circular"
+                                            className="badgeepic me-3 badgee pointer"
+                                            badgeContent="X"
+                                            onClick={() => {
+                                              handledeleteClick(item);
+                                            }}
+                                          ></Badge>
+                                        </div>
+                                      )}
+                                    </>
                                   )}
                                 </>
                               );
@@ -1782,6 +1819,7 @@ export default function CustomerType(props) {
                               setmunicipalno(e.target.value);
                             }}
                             size="small"
+                            required
                           />
                           <TextField
                             type="date"
@@ -1827,57 +1865,61 @@ export default function CustomerType(props) {
                             .map((item) => {
                               return (
                                 <>
-                                  {item.type !== "image" ? (
-                                    <span className="d-flex mt-3">
-                                      <span
-                                        className="col-1 mb-2"
-                                        style={{ width: "fit-content" }}
-                                        onClick={() => {
-                                          handleimageclick(item);
-                                        }}
-                                        key={item.document_name}
-                                      >
-                                        <span className="file p-2">
-                                          {item.picture.name}
+                                  {item.picture && (
+                                    <>
+                                      {item.type !== "image" ? (
+                                        <span className="d-flex mt-3">
+                                          <span
+                                            className="col-1 mb-2"
+                                            style={{ width: "fit-content" }}
+                                            onClick={() => {
+                                              handleimageclick(item);
+                                            }}
+                                            key={item.document_name}
+                                          >
+                                            <span className="file p-2">
+                                              {item.picture.name}
+                                            </span>
+                                          </span>
+                                          <Badge
+                                            color="error"
+                                            className="me-3 badgee pointer"
+                                            overlap="circular"
+                                            badgeContent="X"
+                                            onClick={() => {
+                                              handledeleteClick(item);
+                                            }}
+                                          ></Badge>
                                         </span>
-                                      </span>
-                                      <Badge
-                                        color="error"
-                                        className="me-3 badgee pointer"
-                                        overlap="circular"
-                                        badgeContent="X"
-                                        onClick={() => {
-                                          handledeleteClick(item);
-                                        }}
-                                      ></Badge>
-                                    </span>
-                                  ) : (
-                                    <div
-                                      className="col-1 mb-2 me-3 mt-3 d-flex claas-images"
-                                      key={item.document_name}
-                                    >
-                                      <Avatar
-                                        src={item.url}
-                                        className="avatar"
-                                        style={{
-                                          width: "100px",
-                                          height: "100px",
-                                        }}
-                                        alt="image"
-                                        onClick={() => {
-                                          handleimageclick(item);
-                                        }}
-                                      />
-                                      <Badge
-                                        color="error"
-                                        overlap="circular"
-                                        className="badgeepic me-3 badgee pointer"
-                                        badgeContent="X"
-                                        onClick={() => {
-                                          handledeleteClick(item);
-                                        }}
-                                      ></Badge>
-                                    </div>
+                                      ) : (
+                                        <div
+                                          className="col-1 mb-2 me-3 mt-3 d-flex claas-images"
+                                          key={item.document_name}
+                                        >
+                                          <Avatar
+                                            src={item.url}
+                                            className="avatar"
+                                            style={{
+                                              width: "100px",
+                                              height: "100px",
+                                            }}
+                                            alt="image"
+                                            onClick={() => {
+                                              handleimageclick(item);
+                                            }}
+                                          />
+                                          <Badge
+                                            color="error"
+                                            overlap="circular"
+                                            className="badgeepic me-3 badgee pointer"
+                                            badgeContent="X"
+                                            onClick={() => {
+                                              handledeleteClick(item);
+                                            }}
+                                          ></Badge>
+                                        </div>
+                                      )}
+                                    </>
                                   )}
                                 </>
                               );
@@ -1906,6 +1948,7 @@ export default function CustomerType(props) {
                               setdrivinglicense(e.target.value);
                             }}
                             size="small"
+                            required
                           />
                           <TextField
                             type="date"
@@ -1949,57 +1992,61 @@ export default function CustomerType(props) {
                             .map((item) => {
                               return (
                                 <>
-                                  {item.type !== "image" ? (
-                                    <span className="d-flex mt-3">
-                                      <span
-                                        className="col-1 mb-2"
-                                        style={{ width: "fit-content" }}
-                                        onClick={() => {
-                                          handleimageclick(item);
-                                        }}
-                                        key={item.document_name}
-                                      >
-                                        <span className="file p-2">
-                                          {item.picture.name}
+                                  {item.picture && (
+                                    <>
+                                      {item.type !== "image" ? (
+                                        <span className="d-flex mt-3">
+                                          <span
+                                            className="col-1 mb-2"
+                                            style={{ width: "fit-content" }}
+                                            onClick={() => {
+                                              handleimageclick(item);
+                                            }}
+                                            key={item.document_name}
+                                          >
+                                            <span className="file p-2">
+                                              {item.picture.name}
+                                            </span>
+                                          </span>
+                                          <Badge
+                                            color="error"
+                                            className="me-3 badgee pointer"
+                                            overlap="circular"
+                                            badgeContent="X"
+                                            onClick={() => {
+                                              handledeleteClick(item);
+                                            }}
+                                          ></Badge>
                                         </span>
-                                      </span>
-                                      <Badge
-                                        color="error"
-                                        className="me-3 badgee pointer"
-                                        overlap="circular"
-                                        badgeContent="X"
-                                        onClick={() => {
-                                          handledeleteClick(item);
-                                        }}
-                                      ></Badge>
-                                    </span>
-                                  ) : (
-                                    <div
-                                      className="col-1 mb-2 me-3 mt-3 d-flex claas-images"
-                                      key={item.document_name}
-                                    >
-                                      <Avatar
-                                        src={item.url}
-                                        className="avatar"
-                                        style={{
-                                          width: "100px",
-                                          height: "100px",
-                                        }}
-                                        alt="image"
-                                        onClick={() => {
-                                          handleimageclick(item);
-                                        }}
-                                      />
-                                      <Badge
-                                        color="error"
-                                        overlap="circular"
-                                        className="badgeepic me-3 badgee pointer"
-                                        badgeContent="X"
-                                        onClick={() => {
-                                          handledeleteClick(item);
-                                        }}
-                                      ></Badge>
-                                    </div>
+                                      ) : (
+                                        <div
+                                          className="col-1 mb-2 me-3 mt-3 d-flex claas-images"
+                                          key={item.document_name}
+                                        >
+                                          <Avatar
+                                            src={item.url}
+                                            className="avatar"
+                                            style={{
+                                              width: "100px",
+                                              height: "100px",
+                                            }}
+                                            alt="image"
+                                            onClick={() => {
+                                              handleimageclick(item);
+                                            }}
+                                          />
+                                          <Badge
+                                            color="error"
+                                            overlap="circular"
+                                            className="badgeepic me-3 badgee pointer"
+                                            badgeContent="X"
+                                            onClick={() => {
+                                              handledeleteClick(item);
+                                            }}
+                                          ></Badge>
+                                        </div>
+                                      )}
+                                    </>
                                   )}
                                 </>
                               );

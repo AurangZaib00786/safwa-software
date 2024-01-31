@@ -131,7 +131,7 @@ export default function Dish_View({ user, route, setview }) {
                   aria-hidden="true"
                 />
               )}
-              <SaveIcon /> Update
+              <SaveIcon /> Save
             </Button>
           </div>
         </div>
