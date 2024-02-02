@@ -28,6 +28,7 @@ import Invoice80mm from "../Components/sale/80mminvoice";
 import { useState } from "react";
 import Issueform from "../Components/materialissueform/formprint";
 import EmployeePrint from "../Components/employee/employeeprint";
+import Salaries_page from "./salaries_page/salaries_page";
 
 function Routing(props) {
   const user = props.state.setuser.user;
@@ -96,6 +97,16 @@ function Routing(props) {
               element={
                 user ? (
                   <Menu_page current_user={current_user} />
+                ) : (
+                  <Navigate to={"/"} />
+                )
+              }
+            ></Route>
+            <Route
+              path="/salaries_page"
+              element={
+                user ? (
+                  <Salaries_page current_user={current_user} />
                 ) : (
                   <Navigate to={"/"} />
                 )

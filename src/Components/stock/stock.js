@@ -312,76 +312,78 @@ export default function Stock_table({
           </div>
         </div>
 
-        <div className="card-body pt-0">
-          <ToolkitProvider
-            keyField="id"
-            data={data}
-            columns={columns}
-            search
-            exportCSV
-          >
-            {(props) => (
-              <div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div className="col-md-2">
-                    <Select
-                      options={[{ value: "all", label: "All" }, ...allstore]}
-                      placeholder={"Stores"}
-                      value={store}
-                      funct={(e) => setstore(e)}
-                      required={true}
+        {current_user?.permissions?.includes("view_stock") && (
+          <div className="card-body pt-0">
+            <ToolkitProvider
+              keyField="id"
+              data={data}
+              columns={columns}
+              search
+              exportCSV
+            >
+              {(props) => (
+                <div>
+                  <div className="d-sm-flex justify-content-between align-items-center mt-3">
+                    <div className="col-md-2">
+                      <Select
+                        options={[{ value: "all", label: "All" }, ...allstore]}
+                        placeholder={"Stores"}
+                        value={store}
+                        funct={(e) => setstore(e)}
+                        required={true}
+                      />
+                    </div>
+                  </div>
+                  <div className="d-sm-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <ExportCSVButton
+                        {...props.csvProps}
+                        className="csvbutton  border bg-secondary text-light me-2 mb-2"
+                      >
+                        Export CSV
+                      </ExportCSVButton>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 me-2 mb-2"
+                        variant="outline-primary"
+                        onClick={download}
+                      >
+                        <PictureAsPdfIcon /> PDF
+                      </Button>
+                      <Button
+                        type="button"
+                        className="p-1 ps-3 pe-3 mb-2"
+                        variant="outline-success"
+                        onClick={print}
+                      >
+                        <PrintIcon /> Print
+                      </Button>
+                    </div>
+                    <SearchBar {...props.searchProps} />
+                  </div>
+                  {isloading && (
+                    <div className="text-center">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
+
+                  <hr />
+                  <div style={{ zoom: ".9" }}>
+                    <BootstrapTable
+                      {...props.baseProps}
+                      pagination={paginationFactory(options)}
+                      rowStyle={rowstyle}
+                      striped
+                      bootstrap4
+                      condensed
+                      wrapperClasses="table-responsive"
                     />
                   </div>
                 </div>
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div>
-                    <ExportCSVButton
-                      {...props.csvProps}
-                      className="csvbutton  border bg-secondary text-light me-2 mb-2"
-                    >
-                      Export CSV
-                    </ExportCSVButton>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 me-2 mb-2"
-                      variant="outline-primary"
-                      onClick={download}
-                    >
-                      <PictureAsPdfIcon /> PDF
-                    </Button>
-                    <Button
-                      type="button"
-                      className="p-1 ps-3 pe-3 mb-2"
-                      variant="outline-success"
-                      onClick={print}
-                    >
-                      <PrintIcon /> Print
-                    </Button>
-                  </div>
-                  <SearchBar {...props.searchProps} />
-                </div>
-                {isloading && (
-                  <div className="text-center">
-                    <Spinner animation="border" variant="primary" />
-                  </div>
-                )}
-
-                <hr />
-                <div style={{ zoom: ".9" }}>
-                  <BootstrapTable
-                    {...props.baseProps}
-                    pagination={paginationFactory(options)}
-                    rowStyle={rowstyle}
-                    striped
-                    bootstrap4
-                    condensed
-                    wrapperClasses="table-responsive"
-                  />
-                </div>
-              </div>
-            )}
-          </ToolkitProvider>
-        </div>
+              )}
+            </ToolkitProvider>
+          </div>
+        )}
       </div>
     </div>
   );

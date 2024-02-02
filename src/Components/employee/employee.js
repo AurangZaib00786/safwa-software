@@ -525,7 +525,19 @@ export default function CustomerType(props) {
       formData.append("country", nationality?.value);
       formData.append("address", address);
       formData.append("working_hours", workinghours);
-
+      formData.append(
+        "total_salary",
+        type.value === "Daily Wage"
+          ? salary
+          : (
+              Number(extraallowance) +
+              Number(transportallowance) +
+              Number(foodallowance) +
+              Number(accomallowance) +
+              Number(prallowance) +
+              Number(salary)
+            ).toFixed(2)
+      );
       formData.append("type", type.value);
       formData.append("salary", salary);
       formData.append("transport_allowance", transportallowance);
@@ -713,7 +725,19 @@ export default function CustomerType(props) {
       formData.append("country", nationality?.value);
       formData.append("address", address);
       formData.append("working_hours", workinghours);
-
+      formData.append(
+        "total_salary",
+        type.value === "Daily Wage"
+          ? salary
+          : (
+              Number(extraallowance) +
+              Number(transportallowance) +
+              Number(foodallowance) +
+              Number(accomallowance) +
+              Number(prallowance) +
+              Number(salary)
+            ).toFixed(2)
+      );
       formData.append("type", type.value);
       formData.append("salary", salary);
       formData.append("transport_allowance", transportallowance);
@@ -2135,7 +2159,6 @@ export default function CustomerType(props) {
           row_id={row_id}
         />
       )}
-      <ToastContainer autoClose={1000} hideProgressBar={true} theme="dark" />
     </div>
   );
 }

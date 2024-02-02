@@ -11,7 +11,7 @@ import { Outlet } from "react-router-dom";
 import { Avatar } from "@material-ui/core";
 import PersonIcon from "@material-ui/icons/Person";
 import DashboardIcon from "@material-ui/icons/Dashboard";
-import LocalAtmIcon from "@material-ui/icons/LocalAtm";
+import { ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import Header from "../Container/headerContainer";
@@ -214,6 +214,14 @@ function Layout(props) {
               </MenuItem>
             </SubMenu>
 
+            <MenuItem
+              active={menu_status === "salaries"}
+              icon={<ShoppingBasketIcon />}
+              component={<Link to="/salaries_page" />}
+              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+            >
+              Salaries
+            </MenuItem>
             {/* {current_user?.permissions?.includes("view_payments") && (
               <MenuItem
                 active={menu_status === "payment_customer"}
@@ -325,6 +333,7 @@ function Layout(props) {
           dispatch={dispatch}
         />
       )}
+      <ToastContainer autoClose={1000} hideProgressBar={true} theme="dark" />
     </div>
   );
 }

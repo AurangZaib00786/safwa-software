@@ -291,121 +291,127 @@ function StockUpdate(props) {
                   <VisibilityIcon className="me-2" />
                   View
                 </Button>
-                <Save_button isloading={isloading} />
+                {(current_user?.permissions?.includes("change_stock") ||
+                  current_user?.permissions?.includes("add_stock")) && (
+                  <Save_button isloading={isloading} />
+                )}
               </div>
 
-              <div className="card-body">
-                <div className="d-sm-flex justify-content-between align-items-center mt-3">
-                  <div className="col-md-2">
-                    <Select
-                      options={allstore}
-                      placeholder={"Select Store..."}
-                      value={store}
-                      funct={(e) => setstore(e)}
-                      required={true}
-                    />
+              {(current_user?.permissions?.includes("change_stock") ||
+                current_user?.permissions?.includes("add_stock")) && (
+                <div className="card-body">
+                  <div className="d-sm-flex justify-content-between align-items-center mt-3">
+                    <div className="col-md-2">
+                      <Select
+                        options={allstore}
+                        placeholder={"Select Store..."}
+                        value={store}
+                        funct={(e) => setstore(e)}
+                        required={true}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="row">
-                  <label className="d-flex justify-content-between align-items-start mb-2">
-                    <h5 className="m-0">Stock</h5>
-                    <TextField
-                      label="Search"
-                      variant="outlined"
-                      value={search}
-                      onChange={handlesearch}
-                      size="small"
-                    />
-                  </label>
+                  <div className="row">
+                    <label className="d-flex justify-content-between align-items-start mb-2">
+                      <h5 className="m-0">Stock</h5>
+                      <TextField
+                        label="Search"
+                        variant="outlined"
+                        value={search}
+                        onChange={handlesearch}
+                        size="small"
+                      />
+                    </label>
 
-                  <div className="table-responsive">
-                    <table className="table">
-                      <thead>
-                        <tr>
-                          <th>
-                            <input
-                              className="form-check-input m-0 me-2"
-                              type="checkbox"
-                              checked={allchecked}
-                              onChange={handleallchange}
-                            />{" "}
-                            Check All
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {allproducts.map((item) => {
-                          return (
-                            <tr key={item.product}>
-                              <td>
-                                {item && (
-                                  <div
-                                    className="d-flex align-items-center "
-                                    style={{ height: "40px" }}
-                                  >
-                                    <input
-                                      className="form-check-input m-0 me-2"
-                                      type="checkbox"
-                                      checked={item.value}
-                                      onChange={() =>
-                                        handlecheckboxchange(item)
-                                      }
-                                    />
+                    <div className="table-responsive">
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th>
+                              <input
+                                className="form-check-input m-0 me-2"
+                                type="checkbox"
+                                checked={allchecked}
+                                onChange={handleallchange}
+                              />{" "}
+                              Check All
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {allproducts.map((item) => {
+                            return (
+                              <tr key={item.product}>
+                                <td>
+                                  {item && (
                                     <div
-                                      className=" d-flex"
-                                      style={{ zoom: ".8" }}
+                                      className="d-flex align-items-center "
+                                      style={{ height: "40px" }}
                                     >
-                                      <h5
-                                        className="border rounded border-secondary p-2 pb-1 m-0"
-                                        style={{ width: "30rem" }}
+                                      <input
+                                        className="form-check-input m-0 me-2"
+                                        type="checkbox"
+                                        checked={item.value}
+                                        onChange={() =>
+                                          handlecheckboxchange(item)
+                                        }
+                                      />
+                                      <div
+                                        className=" d-flex"
+                                        style={{ zoom: ".8" }}
                                       >
-                                        {item.category_name}
-                                      </h5>
-                                      <h5
-                                        className="border rounded border-secondary p-2 pb-1 m-0"
-                                        style={{ width: "30rem" }}
-                                      >
-                                        {item.name}
-                                      </h5>
-                                      <TextField
-                                        type="number"
-                                        label="Sale Rate"
-                                        size="small"
-                                        value={item.sale_rate}
-                                        onChange={(e) => {
-                                          handlesalerate(e, item);
-                                        }}
-                                      />
-                                      <TextField
-                                        type="number"
-                                        label="Offer Rate"
-                                        size="small"
-                                        value={item.offer_rate}
-                                        onChange={(e) => {
-                                          handleofferrate(e, item);
-                                        }}
-                                      />
-                                      <TextField
-                                        type="number"
-                                        label="Tax %"
-                                        size="small"
-                                        value={item.percentage}
-                                        onChange={(e) => {
-                                          handlepercentage(e, item);
-                                        }}
-                                      />
+                                        <h5
+                                          className="border rounded border-secondary p-2 pb-1 m-0"
+                                          style={{ width: "30rem" }}
+                                        >
+                                          {item.category_name}
+                                        </h5>
+                                        <h5
+                                          className="border rounded border-secondary p-2 pb-1 m-0"
+                                          style={{ width: "30rem" }}
+                                        >
+                                          {item.name}
+                                        </h5>
+                                        <TextField
+                                          type="number"
+                                          label="Sale Rate"
+                                          size="small"
+                                          value={item.sale_rate}
+                                          onChange={(e) => {
+                                            handlesalerate(e, item);
+                                          }}
+                                        />
+                                        <TextField
+                                          type="number"
+                                          label="Offer Rate"
+                                          size="small"
+                                          value={item.offer_rate}
+                                          onChange={(e) => {
+                                            handleofferrate(e, item);
+                                          }}
+                                        />
+                                        <TextField
+                                          type="number"
+                                          label="Tax %"
+                                          size="small"
+                                          value={item.percentage}
+                                          onChange={(e) => {
+                                            handlepercentage(e, item);
+                                          }}
+                                        />
+                                      </div>
                                     </div>
-                                  </div>
-                                )}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </form>
           </div>
         </div>
