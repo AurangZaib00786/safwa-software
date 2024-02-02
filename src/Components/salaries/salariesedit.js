@@ -278,7 +278,7 @@ export default function Salaries_edit(props) {
                           <td>{item.building_number}</td>
                           <td>{item.start_date}</td>
                           <td>{item.end_date}</td>
-                          <td>{item.building_working_days}</td>
+                          <td>{item.working_days}</td>
                         </tr>
                       );
                     })}

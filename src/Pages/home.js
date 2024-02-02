@@ -127,6 +127,14 @@ function Layout(props) {
             >
               Employees
             </MenuItem>
+            <MenuItem
+              active={menu_status === "salaries"}
+              icon={<ShoppingBasketIcon />}
+              component={<Link to="/salaries_page" />}
+              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+            >
+              Salaries
+            </MenuItem>
 
             <MenuItem
               active={menu_status === "building"}
@@ -214,14 +222,6 @@ function Layout(props) {
               </MenuItem>
             </SubMenu>
 
-            <MenuItem
-              active={menu_status === "salaries"}
-              icon={<ShoppingBasketIcon />}
-              component={<Link to="/salaries_page" />}
-              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
-            >
-              Salaries
-            </MenuItem>
             {/* {current_user?.permissions?.includes("view_payments") && (
               <MenuItem
                 active={menu_status === "payment_customer"}

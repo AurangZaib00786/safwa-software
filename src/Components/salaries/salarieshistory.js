@@ -190,11 +190,18 @@ function Salalrieshistory(props) {
       headerFormatter: headerstyle,
     },
     {
+      dataField: "employee_name",
+      text: "Employee",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
       dataField: "wage_type",
       text: "Wage Type",
       sort: true,
       headerFormatter: headerstyle,
     },
+
     {
       dataField: "working_days",
       text: "Working Days",
