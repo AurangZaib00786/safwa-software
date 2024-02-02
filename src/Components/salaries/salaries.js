@@ -19,23 +19,22 @@ export default function Salaries(props) {
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const current_user = props.state.Setcurrentinfo.current_user;
-  const all_customers = props.state.Settablehistory.table_history;
+
   const dispatch = props.Settable_history;
   const selected_year = props.state.Setcurrentinfo.selected_year;
 
   const [absentdays, setabsentdays] = useState("");
-  const [type, settype] = useState("");
+
   const [workingdays, setworkingdays] = useState("");
   const [date, setdate] = useState(new Date().toISOString().substring(0, 10));
-  const [salary, setsalary] = useState("");
-  const [allemployees, setallemployees] = useState([]);
-  const [employee, setemployee] = useState("");
+
   const [month, setmonth] = useState("");
-  const [total_salary, settotal_salary] = useState("");
+
   const [salary_paid, setsalary_paid] = useState("");
   const [details, setdetails] = useState([]);
   const [isloading, setisloading] = useState(false);
-
+  const [allemployees, setallemployees] = useState([]);
+  const [employee, setemployee] = useState("");
   useEffect(() => {
     dispatch({ type: "Set_menuitem", data: "salaries" });
     const fetchWorkouts = async () => {
@@ -116,6 +115,7 @@ export default function Salaries(props) {
     formData.append("month", month);
     formData.append("working_days", workingdays);
     formData.append("absent_days", absentdays);
+    formData.append("net_days", workingdays - absentdays);
     formData.append("wage_type", employee?.value?.type);
     formData.append(
       "salary",
@@ -133,10 +133,16 @@ export default function Salaries(props) {
     if (details.length > 0) {
       details.map((item, index) => {
         formData.append(`details[${index}]building`, item.building_id);
-        formData.append(`details[${index}]start_date`, item.start_date);
-        formData.append(`details[${index}]end_date`, item.end_date);
         formData.append(
-          `details[${index}]building_working_days`,
+          `details[${index}]start_date`,
+          item.start_date ? item.start_date : ""
+        );
+        formData.append(
+          `details[${index}]end_date`,
+          item.end_date ? item.end_date : ""
+        );
+        formData.append(
+          `details[${index}]working_days`,
           item.building_working_days
         );
       });
@@ -163,6 +169,7 @@ export default function Salaries(props) {
     }
 
     if (response.ok) {
+      setisloading(false);
       custom_toast("Save");
       setdetails([]);
       setemployee("");
@@ -365,7 +372,6 @@ export default function Salaries(props) {
                       <th>Start Date</th>
                       <th>End Date</th>
                       <th>Working Days</th>
-                      <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -376,7 +382,6 @@ export default function Salaries(props) {
                           <td>{item.start_date}</td>
                           <td>{item.end_date}</td>
                           <td>{item.building_working_days}</td>
-                          <td>{item.status}</td>
                         </tr>
                       );
                     })}

@@ -43,7 +43,7 @@ export default function Salaries_edit(props) {
 
     formData.append("working_days", workingdays);
     formData.append("absent_days", absentdays);
-
+    formData.append("net_days", workingdays - absentdays);
     formData.append(
       "salary",
       wage_type === "Daily Wage" ? salary : total_salary

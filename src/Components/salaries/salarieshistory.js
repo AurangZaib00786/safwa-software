@@ -30,12 +30,13 @@ import {
   endOfDay,
   startOfYear,
   endOfYear,
-  addMonths,
-  addDays,
   addYears,
   isSameDay,
 } from "date-fns";
 import moment from "moment";
+import Red_toast from "../alerts/red_toast";
+import Select from "../alerts/select";
+
 function Salalrieshistory(props) {
   const { t } = useTranslation();
 
@@ -44,6 +45,8 @@ function Salalrieshistory(props) {
   const setActiveTab = props.setActiveTab;
   const current_user = props.state.Setcurrentinfo.current_user;
   const all_users = props.state.Settablehistory.table_history;
+
+  const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const dispatch = props.Settable_history;
   const { SearchBar } = Search;
   const { ExportCSVButton } = CSVExport;
@@ -66,6 +69,44 @@ function Salalrieshistory(props) {
       showDateDisplay: "false",
     },
   ]);
+  const selected_year = props.state.Setcurrentinfo.selected_year;
+  const [allemployees, setallemployees] = useState([]);
+  const [employee, setemployee] = useState({ value: "all", label: "All" });
+  const [month, setmonth] = useState("");
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      setisloading(true);
+      var url = `${route}/api/employee/?account_head=${selected_branch.id}`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        setisloading(false);
+        setallemployees(
+          json.map((item) => {
+            return {
+              value: item.id,
+              label: item.name,
+            };
+          })
+        );
+      }
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
+        setisloading(false);
+      }
+    };
+
+    if (user) {
+      fetchWorkouts();
+    }
+  }, [selected_branch]);
 
   const handleSelect = (item) => {
     const get_date = item.selection;
@@ -89,12 +130,16 @@ function Salalrieshistory(props) {
     setisloading(true);
     dispatch({ type: "Set_menuitem", data: "salaries" });
     const fetchWorkouts = async () => {
-      const response = await fetch(
-        `${route}/api/salaries/?start_date=${start_date}&end_date=${end_date}`,
-        {
-          headers: { Authorization: `Bearer ${user.access}` },
-        }
-      );
+      var url = `${route}/api/salaries/?start_date=${start_date}&end_date=${end_date}`;
+      if (employee.value !== "all") {
+        url = `${url}&employee_id=${employee.value}`;
+      }
+      if (month) {
+        url = `${url}&month=${month}`;
+      }
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
 
       const json = await response.json();
 
@@ -109,7 +154,7 @@ function Salalrieshistory(props) {
     };
 
     fetchWorkouts();
-  }, [date_range]);
+  }, [date_range, month, employee]);
 
   const headerstyle = (column, colIndex, { sortElement }) => {
     return (
@@ -283,14 +328,34 @@ function Salalrieshistory(props) {
       return [
         { text: index + 1 },
         { text: item.date },
-        { text: item.Customer_name },
+        { text: item.month },
+        { text: item.employee_name },
+        { text: item.wage_type },
+        { text: item.workking_days },
+        { text: item.absent_days },
+        { text: item.net_days },
+        { text: item.salary },
+        { text: item.total_salary },
+        { text: item.salary_paid },
       ];
     });
-    body.splice(0, 0, ["#", "Date", "Customer"]);
+    body.splice(0, 0, [
+      "#",
+      "Date",
+      "Month",
+      "Employee",
+      "Wage Type",
+      "Working Days",
+      "Absent Days",
+      "Net Days",
+      "Salary",
+      "Total Salary",
+      "Salary Paid",
+    ]);
 
     const documentDefinition = {
       content: [
-        { text: "Orders", style: "header" },
+        { text: "Salaries", style: "header" },
 
         {
           canvas: [
@@ -303,7 +368,7 @@ function Salalrieshistory(props) {
             // headers are automatically repeated if the table spans over multiple pages
             // you can declare how many rows should be treated as headers
             headerRows: 1,
-            widths: [30, "*", "*"],
+            widths: [30, "*", "*", "*", "*", "*", "*", "*", "*", "*", "*"],
             body: body,
           },
           style: "tableStyle",
@@ -318,6 +383,7 @@ function Salalrieshistory(props) {
           width: "100%", // Set the width of the table to 100%
           marginTop: 20,
           font: "ArabicFont",
+          fontSize: 7,
         },
 
         header: {
@@ -361,128 +427,164 @@ function Salalrieshistory(props) {
           >
             {(props) => (
               <div>
-                <div className="col-6 col-sm-2  mt-3">
-                  {date_range[0].endDate.getFullYear() -
-                    date_range[0].startDate.getFullYear() ===
-                  10 ? (
+                <div className="row mt-3">
+                  <div className="col-6 col-sm-2  ">
+                    {date_range[0].endDate.getFullYear() -
+                      date_range[0].startDate.getFullYear() ===
+                    10 ? (
+                      <TextField
+                        ref={ref}
+                        type="button"
+                        className="form-control  mb-3"
+                        label={t("date")}
+                        value="From Start"
+                        onClick={handleselectiochange}
+                        size="small"
+                      />
+                    ) : (
+                      <TextField
+                        ref={ref}
+                        type="button"
+                        className="form-control  mb-3 "
+                        label={t("date")}
+                        value={`${date_range[0].startDate
+                          .toLocaleString("en-GB")
+                          .substring(0, 10)} - ${date_range[0].endDate
+                          .toLocaleString("en-GB")
+                          .substring(0, 10)}`}
+                        onClick={handleselectiochange}
+                        size="small"
+                      />
+                    )}
+                    <Overlay
+                      show={show}
+                      target={target}
+                      placement="bottom-start"
+                      container={ref}
+                      rootClose
+                      onHide={() => setshow(false)}
+                    >
+                      <Popover id="popover-contained" className="pop_over">
+                        <Popover.Body>
+                          <div>
+                            <DateRangePicker
+                              onChange={handleSelect}
+                              showSelectionPreview={true}
+                              showCalendarPreview={false}
+                              dragSelectionEnabled={true}
+                              moveRangeOnFirstSelection={false}
+                              months={2}
+                              ranges={date_range}
+                              direction="horizontal"
+                              preventSnapRefocus={true}
+                              calendarFocus="backwards"
+                              staticRanges={[
+                                ...defaultStaticRanges,
+                                {
+                                  label: "Last Year",
+                                  range: () => ({
+                                    startDate: startOfYear(
+                                      addYears(new Date(), -1)
+                                    ),
+                                    endDate: endOfYear(
+                                      addYears(new Date(), -1)
+                                    ),
+                                  }),
+                                  isSelected(range) {
+                                    const definedRange = this.range();
+                                    return (
+                                      isSameDay(
+                                        range.startDate,
+                                        definedRange.startDate
+                                      ) &&
+                                      isSameDay(
+                                        range.endDate,
+                                        definedRange.endDate
+                                      )
+                                    );
+                                  },
+                                },
+                                {
+                                  label: "This Year",
+                                  range: () => ({
+                                    startDate: startOfYear(new Date()),
+                                    endDate: endOfDay(new Date()),
+                                  }),
+                                  isSelected(range) {
+                                    const definedRange = this.range();
+                                    return (
+                                      isSameDay(
+                                        range.startDate,
+                                        definedRange.startDate
+                                      ) &&
+                                      isSameDay(
+                                        range.endDate,
+                                        definedRange.endDate
+                                      )
+                                    );
+                                  },
+                                },
+                                {
+                                  label: "From Start",
+                                  range: () => ({
+                                    startDate: startOfYear(
+                                      addYears(new Date(), -10)
+                                    ),
+                                    endDate: endOfDay(new Date()),
+                                  }),
+                                  isSelected(range) {
+                                    const definedRange = this.range();
+                                    return (
+                                      isSameDay(
+                                        range.startDate,
+                                        definedRange.startDate
+                                      ) &&
+                                      isSameDay(
+                                        range.endDate,
+                                        definedRange.endDate
+                                      )
+                                    );
+                                  },
+                                },
+                              ]}
+                            />
+                          </div>
+                        </Popover.Body>
+                      </Popover>
+                    </Overlay>
+                  </div>
+                  <div className=" col-6  col-md-2">
                     <TextField
-                      ref={ref}
-                      type="button"
+                      type="month"
                       className="form-control  mb-3"
-                      label={t("date")}
-                      value="From Start"
-                      onClick={handleselectiochange}
+                      label={"Month"}
+                      InputLabelProps={{ shrink: true }}
+                      value={month}
+                      onChange={(e) => {
+                        setmonth(e.target.value);
+                      }}
+                      InputProps={{
+                        inputProps: {
+                          min: `${selected_year.value}-01`,
+                          max: `${selected_year.value}-12`,
+                        },
+                      }}
                       size="small"
+                      required
                     />
-                  ) : (
-                    <TextField
-                      ref={ref}
-                      type="button"
-                      className="form-control  mb-3 "
-                      label={t("date")}
-                      value={`${date_range[0].startDate
-                        .toLocaleString("en-GB")
-                        .substring(0, 10)} - ${date_range[0].endDate
-                        .toLocaleString("en-GB")
-                        .substring(0, 10)}`}
-                      onClick={handleselectiochange}
-                      size="small"
-                    />
-                  )}
-                  <Overlay
-                    show={show}
-                    target={target}
-                    placement="bottom-start"
-                    container={ref}
-                    rootClose
-                    onHide={() => setshow(false)}
-                  >
-                    <Popover id="popover-contained" className="pop_over">
-                      <Popover.Body>
-                        <div>
-                          <DateRangePicker
-                            onChange={handleSelect}
-                            showSelectionPreview={true}
-                            showCalendarPreview={false}
-                            dragSelectionEnabled={true}
-                            moveRangeOnFirstSelection={false}
-                            months={2}
-                            ranges={date_range}
-                            direction="horizontal"
-                            preventSnapRefocus={true}
-                            calendarFocus="backwards"
-                            staticRanges={[
-                              ...defaultStaticRanges,
-                              {
-                                label: "Last Year",
-                                range: () => ({
-                                  startDate: startOfYear(
-                                    addYears(new Date(), -1)
-                                  ),
-                                  endDate: endOfYear(addYears(new Date(), -1)),
-                                }),
-                                isSelected(range) {
-                                  const definedRange = this.range();
-                                  return (
-                                    isSameDay(
-                                      range.startDate,
-                                      definedRange.startDate
-                                    ) &&
-                                    isSameDay(
-                                      range.endDate,
-                                      definedRange.endDate
-                                    )
-                                  );
-                                },
-                              },
-                              {
-                                label: "This Year",
-                                range: () => ({
-                                  startDate: startOfYear(new Date()),
-                                  endDate: endOfDay(new Date()),
-                                }),
-                                isSelected(range) {
-                                  const definedRange = this.range();
-                                  return (
-                                    isSameDay(
-                                      range.startDate,
-                                      definedRange.startDate
-                                    ) &&
-                                    isSameDay(
-                                      range.endDate,
-                                      definedRange.endDate
-                                    )
-                                  );
-                                },
-                              },
-                              {
-                                label: "From Start",
-                                range: () => ({
-                                  startDate: startOfYear(
-                                    addYears(new Date(), -10)
-                                  ),
-                                  endDate: endOfDay(new Date()),
-                                }),
-                                isSelected(range) {
-                                  const definedRange = this.range();
-                                  return (
-                                    isSameDay(
-                                      range.startDate,
-                                      definedRange.startDate
-                                    ) &&
-                                    isSameDay(
-                                      range.endDate,
-                                      definedRange.endDate
-                                    )
-                                  );
-                                },
-                              },
-                            ]}
-                          />
-                        </div>
-                      </Popover.Body>
-                    </Popover>
-                  </Overlay>
+                  </div>
+                  <div className="col-6  col-md-2 ">
+                    <Select
+                      options={[
+                        { value: "all", label: "All" },
+                        ...allemployees,
+                      ]}
+                      placeholder={"Employees"}
+                      value={employee}
+                      funct={(e) => setemployee(e)}
+                      required={true}
+                    ></Select>
+                  </div>
                 </div>
                 <div className="d-sm-flex justify-content-between align-items-center mt-3">
                   <div>
