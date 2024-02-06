@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import "./home.css";
 import {
   Sidebar,
@@ -18,10 +18,10 @@ import Header from "../Container/headerContainer";
 import Footer from "../Components/footer";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
 import TurnedInIcon from "@material-ui/icons/TurnedIn";
-import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
 import StoreIcon from "@material-ui/icons/Store";
 import { useTranslation } from "react-i18next";
 import Select_Branch from "./branchmodel";
+import LocalAtmIcon from "@material-ui/icons/LocalAtm";
 
 function Layout(props) {
   const { t } = useTranslation();
@@ -46,7 +46,11 @@ function Layout(props) {
     }
   };
   return (
-    <div id="app" className="d-flex" style={{ zoom: ".7" }}>
+    <div
+      id="app"
+      className={user && "d-flex"}
+      style={{ zoom: user ? ".7" : "1" }}
+    >
       {user && (
         <Sidebar
           breakPoint="md"
@@ -221,6 +225,14 @@ function Layout(props) {
                 Stock
               </MenuItem>
             </SubMenu>
+            <MenuItem
+              active={menu_status === "sale"}
+              icon={<LocalAtmIcon />}
+              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+              component={<Link to="/sale_page" />}
+            >
+              Sale
+            </MenuItem>
 
             {/* {current_user?.permissions?.includes("view_payments") && (
               <MenuItem
@@ -313,7 +325,6 @@ function Layout(props) {
         ) : (
           <div
             style={{
-              minHeight: "125vh",
               backgroundColor: "rgb(241, 245, 245)",
             }}
           >

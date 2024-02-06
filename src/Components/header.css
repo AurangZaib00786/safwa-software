@@ -24,3 +24,7 @@
     visibility: hidden;
    
 }
+
+.header_right:hover{
+    cursor: pointer;
+}

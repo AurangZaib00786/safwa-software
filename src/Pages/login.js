@@ -70,9 +70,12 @@ function Login(props) {
   return (
     <div
       className="d-flex align-items-center justify-content-center"
-      style={{ minHeight: "125vh" }}
+      style={{ minHeight: "100vh" }}
     >
-      <div className="card col-sm-4 p-5 min-vh-70 login">
+      <div
+        className="card col-sm-4 p-5 min-vh-70 login"
+        style={{ zoom: " 0.6" }}
+      >
         <div className="card-body ">
           <div className="d-flex justify-content-center">
             <Avatar style={{ width: "100px", height: "100px" }}></Avatar>
@@ -143,7 +146,6 @@ function Login(props) {
             </div>
           </form>
         </div>
-        <ToastContainer autoClose={2000} hideProgressBar={true} theme="dark" />
       </div>
     </div>
   );

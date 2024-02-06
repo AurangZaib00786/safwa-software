@@ -7,7 +7,7 @@ import Sale_history from "../../Container/salehistoryContainer";
 import Sale_Edit from "../../Container/saleeditContainer";
 
 function Sale_page({ current_user }) {
-  const tabs = ["sale", "sale_history"];
+  const tabs = ["sale", "sale_history", "sale_Edit"];
   var current_tab = localStorage.getItem("activeTab");
   if (!tabs.includes(current_tab)) {
     current_tab = "sale";
@@ -31,20 +31,22 @@ function Sale_page({ current_user }) {
         id="noanim-tab-example"
         className="mb-3"
       >
-        {current_user?.permissions?.includes("view_sale") && (
+        {!current_user?.permissions?.includes("view_sale") && (
           <Tab eventKey="sale" title="Sale">
             {activeTab === "sale" && <Sale />}
           </Tab>
         )}
-        {current_user?.permissions?.includes("view_sale_history") && (
+        {!current_user?.permissions?.includes("view_sale_history") && (
           <Tab eventKey="sale_history" title="Sale History">
-            {activeTab === "sale_history" ? (
+            {(activeTab === "sale_history" || activeTab === "sale_Edit") && (
               <Sale_history setActiveTab={setActiveTab} />
-            ) : (
-              activeTab === "sale_Edit" && (
-                <Sale_Edit setActiveTab={setActiveTab} />
-              )
             )}
+          </Tab>
+        )}
+
+        {activeTab === "sale_Edit" && (
+          <Tab eventKey="sale_Edit" title="Sale Edit">
+            <Sale_Edit setActiveTab={setActiveTab} />
           </Tab>
         )}
       </Tabs>

@@ -34,6 +34,12 @@ export default function Order(props) {
   const [allemployee, setallemployee] = useState([]);
   const [employee, setemployee] = useState("");
 
+  const [allmenu, setallmenu] = useState([]);
+  const [menu, setmenu] = useState("");
+
+  const [alltime, setalltime] = useState([]);
+  const [time, settime] = useState("");
+
   const [breakfast, setbreakfast] = useState("");
   const [remarks, setremarks] = useState("");
   const [isloading, setisloading] = useState(false);
@@ -378,6 +384,26 @@ export default function Order(props) {
                       value={employee}
                       funct={(e) => {
                         setemployee(e);
+                      }}
+                    />
+                  </div>
+                  <div className="col-md-4 me-3">
+                    <Select
+                      options={allmenu}
+                      placeholder={"Menu"}
+                      value={menu}
+                      funct={(e) => {
+                        setmenu(e);
+                      }}
+                    />
+                  </div>
+                  <div className="col-md-4 me-3">
+                    <Select
+                      options={alltime}
+                      placeholder={""}
+                      value={time}
+                      funct={(e) => {
+                        settime(e);
                       }}
                     />
                   </div>

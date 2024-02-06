@@ -36,6 +36,7 @@ import {
 import moment from "moment";
 import Red_toast from "../alerts/red_toast";
 import Select from "../alerts/select";
+import PrintRoundedIcon from "@material-ui/icons/PrintRounded";
 
 function Salalrieshistory(props) {
   const { t } = useTranslation();
@@ -176,6 +177,17 @@ function Salalrieshistory(props) {
   const linkFollow = (cell, row, rowIndex, formatExtraData) => {
     return (
       <span className="action d-flex">
+        <IconButton
+          className="border border-primary rounded me-2 tooltipclass"
+          onClick={() => {
+            localStorage.setItem("data", JSON.stringify(row));
+
+            window.open("/salary_print", "_blank");
+          }}
+        >
+          <PrintRoundedIcon className="m-1" color="primary" fontSize="medium" />
+          <span className="tooltip-textclass">Print</span>
+        </IconButton>
         {current_user?.permissions?.includes("delete_salaries") && (
           <IconButton
             className="me-2 border border-danger rounded"
@@ -235,7 +247,7 @@ function Salalrieshistory(props) {
       headerFormatter: headerstyle,
     },
     {
-      dataField: "employee_name",
+      dataField: "employee_info.name",
       text: "Employee",
       sort: true,
       headerFormatter: headerstyle,
@@ -570,7 +582,6 @@ function Salalrieshistory(props) {
                         },
                       }}
                       size="small"
-                      required
                     />
                   </div>
                   <div className="col-6  col-md-2 ">
@@ -582,7 +593,6 @@ function Salalrieshistory(props) {
                       placeholder={"Employees"}
                       value={employee}
                       funct={(e) => setemployee(e)}
-                      required={true}
                     ></Select>
                   </div>
                 </div>

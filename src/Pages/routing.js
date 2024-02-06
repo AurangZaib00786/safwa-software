@@ -29,6 +29,7 @@ import { useState } from "react";
 import Issueform from "../Components/materialissueform/formprint";
 import EmployeePrint from "../Components/employee/employeeprint";
 import Salaries_page from "./salaries_page/salaries_page";
+import Salary_Print from "../Components/salaries/salariesprint";
 
 function Routing(props) {
   const user = props.state.setuser.user;
@@ -180,6 +181,17 @@ function Routing(props) {
               }
             ></Route>
 
+            <Route
+              path="/sale_page"
+              element={
+                user ? (
+                  <Sale_page current_user={current_user} />
+                ) : (
+                  <Navigate to={"/"} />
+                )
+              }
+            ></Route>
+
             {/* <Route
               path="/payments"
               element={
@@ -239,6 +251,10 @@ function Routing(props) {
           </Route>
           <Route path="/issueform" element={user && <Issueform />}></Route>
           <Route path="/mealform" element={user && <Mealform />}></Route>
+          <Route
+            path="/salary_print"
+            element={user && <Salary_Print />}
+          ></Route>
           <Route
             path="/employeeprint"
             element={user && <EmployeePrint />}

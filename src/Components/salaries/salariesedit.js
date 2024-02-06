@@ -7,7 +7,7 @@ import Spinner from "react-bootstrap/Spinner";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import { useTranslation } from "react-i18next";
-import Select from "../alerts/select";
+import PrintRoundedIcon from "@material-ui/icons/PrintRounded";
 import TextField from "@mui/material/TextField";
 import custom_toast from "../alerts/custom_toast";
 
@@ -36,7 +36,6 @@ export default function Salaries_edit(props) {
   const [isloading, setisloading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
     const formData = new FormData();
 
     formData.append("user", current_user?.id);
@@ -84,6 +83,10 @@ export default function Salaries_edit(props) {
       setabsentdays("");
       setsalary_paid("");
       setActiveTab("salaries_history");
+      if (e) {
+        localStorage.setItem("data", JSON.stringify(json));
+        window.open("/salary_print", "_blank");
+      }
     }
   };
 
@@ -97,13 +100,23 @@ export default function Salaries_edit(props) {
   return (
     <div className="p-3">
       <div className="card">
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (document.activeElement.name === "printbtn") {
+              handleSubmit(true);
+            } else {
+              handleSubmit(false);
+            }
+          }}
+        >
           <div className="card-header d-flex justify-content-between bg-white">
             <h3 className="mt-2 me-2">Employee Salary</h3>
             <div className="mt-2 me-2 d-flex flex-row-reverse">
               <Button
                 name="savebtn"
-                variant="outline-primary"
+                variant="outline-success"
+                className="me-2"
                 type="submit"
                 disabled={isloading}
               >
@@ -117,6 +130,24 @@ export default function Salaries_edit(props) {
                   />
                 )}
                 <FontAwesomeIcon icon={faRotate} className="me-1" /> Save
+              </Button>
+
+              <Button
+                name="printbtn"
+                variant="outline-primary"
+                type="submit"
+                disabled={isloading}
+              >
+                {isloading && (
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                )}
+                <PrintRoundedIcon className="me-1" /> Print
               </Button>
             </div>
           </div>

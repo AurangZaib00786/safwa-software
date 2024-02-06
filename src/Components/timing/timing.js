@@ -86,7 +86,7 @@ export default function Timing(props) {
   const Action = (cell, row, rowIndex, formatExtraData) => {
     return (
       <span className="action d-flex">
-        {current_user?.permissions?.includes("delete_timing") && (
+        {current_user?.permissions?.includes("delete_timings") && (
           <IconButton
             className="border border-danger rounded me-2 tooltipclass"
             onClick={() => {
@@ -100,7 +100,7 @@ export default function Timing(props) {
           </IconButton>
         )}
 
-        {current_user?.permissions?.includes("change_timing") && (
+        {current_user?.permissions?.includes("change_timings") && (
           <IconButton
             style={{ border: "1px solid #003049", borderRadius: "5px" }}
             className="tooltipclass"
@@ -275,7 +275,7 @@ export default function Timing(props) {
               {" "}
               Process
             </Button>
-            {current_user?.permissions?.includes("add_timing") && (
+            {current_user?.permissions?.includes("add_timings") && (
               <Button
                 type="button"
                 className="mb-2"
@@ -289,7 +289,7 @@ export default function Timing(props) {
           </div>
         </div>
 
-        {current_user?.permissions?.includes("view_timing") && (
+        {current_user?.permissions?.includes("view_timings") && (
           <div className="card-body pt-0">
             <ToolkitProvider
               keyField="id"

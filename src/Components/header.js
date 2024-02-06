@@ -175,6 +175,8 @@ function Header(props) {
           placement="bottom"
           container={ref}
           containerPadding={20}
+          rootClose
+          onHide={() => setshow(false)}
         >
           <Popover
             style={{ width: "500px" }}

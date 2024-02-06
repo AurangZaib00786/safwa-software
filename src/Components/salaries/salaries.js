@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import Select from "../alerts/select";
 import TextField from "@mui/material/TextField";
 import custom_toast from "../alerts/custom_toast";
+import PrintRoundedIcon from "@material-ui/icons/PrintRounded";
 
 export default function Salaries(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -104,7 +105,6 @@ export default function Salaries(props) {
   }, [employee, month]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
     const formData = new FormData();
 
     formData.append("employee", employee?.value?.id);
@@ -177,6 +177,10 @@ export default function Salaries(props) {
       setworkingdays("");
       setabsentdays("");
       setsalary_paid("");
+      if (e) {
+        localStorage.setItem("data", JSON.stringify(json));
+        window.open("/salary_print", "_blank");
+      }
     }
   };
 
@@ -192,12 +196,39 @@ export default function Salaries(props) {
   return (
     <div className="p-3">
       <div className="card">
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (document.activeElement.name === "printbtn") {
+              handleSubmit(true);
+            } else {
+              handleSubmit(false);
+            }
+          }}
+        >
           <div className="card-header d-flex justify-content-between bg-white">
             <h3 className="mt-2 me-2">Employee Salary</h3>
-            <div className="mt-2 me-2 d-flex flex-row-reverse">
+            <div className="mt-2 me-2 d-flex">
               <Button
                 name="savebtn"
+                variant="outline-success"
+                type="submit"
+                disabled={isloading}
+                className="me-2"
+              >
+                {isloading && (
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                )}
+                <FontAwesomeIcon icon={faRotate} className="me-1" /> Save
+              </Button>
+              <Button
+                name="printbtn"
                 variant="outline-primary"
                 type="submit"
                 disabled={isloading}
@@ -211,7 +242,7 @@ export default function Salaries(props) {
                     aria-hidden="true"
                   />
                 )}
-                <FontAwesomeIcon icon={faRotate} className="me-1" /> Save
+                <PrintRoundedIcon className="me-1" /> Print
               </Button>
             </div>
           </div>

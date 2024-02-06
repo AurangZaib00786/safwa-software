@@ -76,7 +76,7 @@ font-size: 12px;
     }
 
 .saleman::after{
-    content: 'Salesman';
+    content: 'Sale Person';
     position: absolute;
     top: -9px;
     left: 9px;
@@ -85,8 +85,8 @@ font-size: 12px;
     color: gray;
     font-size: 12px;
     }
-.deliveryman::after{
-    content: 'Delivery Man';
+.orders::after{
+    content: 'Orders ';
     position: absolute;
     top: -9px;
     left: 9px;
