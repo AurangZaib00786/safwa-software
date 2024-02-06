@@ -263,6 +263,8 @@ function Sale_Edit(props) {
       setdata([]);
       setgetagain_invoice(!getagain_invoice);
       success_toast();
+      localStorage.setItem("data", JSON.stringify(json));
+      window.open("/invoice/sales", "_blank");
       setActiveTab("sale_history");
     }
   };

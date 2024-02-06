@@ -214,6 +214,7 @@ function Sale_history(props) {
           className="border border-primary rounded me-2"
           onClick={() => {
             localStorage.setItem("data", JSON.stringify(row));
+            window.open("/invoice/sales", "_blank");
           }}
         >
           <PrintRoundedIcon className="m-1" color="primary" fontSize="medium" />

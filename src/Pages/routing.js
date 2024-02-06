@@ -16,7 +16,7 @@ import Mealform from "../Components/dailymeal/dailmealprint";
 import BuffetMenu from "../Container/buffetmenuContainer";
 import Sale_page from "./sale_page/sale_page";
 import Payment_page from "./payments/payment_page";
-import Sale_invoice from "../Container/invoiceContainer";
+import Sale_invoice from "../Components/sale/sale_invoice";
 import Dashboard from "../Container/dashboardContainer";
 import Report_page from "./report_page/report_page";
 import Login from "../Container/loginContainer";
@@ -249,6 +249,10 @@ function Routing(props) {
               }
             ></Route> */}
           </Route>
+          <Route
+            path="/invoice/:name"
+            element={user && <Sale_invoice />}
+          ></Route>
           <Route path="/issueform" element={user && <Issueform />}></Route>
           <Route path="/mealform" element={user && <Mealform />}></Route>
           <Route
