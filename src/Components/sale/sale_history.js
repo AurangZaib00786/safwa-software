@@ -267,28 +267,24 @@ function Sale_history(props) {
       hidden: true,
       headerFormatter: headerstyle,
       csvExport: false,
-      footer: "",
     },
     {
       dataField: "date",
       text: t("date"),
       sort: true,
       headerFormatter: headerstyle,
-      footer: "",
     },
     {
       dataField: "invoice",
       text: t("invoice"),
       sort: true,
       headerFormatter: headerstyle,
-      footer: "",
     },
     {
       dataField: "customer_info.name",
       text: t("side_bar_customers"),
       sort: true,
       headerFormatter: headerstyle,
-      footer: "",
     },
 
     {
