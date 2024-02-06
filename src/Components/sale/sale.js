@@ -96,7 +96,7 @@ function Sale(props) {
         const supp = json.map((item) => {
           return {
             value: item,
-            label: `id-${item.id}`,
+            label: `ID-${String(item.id).padStart(3, "0")}`,
           };
         });
         setallorders(supp);

@@ -216,7 +216,7 @@ export default function Order(props) {
           customer: employee.value,
           date: date,
           menu: menu.value,
-          time: time.value,
+          timing: time.value,
         }),
       });
       const json = await response.json();
@@ -263,7 +263,7 @@ export default function Order(props) {
         customer: employee.value,
         date: date,
         menu: menu.value,
-        time: time.value,
+        timing: time.value,
       }),
     });
     const json = await response.json();

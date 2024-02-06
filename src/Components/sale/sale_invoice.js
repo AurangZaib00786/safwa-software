@@ -149,7 +149,7 @@ function Invoice(props) {
               className="d-flex justify-content-between mt-1 p-2 ms-1 me-1"
               style={{ border: "1px solid black", borderRadius: "5px" }}
             >
-              <div className="col-6 text-left">
+              <div className=" ">
                 <h6 className="m-0">Customer Details :</h6>
                 {customer?.name && <p className="m-0">{customer.name}</p>}
                 {customer?.ntn && <p className="m-0">NTN: {customer.ntn}</p>}
@@ -162,27 +162,29 @@ function Invoice(props) {
                   <p className="m-0">Address: {customer.address}</p>
                 )}
               </div>
-              <div className="col-6 text-left">
+              <div className=" ">
                 <p className="d-flex justify-content-between m-0">
-                  <span className="col-6 me-3">Invoive no:</span>
-                  <span className="col-6 me-3">{data.invoice}</span>
+                  <span className="  me-3">Invoive no:</span>
+                  <span className="   me-3">{data.invoice}</span>
                 </p>
                 <p className="d-flex justify-content-between m-0">
-                  <span className="col-6 me-3">Invoive Date:</span>
-                  <span className="col-6 me-3">{data.date}</span>
+                  <span className=" me-3">Invoive Date:</span>
+                  <span className=" me-3">{data.date}</span>
                 </p>
                 <p className="d-flex justify-content-between m-0">
-                  <span className="col-6 me-3">Payment Type:</span>
-                  <span className="col-6 me-3">{data.payment_type} </span>
+                  <span className=" me-3">Payment Type:</span>
+                  <span className=" me-3">{data.payment_type} </span>
                 </p>
                 <p className="d-flex justify-content-between m-0">
-                  <span className="col-6 me-3">Sale Person:</span>
-                  <span className="col-6 me-3">{data.sale_person_name} </span>
+                  <span className=" me-3">Sale Person:</span>
+                  <span className=" me-3">{data.sale_person_name} </span>
                 </p>
                 <p className="d-flex justify-content-between m-0">
-                  <span className="col-6 me-3">Orders:</span>
-                  <span className="col-6 me-3">
-                    {data.orders_detail.map((item) => `id-${item.order}`)}{" "}
+                  <span className=" me-3">Orders:</span>
+                  <span className=" me-3">
+                    {data.orders_detail.map(
+                      (item) => `ID-${String(item.order).padStart(3, "0")}, `
+                    )}{" "}
                   </span>
                 </p>
               </div>

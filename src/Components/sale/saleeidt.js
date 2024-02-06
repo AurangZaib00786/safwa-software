@@ -50,11 +50,7 @@ function Sale_Edit(props) {
   const [allsalemans, setallsalemans] = useState([]);
   const [data, setdata] = useState(id_data?.details);
   const [allorders, setallorders] = useState([]);
-  const [orders, setorders] = useState(
-    id_data?.orders_detail?.map((item) => {
-      return { value: item, label: `id-${item.order}` };
-    })
-  );
+  const [orders, setorders] = useState("");
   const [pax, setpax] = useState("");
   const [meal_type, setmeal_type] = useState("");
   const [days, setdays] = useState("");
@@ -80,10 +76,21 @@ function Sale_Edit(props) {
         const supp = json.map((item) => {
           return {
             value: item,
-            label: `id-${item.id}`,
+            label: `ID-${String(item.id).padStart(3, "0")}`,
           };
         });
         setallorders(supp);
+        const filter_orders = json.filter((item) =>
+          order_data_list.includes(item.id)
+        );
+        setorders(
+          filter_orders.map((item) => {
+            return {
+              value: item,
+              label: `ID-${String(item.id).padStart(3, "0")}`,
+            };
+          })
+        );
       }
       if (!response.ok) {
         went_wrong_toast();
@@ -277,7 +284,7 @@ function Sale_Edit(props) {
 
   const handleaddfromorder = (e) => {
     setorders(e);
-    setdata([]);
+
     var breakfast = 0;
     var lunch = 0;
     var dinner = 0;
