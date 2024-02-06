@@ -50,10 +50,9 @@ function Sale_history(props) {
   const current_user = props.state.Setcurrentinfo.current_user;
   const history = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
-  const settable_data = props.Setsavedata;
   const { SearchBar } = Search;
   const { ExportCSVButton } = CSVExport;
-  const settings = props.state.Setcurrentinfo.settings;
+
   const setActiveTab = props.setActiveTab;
   const [delete_user, setdelete_user] = useState(false);
   const [url_to_delete, seturl_to_delete] = useState("");
@@ -120,13 +119,7 @@ function Sale_history(props) {
   useEffect(() => {
     const fetchCustomer = async () => {
       var url = `${route}/api/parties/?account_head=${selected_branch.id}&type=Customer`;
-      if (!settings?.user_base?.account_base) {
-        if (current_user.profile.user_type === "user") {
-          url = `${route}/api/parties/?user_id=${current_user.profile.parent_user}&type=Customer`;
-        } else {
-          url = `${route}/api/parties/?user_id=${current_user.id}&type=Customer`;
-        }
-      }
+
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
       });
@@ -142,14 +135,7 @@ function Sale_history(props) {
     };
 
     const fetchsalesman = async () => {
-      var url = `${route}/api/sales-persons/?account_head=${selected_branch.id}`;
-      if (!settings?.user_base?.account_base) {
-        if (current_user.profile.user_type === "user") {
-          url = `${route}/api/sales-persons/?user_id=${current_user.profile.parent_user}`;
-        } else {
-          url = `${route}/api/sales-persons/?user_id=${current_user.id}`;
-        }
-      }
+      var url = `${route}/api/employee/?account_head=${selected_branch.id}`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -177,8 +163,8 @@ function Sale_history(props) {
   useEffect(() => {
     setisloading(true);
     dispatch({ type: "Set_table_history", data: [] });
-    const fetchProducts = async () => {
-      var url = `${route}/api/sales/?account_head=${selected_branch.id}&user_id=${current_user.id}&user_type=${current_user?.profile?.user_type}&start_date=${start_date}&end_date=${end_date}`;
+    const fetchsales = async () => {
+      var url = `${route}/api/sales/?account_head=${selected_branch.id}&start_date=${start_date}&end_date=${end_date}`;
       if (
         date_range[0].endDate.getFullYear() -
           date_range[0].startDate.getFullYear() ===
@@ -212,7 +198,7 @@ function Sale_history(props) {
     };
 
     if (user) {
-      fetchProducts();
+      fetchsales();
     }
   }, [callagain, selected_branch]);
 
@@ -228,12 +214,6 @@ function Sale_history(props) {
           className="border border-primary rounded me-2"
           onClick={() => {
             localStorage.setItem("data", JSON.stringify(row));
-
-            if (formatExtraData.code === "A4") {
-              window.open("/invoice/sales", "_blank");
-            } else if (formatExtraData.code === "80mm") {
-              window.open("/invoice_80/sales", "_blank");
-            }
           }}
         >
           <PrintRoundedIcon className="m-1" color="primary" fontSize="medium" />
@@ -253,13 +233,7 @@ function Sale_history(props) {
           className="p-0 me-2"
           style={{ border: "1px solid #003049", borderRadius: "5px" }}
           onClick={() => {
-            const data = history.filter((item) => {
-              return item.id === row.id;
-            });
-            settable_data({
-              type: "Set_save_data",
-              data: [{ data: data[0] }],
-            });
+            localStorage.setItem("data", JSON.stringify(row));
             setActiveTab("sale_Edit");
           }}
         >
@@ -283,20 +257,6 @@ function Sale_history(props) {
         {sortElement}
       </div>
     );
-  };
-
-  const fix_formatter = (cell, row) => {
-    return <div>{parseFloat(cell).toFixed(2)}</div>;
-  };
-
-  const footerFormatter = (column, colIndex, { text }) => {
-    if (colIndex > 3) {
-      return (
-        <span style={{ fontSize: "large" }}>{Number(text).toFixed(2)}</span>
-      );
-    } else {
-      return <span style={{ fontSize: "large" }}>{text}</span>;
-    }
   };
 
   const columns = [
@@ -329,61 +289,7 @@ function Sale_history(props) {
       headerFormatter: headerstyle,
       footer: "",
     },
-    {
-      dataField: "sale_person_name",
-      text: "Sale Person",
-      sort: true,
-      headerFormatter: headerstyle,
-      footer: "Total",
-      footerFormatter: footerFormatter,
-    },
-    {
-      dataField: "sub_total",
-      text: t("subtotal"),
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-      footer: (columnData) => columnData.reduce((acc, item) => acc + item, 0),
-      footerFormatter: footerFormatter,
-    },
-    {
-      dataField: "tax_amount",
-      text: "Tax ",
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-      footer: (columnData) => columnData.reduce((acc, item) => acc + item, 0),
-      footerFormatter: footerFormatter,
-    },
 
-    {
-      dataField: "discount_amount",
-      text: "Discount",
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-      footer: (columnData) => columnData.reduce((acc, item) => acc + item, 0),
-      footerFormatter: footerFormatter,
-    },
-    {
-      dataField: "extra_disc",
-      text: "Extra Dis.",
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-      footer: (columnData) => columnData.reduce((acc, item) => acc + item, 0),
-      footerFormatter: footerFormatter,
-    },
-
-    {
-      dataField: "total",
-      text: "Total",
-      sort: true,
-      headerFormatter: headerstyle,
-      formatter: fix_formatter,
-      footer: (columnData) => columnData.reduce((acc, item) => acc + item, 0),
-      footerFormatter: footerFormatter,
-    },
     {
       dataField: "payment_type",
       text: "Payment Type",

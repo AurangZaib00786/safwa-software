@@ -2,27 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import "./sale.css";
 import Button from "react-bootstrap/Button";
 import { IconButton } from "@material-ui/core";
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import BootstrapTable from "react-bootstrap-table-next";
-import cellEditFactory from "react-bootstrap-table2-editor";
 import Spinner from "react-bootstrap/Spinner";
 import SaveIcon from "@material-ui/icons/Save";
-import ToolkitProvider, {
-  CSVExport,
-} from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
-import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
-import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import Select from "react-select";
 import PrintRoundedIcon from "@material-ui/icons/PrintRounded";
 import TextField from "@mui/material/TextField";
 import InputGroup from "react-bootstrap/InputGroup";
 import AddIcon from "@material-ui/icons/Add";
-import VisibilityIcon from "@material-ui/icons/Visibility";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBarcode } from "@fortawesome/free-solid-svg-icons";
-import { faTag } from "@fortawesome/free-solid-svg-icons";
-import { faListOl } from "@fortawesome/free-solid-svg-icons";
-import { ToastContainer } from "react-toastify";
 import went_wrong_toast from "../alerts/went_wrong_toast";
 import success_toast from "../alerts/success_toast";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -66,7 +52,6 @@ function Sale(props) {
   const [meal_type, setmeal_type] = useState("");
   const [days, setdays] = useState("");
   const [price, setprice] = useState("");
-  const [total, settotal] = useState("");
   const [remarks, setremarks] = useState("");
 
   useEffect(() => {
@@ -111,7 +96,7 @@ function Sale(props) {
         const supp = json.map((item) => {
           return {
             value: item,
-            label: item.id,
+            label: `id-${item.id}`,
           };
         });
         setallorders(supp);
@@ -321,32 +306,40 @@ function Sale(props) {
       });
     });
 
-    setdata([
-      {
+    const new_data = [];
+    if (breakfast > 0) {
+      new_data.push({
         pax: breakfast,
         meal_type: "breakfast",
         days: 0,
         price: 0,
         total: 0,
         description: "",
-      },
-      {
+      });
+    }
+    if (lunch > 0) {
+      new_data.push({
         pax: lunch,
         meal_type: "lunch",
         days: 0,
         price: 0,
         total: 0,
         description: "",
-      },
-      {
+      });
+    }
+
+    if (dinner > 0) {
+      new_data.push({
         pax: dinner,
         meal_type: "dinner",
         days: 0,
         price: 0,
         total: 0,
         description: "",
-      },
-    ]);
+      });
+    }
+
+    setdata(new_data);
 
     setpax("");
     setremarks("");

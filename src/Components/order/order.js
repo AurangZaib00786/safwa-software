@@ -53,6 +53,17 @@ export default function Order(props) {
         value: orderdata.customer,
         label: orderdata.customer_name,
       });
+
+      setmenu({
+        value: orderdata.menu,
+        label: orderdata.menu_name,
+      });
+
+      settime({
+        value: orderdata.timing,
+        label: orderdata.time_name,
+      });
+
       setdate(orderdata.date);
       setdata(
         orderdata.details?.map((item) => {
@@ -70,6 +81,61 @@ export default function Order(props) {
         })
       );
     }
+  }, []);
+
+  useEffect(() => {
+    const fetchmenu = async () => {
+      var url = `${route}/api/menu/`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        setisloading(false);
+
+        const optimize = json.map((item) => {
+          return { value: item.id, label: item.name };
+        });
+        setallmenu(optimize);
+      }
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${json[error[0]]}`);
+        }
+        setisloading(false);
+      }
+    };
+
+    const fetchtime = async () => {
+      var url = `${route}/api/buffet-timing/`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        setisloading(false);
+
+        const optimize = json.map((item) => {
+          return { value: item.id, label: item.name };
+        });
+        setalltime(optimize);
+      }
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${json[error[0]]}`);
+        }
+        setisloading(false);
+      }
+    };
+
+    fetchmenu();
+    fetchtime();
   }, []);
 
   useEffect(() => {
@@ -130,7 +196,7 @@ export default function Order(props) {
 
   const handlesubmit = async (e) => {
     e.preventDefault();
-    if (employee) {
+    if (employee && menu && time) {
       const optimizedata = data.map((item) => {
         return {
           ...item,
@@ -149,6 +215,8 @@ export default function Order(props) {
           user: current_user.id,
           customer: employee.value,
           date: date,
+          menu: menu.value,
+          time: time.value,
         }),
       });
       const json = await response.json();
@@ -166,9 +234,11 @@ export default function Order(props) {
         setdata([]);
         setemployee("");
         setdate(curdate);
+        setmenu("");
+        settime("");
       }
     } else {
-      Red_toast("Pleae Select Customer!");
+      Red_toast("Pleae Select all fields!");
     }
   };
 
@@ -192,6 +262,8 @@ export default function Order(props) {
         details: optimizedata,
         customer: employee.value,
         date: date,
+        menu: menu.value,
+        time: time.value,
       }),
     });
     const json = await response.json();
@@ -210,6 +282,8 @@ export default function Order(props) {
       setemployee("");
       localStorage.setItem("data", JSON.stringify(""));
       setupdate(false);
+      setmenu("");
+      settime("");
       setActiveTab("assignorderhistory");
     }
   };
@@ -400,7 +474,7 @@ export default function Order(props) {
                   <div className="col-md-4 me-3">
                     <Select
                       options={alltime}
-                      placeholder={""}
+                      placeholder={"Time"}
                       value={time}
                       funct={(e) => {
                         settime(e);

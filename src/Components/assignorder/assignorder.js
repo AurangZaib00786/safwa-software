@@ -23,7 +23,7 @@ export default function AssignOrder(props) {
     setisloading(true);
     dispatch({ type: "Set_menuitem", data: "order" });
     const fetchWorkouts = async () => {
-      var url = `${route}/api/schedule/?buffet_time_id=${order.timing_id}`;
+      var url = `${route}/api/schedule/?buffet_time_id=${order.timing}`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },

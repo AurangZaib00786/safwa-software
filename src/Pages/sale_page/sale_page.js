@@ -25,7 +25,7 @@ function Sale_page({ current_user }) {
   return (
     <div>
       <Tabs
-        defaultActiveKey={activeTab}
+        activeKey={activeTab}
         transition={true}
         onSelect={handleTabSelect}
         id="noanim-tab-example"
@@ -38,7 +38,7 @@ function Sale_page({ current_user }) {
         )}
         {!current_user?.permissions?.includes("view_sale_history") && (
           <Tab eventKey="sale_history" title="Sale History">
-            {(activeTab === "sale_history" || activeTab === "sale_Edit") && (
+            {activeTab === "sale_history" && (
               <Sale_history setActiveTab={setActiveTab} />
             )}
           </Tab>
