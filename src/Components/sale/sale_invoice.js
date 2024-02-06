@@ -168,7 +168,7 @@ function Invoice(props) {
                   <span className="   me-3">{data.invoice}</span>
                 </p>
                 <p className="d-flex justify-content-between m-0">
-                  <span className=" me-3">Invoive Date:</span>
+                  <span className=" me-3">Invoice Date:</span>
                   <span className=" me-3">{data.date}</span>
                 </p>
                 <p className="d-flex justify-content-between m-0">

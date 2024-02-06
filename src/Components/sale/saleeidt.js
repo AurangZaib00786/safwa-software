@@ -28,6 +28,16 @@ function Sale_Edit(props) {
   const settable_data = props.Setproduct_history;
   const [all_suppliers, setall_suppliers] = useState([]);
 
+  const [sub_total, setsub_total] = useState(id_data.sub_total);
+  const [discount_amount, setdiscount_amount] = useState(
+    id_data?.discount_amount
+  );
+  const [discount_percentage, setdiscount_percentage] = useState(
+    id_data?.discount_percentage
+  );
+  const [tax_amount, settax_amount] = useState(id_data.tax_amount);
+  const [tax_percentage, settax_percentage] = useState(id_data?.tax_percentage);
+  const [total, settotal] = useState(id_data?.total);
   const [invoice, setinvoice] = useState(id_data?.invoice);
   const [date, setdate] = useState(id_data?.date);
   const [supplier, setsupplier] = useState({
@@ -155,7 +165,11 @@ function Sale_Edit(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (payment_type.value == "cash") {
+      var credit = total;
+    } else {
+      credit = 0;
+    }
     const body = {
       user: current_user.id,
 
@@ -165,7 +179,14 @@ function Sale_Edit(props) {
       date: date,
       invoice: invoice,
       sale_person: saleman.value,
-
+      total: total,
+      sub_total: sub_total,
+      credit: credit,
+      debit: total,
+      tax_amount: tax_amount,
+      tax_percentage: tax_percentage,
+      discount_amount: discount_amount,
+      discount_percentage: discount_percentage,
       details: data,
     };
 
@@ -217,6 +238,11 @@ function Sale_Edit(props) {
   };
 
   const handlePrint = async () => {
+    if (payment_type.value == "cash") {
+      var credit = total;
+    } else {
+      credit = 0;
+    }
     const body = {
       user: current_user.id,
 
@@ -226,6 +252,14 @@ function Sale_Edit(props) {
       date: date,
       invoice: invoice,
       sale_person: saleman.value,
+      total: total,
+      sub_total: sub_total,
+      credit: credit,
+      debit: total,
+      tax_amount: tax_amount,
+      tax_percentage: tax_percentage,
+      discount_amount: discount_amount,
+      discount_percentage: discount_percentage,
 
       details: data,
     };
@@ -408,6 +442,19 @@ function Sale_Edit(props) {
 
     setdata(optimize);
   };
+
+  useEffect(() => {
+    if (data.length > 0) {
+      var sub_total_total = 0;
+
+      data.map((item) => {
+        sub_total_total += Number(item.total);
+      });
+
+      setsub_total(sub_total_total);
+      settotal(sub_total_total + Number(tax_amount) - Number(discount_amount));
+    }
+  }, [data]);
 
   return (
     <div className="p-3">
@@ -741,6 +788,122 @@ function Sale_Edit(props) {
               </tbody>
             </table>
           </form>
+        </div>
+        <div className="card-footer row">
+          <div className="col-6 col-sm-2 ">
+            <TextField
+              type="number"
+              className="form-control"
+              id="outlined-basic"
+              label={t("subtotal")}
+              value={sub_total}
+              size="small"
+              disabled
+            />
+          </div>
+
+          <div className="col-6 col-sm-2 ">
+            <TextField
+              type="number"
+              className="form-control"
+              id="outlined-basic"
+              label="Disc. %"
+              value={discount_percentage}
+              onChange={(e) => {
+                setdiscount_percentage(e.target.value);
+                const amount = Number((sub_total / 100) * e.target.value);
+                setdiscount_amount(amount.toFixed(2));
+                settotal(
+                  (Number(sub_total) + Number(tax_amount) - amount).toFixed(2)
+                );
+              }}
+              size="small"
+            />
+          </div>
+
+          <div className="col-6 col-sm-2 ">
+            <TextField
+              type="number"
+              className="form-control "
+              id="outlined-basic"
+              label="Disc. Amount"
+              value={discount_amount}
+              onChange={(e) => {
+                setdiscount_amount(e.target.value);
+                const perc = Number((e.target.value / sub_total) * 100);
+                setdiscount_percentage(perc.toFixed(2));
+                settotal(
+                  (
+                    Number(sub_total) +
+                    Number(tax_amount) -
+                    Number(e.target.value)
+                  ).toFixed(2)
+                );
+              }}
+              size="small"
+            />
+          </div>
+          <div className="col-6 col-sm-2 ">
+            <TextField
+              type="number"
+              className="form-control"
+              id="outlined-basic"
+              label="Tax %"
+              value={tax_percentage}
+              onChange={(e) => {
+                settax_percentage(e.target.value);
+                const amount = Number((sub_total / 100) * e.target.value);
+                settax_amount(amount.toFixed(2));
+                settotal(
+                  (
+                    Number(sub_total) +
+                    Number(amount) -
+                    Number(discount_amount)
+                  ).toFixed(2)
+                );
+              }}
+              size="small"
+            />
+          </div>
+
+          <div className="col-6 col-sm-2 ">
+            <TextField
+              type="number"
+              className="form-control "
+              id="outlined-basic"
+              label="Tax Amount"
+              value={tax_amount}
+              onChange={(e) => {
+                settax_amount(e.target.value);
+
+                const perc = Number((e.target.value / sub_total) * 100);
+                settax_percentage(perc.toFixed(2));
+                settotal(
+                  (
+                    Number(sub_total) -
+                    Number(discount_amount) +
+                    Number(e.target.value)
+                  ).toFixed(2)
+                );
+              }}
+              size="small"
+            />
+          </div>
+
+          <div className="col-6 col-sm-2 ">
+            <TextField
+              type="number"
+              className="form-control "
+              id="outlined-basic"
+              label={t("total")}
+              value={total}
+              onChange={(e) => {
+                settotal(e.target.value);
+              }}
+              size="small"
+              disabled
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -183,10 +183,8 @@ function Assignorderhistory(props) {
   const columns = [
     {
       dataField: "id",
-      text: "#",
-      formatter: (cell, row, rowIndex, formatExtraData) => {
-        return rowIndex + 1;
-      },
+      text: "ID",
+
       headerFormatter: headerstyle,
     },
 
@@ -199,6 +197,18 @@ function Assignorderhistory(props) {
     {
       dataField: "customer_name",
       text: "Customer",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "menu_name",
+      text: "Menu",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+    {
+      dataField: "time_name",
+      text: "Time",
       sort: true,
       headerFormatter: headerstyle,
     },
