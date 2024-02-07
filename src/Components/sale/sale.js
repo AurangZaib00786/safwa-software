@@ -452,7 +452,7 @@ function Sale(props) {
 
   return (
     <div className="p-3">
-      <div className="card">
+      <div className="card" style={{ minHeight: "100vh" }}>
         <div className="card-header  d-flex justify-content-end">
           <Button
             className="me-2"
@@ -792,7 +792,7 @@ function Sale(props) {
             </table>
           </form>
         </div>
-        <div className="card-footer row">
+        <div className="card-footer row ms-1 me-1">
           <div className="col-6 col-sm-2 ">
             <TextField
               type="number"

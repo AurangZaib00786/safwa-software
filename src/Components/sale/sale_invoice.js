@@ -297,9 +297,13 @@ function Invoice(props) {
               <div>
                 {data.sub_total > 0 && <p className="m-0">SubTotal</p>}
 
-                {data.discount_amount > 0 && <p className="m-0">Discount</p>}
+                {data.discount_amount > 0 && (
+                  <p className="m-0">Discount ({data.discount_percentage} %)</p>
+                )}
 
-                {data.tax_amount > 0 && <p className="m-0">Tax</p>}
+                {data.tax_amount > 0 && (
+                  <p className="m-0">Tax ({data.tax_percentage} %)</p>
+                )}
 
                 {data.total > 0 && <p className="m-0">Total</p>}
               </div>
