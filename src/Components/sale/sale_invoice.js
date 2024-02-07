@@ -209,6 +209,34 @@ function Invoice(props) {
                 {data.remarks}
               </p>
             </div>
+            <div
+              className="col-sm-6 p-2 d-flex justify-content-between"
+              style={{ border: "1px solid black", borderRadius: "5px" }}
+            >
+              <div>
+                {data.sub_total > 0 && <p className="m-0">SubTotal</p>}
+
+                {data.discount_amount > 0 && <p className="m-0">Discount</p>}
+
+                {data.tax_amount > 0 && <p className="m-0">Tax</p>}
+
+                {data.total > 0 && <p className="m-0">Total</p>}
+              </div>
+
+              <div className="text-end">
+                {data.sub_total > 0 && <p className="m-0">{data.sub_total}</p>}
+
+                {data.discount_amount > 0 && (
+                  <p className="m-0">{data.discount_amount}</p>
+                )}
+
+                {data.tax_amount > 0 && (
+                  <p className="m-0">{data.tax_amount}</p>
+                )}
+
+                {data.total > 0 && <p className="m-0">{data.total}</p>}
+              </div>
+            </div>
           </div>
         </div>
       )}

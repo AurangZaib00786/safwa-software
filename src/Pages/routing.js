@@ -15,7 +15,7 @@ import Dailymeal_page from "./dailymeal_page/dailymeal_page";
 import Mealform from "../Components/dailymeal/dailmealprint";
 import BuffetMenu from "../Container/buffetmenuContainer";
 import Sale_page from "./sale_page/sale_page";
-import Payment_page from "./payments/payment_page";
+import Purchase_page from "./purchase_page/purchase_page";
 import Sale_invoice from "../Components/sale/sale_invoice";
 import Dashboard from "../Container/dashboardContainer";
 import Report_page from "./report_page/report_page";
@@ -186,6 +186,16 @@ function Routing(props) {
               element={
                 user ? (
                   <Sale_page current_user={current_user} />
+                ) : (
+                  <Navigate to={"/"} />
+                )
+              }
+            ></Route>
+            <Route
+              path="/purchase_page"
+              element={
+                user ? (
+                  <Purchase_page current_user={current_user} />
                 ) : (
                   <Navigate to={"/"} />
                 )

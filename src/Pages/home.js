@@ -226,6 +226,14 @@ function Layout(props) {
               </MenuItem>
             </SubMenu>
             <MenuItem
+              active={menu_status === "purchase"}
+              icon={<LocalAtmIcon />}
+              rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
+              component={<Link to="/purchase_page" />}
+            >
+              Purchase
+            </MenuItem>
+            <MenuItem
               active={menu_status === "sale"}
               icon={<LocalAtmIcon />}
               rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
