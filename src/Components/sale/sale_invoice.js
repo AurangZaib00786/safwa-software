@@ -27,40 +27,80 @@ function Invoice(props) {
       </div>
     );
   };
-  const columns = [
-    {
-      dataField: "id",
-      text: "#",
-      formatter: (cell, row, rowIndex) => {
-        return rowIndex + 1;
+  if (name === "purchases") {
+    var columns = [
+      {
+        dataField: "id",
+        text: "#",
+        formatter: (cell, row, rowIndex) => {
+          return rowIndex + 1;
+        },
       },
-    },
-    {
-      dataField: "description",
-      text: "Description",
-      formatter: name_column_formater,
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "meal_type",
-      text: "Meal Type",
+      {
+        dataField: "name",
+        text: "Product",
+        formatter: name_column_formater,
+        headerFormatter: headerstyle,
+      },
 
-      headerFormatter: headerstyle,
-    },
-    {
-      dataField: "pax",
-      text: "Pax",
+      { dataField: "price", text: "Price", headerFormatter: headerstyle },
+      {
+        dataField: "sub_total",
+        text: "Sub Total",
+        headerFormatter: headerstyle,
+      },
+      {
+        dataField: "tax_percentage",
+        text: "Tax %",
+        headerFormatter: headerstyle,
+      },
+      {
+        dataField: "tax_amount",
+        text: "Tax Amount",
+        headerFormatter: headerstyle,
+      },
+      {
+        dataField: "total",
+        text: "Total",
+        headerFormatter: headerstyle,
+      },
+    ];
+  } else {
+    var columns = [
+      {
+        dataField: "id",
+        text: "#",
+        formatter: (cell, row, rowIndex) => {
+          return rowIndex + 1;
+        },
+      },
+      {
+        dataField: "description",
+        text: "Description",
+        formatter: name_column_formater,
+        headerFormatter: headerstyle,
+      },
+      {
+        dataField: "meal_type",
+        text: "Meal Type",
 
-      headerFormatter: headerstyle,
-    },
-    { dataField: "days", text: "Days", headerFormatter: headerstyle },
-    { dataField: "price", text: "Price", headerFormatter: headerstyle },
-    {
-      dataField: "total",
-      text: "Total",
-      headerFormatter: headerstyle,
-    },
-  ];
+        headerFormatter: headerstyle,
+      },
+      {
+        dataField: "pax",
+        text: "Pax",
+
+        headerFormatter: headerstyle,
+      },
+      { dataField: "days", text: "Days", headerFormatter: headerstyle },
+      { dataField: "price", text: "Price", headerFormatter: headerstyle },
+      {
+        dataField: "total",
+        text: "Total",
+        headerFormatter: headerstyle,
+      },
+    ];
+  }
 
   const componentRef = useRef();
   const handleprint = useReactToPrint({
@@ -144,6 +184,15 @@ function Invoice(props) {
             </h5>
           )}
 
+          {name === "purchases" && (
+            <h5
+              className="text-center mt-2 ms-1 me-1"
+              style={{ border: "1px solid black", borderRadius: "5px" }}
+            >
+              Purcase
+            </h5>
+          )}
+
           {(name === "sales" || name === "sales_return") && (
             <div
               className="d-flex justify-content-between mt-1 p-2 ms-1 me-1"
@@ -186,6 +235,38 @@ function Invoice(props) {
                       (item) => `ID-${String(item.order).padStart(3, "0")}, `
                     )}{" "}
                   </span>
+                </p>
+              </div>
+            </div>
+          )}
+
+          {name === "purchases" && (
+            <div
+              className="d-flex justify-content-between mt-1 p-2 ms-1 me-1"
+              style={{ border: "1px solid black", borderRadius: "5px" }}
+            >
+              <div className=" ">
+                <h6 className="m-0">Supplier Details :</h6>
+                {data.supplier_name && (
+                  <p className="m-0">{data.supplier_name}</p>
+                )}
+              </div>
+              <div className=" ">
+                <p className="d-flex justify-content-between m-0">
+                  <span className="  me-3">Invoive no:</span>
+                  <span className="   me-3">{data.invoice}</span>
+                </p>
+                <p className="d-flex justify-content-between m-0">
+                  <span className="  me-3">Reference Invoive:</span>
+                  <span className="   me-3">{data.reference_invoice}</span>
+                </p>
+                <p className="d-flex justify-content-between m-0">
+                  <span className=" me-3"> Date:</span>
+                  <span className=" me-3">{data.date}</span>
+                </p>
+                <p className="d-flex justify-content-between m-0">
+                  <span className=" me-3">Payment Type:</span>
+                  <span className=" me-3">{data.payment_type} </span>
                 </p>
               </div>
             </div>

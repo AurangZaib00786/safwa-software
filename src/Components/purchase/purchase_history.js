@@ -187,11 +187,7 @@ function Purchase_history(props) {
           onClick={() => {
             localStorage.setItem("data", JSON.stringify(row));
 
-            if (formatExtraData.code === "A4") {
-              window.open("/invoice/purchases", "_blank");
-            } else if (formatExtraData.code === "80mm") {
-              window.open("/invoice_80/purchases", "_blank");
-            }
+            window.open("/invoice/purchases", "_blank");
           }}
         >
           <PrintRoundedIcon className="m-1" color="primary" fontSize="medium" />

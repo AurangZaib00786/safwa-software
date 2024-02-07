@@ -366,11 +366,8 @@ function Purchase_Edit(props) {
         setrefernce_invoice("");
         product_selection.current.focus();
 
-        if (invoice_type.code === "A4") {
-          window.open("/invoice/purchases", "_blank");
-        } else if (invoice_type.code === "80mm") {
-          window.open("/invoice_80/purchases", "_blank");
-        }
+        window.open("/invoice/purchases", "_blank");
+
         setActiveTab("purchase_history");
       }
     }
