@@ -37,6 +37,7 @@ import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import PrintIcon from "@material-ui/icons/Print";
 import Red_toast from "../alerts/red_toast";
 import moment from "moment";
+import SwapHorizIcon from "@material-ui/icons/SwapHoriz";
 
 function Dailymeal_history(props) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -138,6 +139,15 @@ function Dailymeal_history(props) {
   const linkFollow = (cell, row, rowIndex, formatExtraData) => {
     return (
       <span className="action d-flex">
+        <IconButton
+          className="me-2 border border-success rounded"
+          onClick={() => {
+            localStorage.setItem("data", JSON.stringify(row));
+            setActiveTab("assignmeal");
+          }}
+        >
+          <SwapHorizIcon className="m-1 text-success" fontSize="medium" />
+        </IconButton>
         <IconButton
           className="border border-primary rounded me-2"
           onClick={() => {

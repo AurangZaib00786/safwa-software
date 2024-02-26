@@ -6,6 +6,7 @@ import Dailymeal from "../../Container/dailymealContainer";
 import Dailymeal_history from "../../Container/dailymealhistpryContainer";
 import Dailymeal_Edit from "../../Container/dailymealeditContainer";
 import Dailymealreport from "../../Container/mealreportContainer";
+import AssignDailymeal from "../../Container/assigndailymealContainer";
 
 function Dailymeal_page({ current_user }) {
   const tabs = [
@@ -13,6 +14,7 @@ function Dailymeal_page({ current_user }) {
     "dailymeal_history",
     "dailymeal_Edit",
     '"dailymeal_report',
+    "assignmeal",
   ];
   var current_tab = localStorage.getItem("activeTab");
   if (!tabs.includes(current_tab)) {
@@ -47,6 +49,13 @@ function Dailymeal_page({ current_user }) {
           <Tab eventKey="dailymeal_history" title="Meal History">
             {activeTab === "dailymeal_history" && (
               <Dailymeal_history setActiveTab={setActiveTab} />
+            )}
+          </Tab>
+        )}
+        {activeTab === "assignmeal" && (
+          <Tab eventKey="assignmeal" title="Assign Meal">
+            {activeTab === "assignmeal" && (
+              <AssignDailymeal setActiveTab={setActiveTab} />
             )}
           </Tab>
         )}
