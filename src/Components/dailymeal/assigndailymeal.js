@@ -115,6 +115,8 @@ export default function AssignDailymeal(props) {
         if (json.length > 0) {
           setid(true);
           setallprocess({ details: json });
+        } else {
+          setallprocess({ details: input_data.details });
         }
         // const optimize = input_data?.details?.map((item) => {
         //   var assign_meal_process = json.filter(
@@ -146,9 +148,6 @@ export default function AssignDailymeal(props) {
 
         //   return item;
         // });
-        else {
-          setallprocess({ details: input_data });
-        }
       }
       if (!response.ok) {
         var error = Object.keys(json);
