@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import SaveIcon from "@material-ui/icons/Save";
 import Select from "react-select";
+import Selectr from "../alerts/select";
 import PrintRoundedIcon from "@material-ui/icons/PrintRounded";
 import TextField from "@mui/material/TextField";
 import AddIcon from "@material-ui/icons/Add";
@@ -43,38 +44,41 @@ function Dailymeal(props) {
   const [data, setdata] = useState("");
   const [column, setcolumn] = useState([]);
   const [order, setorder] = useState(null);
+  const [allorder, setallorder] = useState([]);
   const [dishes, setdishes] = useState(null);
+  useEffect(() => {
+    const fetchorder = async () => {
+      const response = await fetch(
+        `${route}/api/orders/?customer_id=${customer.value}&start_date=${date}&end_date=${date}`,
+        {
+          headers: { Authorization: `Bearer ${user.access}` },
+        }
+      );
+      const json = await response.json();
 
-  const fetchorder = async () => {
-    const response = await fetch(
-      `${route}/api/orders/?customer_id=${customer.value}&start_date=${date}&end_date=${date}`,
-      {
-        headers: { Authorization: `Bearer ${user.access}` },
-      }
-    );
-    const json = await response.json();
+      if (response.ok) {
+        setallorder(
+          json.map((item) => {
+            return { value: item, label: `Order : ${item.id}` };
+          })
+        );
 
-    if (response.ok) {
-      const order = json.shift();
-      setorder(order);
-      const optimize = order?.details?.map((item) => {
-        return {
-          ...item,
-          pot_details: [],
-        };
-      });
-      settable_data({ type: "Set_product_history", data: optimize });
-      if (!order) {
-        Red_toast("The Customer has no order for this Date !");
+        if (json.length === 0) {
+          Red_toast("The Customer has no order for this Date !");
+        }
       }
-    }
-    if (!response.ok) {
-      var error = Object.keys(json);
-      if (error.length > 0) {
-        Red_toast(`${error[0]}:${json[error[0]]}`);
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
       }
+    };
+
+    if (date && customer) {
+      fetchorder();
     }
-  };
+  }, [date, customer]);
 
   const fetchdish = async () => {
     if (!type) {
@@ -93,7 +97,7 @@ function Dailymeal(props) {
     const day = d.getDay();
 
     const response = await fetch(
-      `${route}/api/buffet-menus/?customer_id=${customer.value}&title=${weekday[day]}_${type.value}`,
+      `${route}/api/buffet-menus/?menu_id=${order.value?.menu}&title=${weekday[day]}_${type.value}`,
       {
         headers: { Authorization: `Bearer ${user.access}` },
       }
@@ -200,7 +204,13 @@ function Dailymeal(props) {
       Red_toast("Select Type First !");
       return;
     }
-    fetchorder();
+    const optimize = order.value?.details?.map((item) => {
+      return {
+        ...item,
+        pot_details: [],
+      };
+    });
+    settable_data({ type: "Set_product_history", data: optimize });
     fetchdish();
   };
 
@@ -233,7 +243,7 @@ function Dailymeal(props) {
         Authorization: `Bearer ${user.access}`,
       },
       body: JSON.stringify({
-        order: order.id,
+        order: order.value.id,
         meal_type: type.value,
         dish_details: dishdetail,
         building_details: buildingdetail,
@@ -357,7 +367,10 @@ function Dailymeal(props) {
         </div>
 
         <div className="card-body">
-          <div className="row  d-sm-flex align-items-start mt-1">
+          <form
+            onSubmit={handlegenerate}
+            className="row  d-sm-flex align-items-start mt-1"
+          >
             <div className="col-6 col-md-2 mb-2">
               <TextField
                 type="date"
@@ -391,6 +404,17 @@ function Dailymeal(props) {
               ></Select>
             </div>
             <div className="col-6 col-md-2 mb-2">
+              <Selectr
+                options={allorder}
+                placeholder={"Orders"}
+                value={order}
+                funct={(e) => {
+                  setorder(e);
+                }}
+                required
+              ></Selectr>
+            </div>
+            <div className="col-6 col-md-2 mb-2">
               <Select
                 className={
                   type !== ""
@@ -412,11 +436,7 @@ function Dailymeal(props) {
               ></Select>
             </div>
             <div className="col-6 col-md-2 mb-2">
-              <Button
-                className="ms-2"
-                variant="outline-success"
-                onClick={handlegenerate}
-              >
+              <Button className="ms-2" type="submit" variant="outline-success">
                 Generate..
               </Button>
             </div>
@@ -438,7 +458,7 @@ function Dailymeal(props) {
                 Add Pots
               </Button>
             </div>
-          </div>
+          </form>
 
           <div style={{ zoom: "0.8" }} className="table-responsive">
             <table

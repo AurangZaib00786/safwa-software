@@ -22,7 +22,7 @@ export default function Order(props) {
   const current_user = props.state.Setcurrentinfo.current_user;
   const dispatch = props.Settable_history;
   const setActiveTab = props.setActiveTab;
-
+  const selected_year = props.state.Setcurrentinfo.selected_year;
   const buildingref = useRef(null);
   var curdate = moment().format().substring(0, 10);
   const [date, setdate] = useState(curdate);
@@ -445,6 +445,12 @@ export default function Order(props) {
                       size="small"
                       label="Delivery date"
                       value={date}
+                      InputProps={{
+                        inputProps: {
+                          min: `${selected_year.value}-01-01`,
+                          max: `${selected_year.value}-12-31`,
+                        },
+                      }}
                       onChange={(e) => {
                         setdate(e.target.value);
                       }}

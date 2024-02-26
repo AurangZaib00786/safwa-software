@@ -113,6 +113,7 @@ export default function AssignDailymeal(props) {
         return;
       }
       return {
+        daily_meal: order.id,
         process: item.process,
         employee: item?.employee?.value,
         alloted_start_time:
