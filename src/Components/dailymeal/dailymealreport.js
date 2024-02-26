@@ -16,7 +16,7 @@ export default function Dailymealreport(props) {
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
-
+  const selected_year = props.state.Setcurrentinfo.selected_year;
   const [date, setdate] = useState(moment().format().substring(0, 10));
   const [print, setprint] = useState(false);
 
@@ -146,6 +146,12 @@ export default function Dailymealreport(props) {
                 value={date}
                 InputLabelProps={{ shrink: true }}
                 onChange={(e) => setdate(e.target.value)}
+                InputProps={{
+                  inputProps: {
+                    min: `${selected_year.value}-01-01`,
+                    max: `${selected_year.value}-12-31`,
+                  },
+                }}
                 size="small"
               />
             </div>

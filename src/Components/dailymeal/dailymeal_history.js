@@ -47,6 +47,7 @@ function Dailymeal_history(props) {
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const history = props.state.Settablehistory.table_history;
   const dispatch = props.Settable_history;
+  const selected_year = props.state.Setcurrentinfo.selected_year;
   const { SearchBar } = Search;
   const { ExportCSVButton } = CSVExport;
   const invoice_type = props.state.Setcurrentinfo.invoice_type;
@@ -245,6 +246,13 @@ function Dailymeal_history(props) {
     },
 
     {
+      dataField: "status",
+      text: "Status",
+      sort: true,
+      headerFormatter: headerstyle,
+    },
+
+    {
       dataField: "Edit",
       text: t("action"),
       formatter: linkFollow,
@@ -346,6 +354,12 @@ function Dailymeal_history(props) {
                   value={start_date}
                   onChange={(e) => {
                     setstart_date(e.target.value);
+                  }}
+                  InputProps={{
+                    inputProps: {
+                      min: `${selected_year.value}-01-01`,
+                      max: `${selected_year.value}-12-31`,
+                    },
                   }}
                   size="small"
                 />

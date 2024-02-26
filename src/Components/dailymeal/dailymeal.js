@@ -21,7 +21,7 @@ function Dailymeal(props) {
 
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
-
+  const selected_year = props.state.Setcurrentinfo.selected_year;
   const dispatch = props.Settable_history;
 
   const table_data = props.state.Setproducthistory.product_history;
@@ -382,6 +382,12 @@ function Dailymeal(props) {
                 value={date}
                 onChange={(e) => {
                   setdate(e.target.value);
+                }}
+                InputProps={{
+                  inputProps: {
+                    min: `${selected_year.value}-01-01`,
+                    max: `${selected_year.value}-12-31`,
+                  },
                 }}
                 size="small"
               />

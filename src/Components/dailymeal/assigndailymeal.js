@@ -16,13 +16,39 @@ export default function AssignDailymeal(props) {
   const [allprocess, setallprocess] = useState([]);
   const order = JSON.parse(localStorage.getItem("data"));
   const [allemployee, setallemployee] = useState([]);
-  const [employee, setemployee] = useState("");
+  const [id, setid] = useState("");
   const [isloading, setisloading] = useState(false);
   const [data, setdata] = useState([]);
 
   useEffect(() => {
-    setisloading(true);
-    // dispatch({ type: "Set_menuitem", data: "order" });
+    const fetchemployess = async () => {
+      var url = `${route}/api/employee/`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        const optimize = json.map((item) => {
+          return { value: item.id, label: item.name };
+        });
+        setallemployee(optimize);
+      }
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${json[error[0]]}`);
+        }
+      }
+    };
+
+    if (user) {
+      fetchemployess();
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchWorkouts = async () => {
       var url = `${route}/api/schedule/?buffet_time_id=${order.time_id}`;
 
@@ -65,7 +91,8 @@ export default function AssignDailymeal(props) {
         //     };
         //   }
         // });
-        setallprocess(json.shift());
+        // setallprocess();
+        fetchassignmeal(json.shift());
       }
       if (!response.ok) {
         var error = Object.keys(json);
@@ -76,8 +103,8 @@ export default function AssignDailymeal(props) {
       }
     };
 
-    const fetchemployess = async () => {
-      var url = `${route}/api/employee/`;
+    const fetchassignmeal = async (input_data) => {
+      var url = `${route}/api/assign-daily-meals/?daily_meal_id=${order.id}`;
 
       const response = await fetch(`${url}`, {
         headers: { Authorization: `Bearer ${user.access}` },
@@ -85,10 +112,43 @@ export default function AssignDailymeal(props) {
       const json = await response.json();
 
       if (response.ok) {
-        const optimize = json.map((item) => {
-          return { value: item.id, label: item.name };
-        });
-        setallemployee(optimize);
+        if (json.length > 0) {
+          setid(true);
+          setallprocess({ details: json });
+        }
+        // const optimize = input_data?.details?.map((item) => {
+        //   var assign_meal_process = json.filter(
+        //     (assign_mealitem) => assign_mealitem.process === item.process
+        //   );
+        //   assign_meal_process = assign_meal_process.shift();
+        //   if (assign_meal_process) {
+        //     item["employee"] = {
+        //       value: assign_meal_process.employee,
+        //       label: assign_meal_process.employee_name,
+        //     };
+        //     item["id"] = assign_meal_process.id;
+        //     switch (item.order_info?.meal_type) {
+        //       case "Breakfast":
+        //         item["break_fast_start"] =
+        //           assign_meal_process.alloted_start_time;
+        //         item["break_fast_end"] = assign_meal_process.alloted_end_time;
+        //         return;
+        //       case "Lunch":
+        //         item["lunch_start"] = assign_meal_process.alloted_start_time;
+        //         item["lunch_end"] = assign_meal_process.alloted_end_time;
+        //         return;
+        //       case "Dinner":
+        //         item["dinner_start"] = assign_meal_process.alloted_start_time;
+        //         item["dinner_end"] = assign_meal_process.alloted_end_time;
+        //         return;
+        //     }
+        //   }
+
+        //   return item;
+        // });
+        else {
+          setallprocess({ details: input_data });
+        }
       }
       if (!response.ok) {
         var error = Object.keys(json);
@@ -100,7 +160,6 @@ export default function AssignDailymeal(props) {
 
     if (user) {
       fetchWorkouts();
-      fetchemployess();
     }
   }, []);
 
@@ -108,14 +167,10 @@ export default function AssignDailymeal(props) {
     e.preventDefault();
     var flag = false;
     const optimizedata = allprocess.details?.map((item) => {
-      if (!item.employee) {
-        flag = true;
-        return;
-      }
       return {
         daily_meal: order.id,
         process: item.process,
-        employee: item?.employee?.value,
+        employee: item?.employee ? item?.employee : "",
         alloted_start_time:
           order?.meal_type === "Breakfast"
             ? item.break_fast_start
@@ -131,10 +186,6 @@ export default function AssignDailymeal(props) {
       };
     });
 
-    if (flag) {
-      Red_toast("Select all Employees");
-      return;
-    }
     const response = await fetch(`${route}/api/assign-daily-meals/`, {
       method: "POST",
       headers: {
@@ -159,12 +210,40 @@ export default function AssignDailymeal(props) {
     }
   };
 
+  const handleupdate = async (e) => {
+    e.preventDefault();
+
+    const response = await fetch(`${route}/api/assign-daily-meals/`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${user.access}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(allprocess.details),
+    });
+    const json = await response.json();
+
+    if (!response.ok) {
+      setisloading(false);
+      var error = Object.keys(json);
+      if (error.length > 0) {
+        Red_toast(`${json[error[0]]}`);
+      }
+    }
+
+    if (response.ok) {
+      success_toast();
+      setActiveTab("dailymeal_history");
+    }
+  };
+
   const handleemployeechange = (e, row, time) => {
     switch (time) {
       case "Breakfast":
         var optimize = allprocess?.details.map((item) => {
           if (item.id === row.id) {
-            item["employee"] = e;
+            item["employee"] = e.value;
+            item["employee_name"] = e.label;
             return item;
           }
           return item;
@@ -174,7 +253,8 @@ export default function AssignDailymeal(props) {
       case "Lunch":
         var optimize = allprocess?.details.map((item) => {
           if (item.id === row.id) {
-            item["employee"] = e;
+            item["employee"] = e.value;
+            item["employee_name"] = e.label;
             return item;
           }
           return item;
@@ -184,7 +264,8 @@ export default function AssignDailymeal(props) {
       case "Dinner":
         var optimize = allprocess?.details.map((item) => {
           if (item.id === row.id) {
-            item["employee"] = e;
+            item["employee"] = e.value;
+            item["employee_name"] = e.label;
             return item;
           }
           return item;
@@ -198,7 +279,12 @@ export default function AssignDailymeal(props) {
       case "Breakfast":
         var optimize = allprocess?.details.map((item) => {
           if (item.id === row.id) {
-            item["break_fast_start"] = e;
+            if (id) {
+              item["alloted_start_time"] = e;
+            } else {
+              item["break_fast_start"] = e;
+            }
+
             return item;
           }
           return item;
@@ -208,7 +294,12 @@ export default function AssignDailymeal(props) {
       case "Lunch":
         var optimize = allprocess?.details.map((item) => {
           if (item.id === row.id) {
-            item["lunch_start"] = e;
+            if (id) {
+              item["alloted_start_time"] = e;
+            } else {
+              item["lunch_start"] = e;
+            }
+
             return item;
           }
           return item;
@@ -218,7 +309,12 @@ export default function AssignDailymeal(props) {
       case "Dinner":
         var optimize = allprocess?.details.map((item) => {
           if (item.id === row.id) {
-            item["dinner_start"] = e;
+            if (id) {
+              item["alloted_start_time"] = e;
+            } else {
+              item["dinner_start"] = e;
+            }
+
             return item;
           }
           return item;
@@ -232,7 +328,12 @@ export default function AssignDailymeal(props) {
       case "Breakfast":
         var optimize = allprocess?.details.map((item) => {
           if (item.id === row.id) {
-            item["break_fast_end"] = e;
+            if (id) {
+              item["alloted_end_time"] = e;
+            } else {
+              item["break_fast_end"] = e;
+            }
+
             return item;
           }
           return item;
@@ -242,7 +343,12 @@ export default function AssignDailymeal(props) {
       case "Lunch":
         var optimize = allprocess?.details.map((item) => {
           if (item.id === row.id) {
-            item["lunch_end"] = e;
+            if (id) {
+              item["alloted_end_time"] = e;
+            } else {
+              item["lunch_end"] = e;
+            }
+
             return item;
           }
           return item;
@@ -252,7 +358,12 @@ export default function AssignDailymeal(props) {
       case "Dinner":
         var optimize = allprocess?.details.map((item) => {
           if (item.id === row.id) {
-            item["dinner_end"] = e;
+            if (id) {
+              item["alloted_end_time"] = e;
+            } else {
+              item["dinner_end"] = e;
+            }
+
             return item;
           }
           return item;
@@ -278,7 +389,10 @@ export default function AssignDailymeal(props) {
         <div className="card-header d-flex justify-content-between bg-white">
           <h3 className="mt-2 me-2">Assign Meal </h3>
           <div className="mt-2 me-2 d-flex flex-row-reverse">
-            <Button variant="outline-primary" onClick={handlesubmit}>
+            <Button
+              variant="outline-primary"
+              onClick={id ? handleupdate : handlesubmit}
+            >
               {isloading && (
                 <Spinner
                   as="span"
@@ -328,7 +442,9 @@ export default function AssignDailymeal(props) {
                           InputLabelProps={{ shrink: true }}
                           label="Start"
                           value={
-                            order?.meal_type === "Breakfast"
+                            id
+                              ? item.alloted_start_time
+                              : order?.meal_type === "Breakfast"
                               ? item.break_fast_start
                               : order?.meal_type === "Dinner"
                               ? item.dinner_start
@@ -350,7 +466,9 @@ export default function AssignDailymeal(props) {
                           type="Time"
                           label="End"
                           value={
-                            order?.meal_type === "Breakfast"
+                            id
+                              ? item.alloted_end_time
+                              : order?.meal_type === "Breakfast"
                               ? item.break_fast_end
                               : order?.meal_type === "Dinner"
                               ? item.dinner_end
@@ -373,7 +491,10 @@ export default function AssignDailymeal(props) {
                         <Select
                           styles={selectStyles}
                           options={allemployee}
-                          value={item.employee}
+                          value={{
+                            value: item.employee,
+                            label: item.employee ? item.employee_name : "",
+                          }}
                           onChange={(e) => {
                             handleemployeechange(e, item, order?.meal_type);
                           }}
