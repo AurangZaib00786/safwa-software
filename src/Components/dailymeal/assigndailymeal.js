@@ -213,7 +213,7 @@ export default function AssignDailymeal(props) {
     e.preventDefault();
 
     const response = await fetch(`${route}/api/assign-bulk-daily-meals/`, {
-      method: "PATCH",
+      method: "POST",
       headers: {
         Authorization: `Bearer ${user.access}`,
         "Content-Type": "application/json",
