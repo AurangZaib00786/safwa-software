@@ -185,7 +185,7 @@ export default function AssignDailymeal(props) {
       };
     });
 
-    const response = await fetch(`${route}/api/assign-daily-meals/`, {
+    const response = await fetch(`${route}/api/assign-bulk-daily-meals/`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${user.access}`,
@@ -212,7 +212,7 @@ export default function AssignDailymeal(props) {
   const handleupdate = async (e) => {
     e.preventDefault();
 
-    const response = await fetch(`${route}/api/assign-daily-meals/`, {
+    const response = await fetch(`${route}/api/assign-bulk-daily-meals/`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${user.access}`,
