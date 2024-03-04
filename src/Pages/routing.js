@@ -171,7 +171,7 @@ function Routing(props) {
             ></Route>
 
             <Route
-              path="/daily_meal"
+              path="/daily_meal/:id/:name"
               element={
                 user ? (
                   <Dailymeal_page current_user={current_user} />

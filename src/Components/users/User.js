@@ -154,7 +154,7 @@ function User(props) {
             style={{ border: "1px solid #003049", borderRadius: "5px" }}
             className="me-2 tooltipclass"
             onClick={() => {
-              setname(row.name);
+              setname(row.username);
               setid(row.id);
               setcheck_update(false);
               setemail(row.email);

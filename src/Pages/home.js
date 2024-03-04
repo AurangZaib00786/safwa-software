@@ -195,9 +195,9 @@ function Layout(props) {
             </MenuItem>
 
             <MenuItem
-              active={menu_status === "purchase"}
+              active={menu_status === "dailymeal"}
               icon={<ShoppingBasketIcon />}
-              component={<Link to="/daily_meal" />}
+              component={<Link to="/daily_meal/null/null" />}
               rootStyles={{ color: "whitesmoke", backgroundColor: "#000" }}
             >
               Daily Meal

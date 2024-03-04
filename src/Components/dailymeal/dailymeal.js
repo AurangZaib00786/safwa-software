@@ -14,11 +14,14 @@ import { useTranslation } from "react-i18next";
 import Red_toast from "../alerts/red_toast";
 import custom_toast from "../alerts/custom_toast";
 import moment from "moment";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Dailymeal(props) {
   const user = props.state.setuser.user;
   const { t } = useTranslation();
-
+  const { id, name } = useParams();
+  const navigate = useNavigate();
   const route = props.state.setuser.route;
   const selected_branch = props.state.Setcurrentinfo.selected_branch;
   const selected_year = props.state.Setcurrentinfo.selected_year;
@@ -30,22 +33,55 @@ function Dailymeal(props) {
   const [all_customers, setall_customers] = useState([]);
   const [text, settext] = useState("");
   const [type, settype] = useState("");
-
   var curdate = moment().format().substring(0, 10);
-
   const [date, setdate] = useState(curdate);
-
   const [customer, setcustomer] = useState("");
-
   const [showmodel, setshowmodel] = useState(false);
   const [isloading, setisloading] = useState(false);
-
   const [potsdata, setpotsdata] = useState([]);
   const [data, setdata] = useState("");
   const [column, setcolumn] = useState([]);
   const [order, setorder] = useState(null);
   const [allorder, setallorder] = useState([]);
   const [dishes, setdishes] = useState(null);
+
+  useEffect(() => {
+    const fetchorder = async () => {
+      var url = `${route}/api/orders/${id}/`;
+
+      const response = await fetch(`${url}`, {
+        headers: { Authorization: `Bearer ${user.access}` },
+      });
+      const json = await response.json();
+
+      if (response.ok) {
+        setdate(json.date);
+        setcustomer({ value: json.customer, label: json.customer_name });
+        setorder({ value: json, label: json.id });
+        settype({
+          value: name,
+          label:
+            name === "Breakfast"
+              ? "Breakfast / إفطار"
+              : name === "Lunch"
+              ? " Lunch / غداء"
+              : "Dinner / عشاء",
+        });
+        handlegenerate(json, name);
+      }
+      if (!response.ok) {
+        var error = Object.keys(json);
+        if (error.length > 0) {
+          Red_toast(`${error[0]}:${json[error[0]]}`);
+        }
+      }
+    };
+
+    if (id !== "null") {
+      fetchorder();
+    }
+  }, []);
+
   useEffect(() => {
     const fetchorder = async () => {
       const response = await fetch(
@@ -75,13 +111,13 @@ function Dailymeal(props) {
       }
     };
 
-    if (date && customer) {
+    if (date && customer && id === "null") {
       fetchorder();
     }
   }, [date, customer]);
 
-  const fetchdish = async () => {
-    if (!type) {
+  const fetchdish = async (s_order, s_type) => {
+    if (!s_type) {
       return;
     }
     const weekday = [
@@ -97,7 +133,7 @@ function Dailymeal(props) {
     const day = d.getDay();
 
     const response = await fetch(
-      `${route}/api/buffet-menus/?menu_id=${order.value?.menu}&title=${weekday[day]}_${type.value}`,
+      `${route}/api/buffet-menus/?menu_id=${s_order?.menu}&title=${weekday[day]}_${s_type}`,
       {
         headers: { Authorization: `Bearer ${user.access}` },
       }
@@ -116,7 +152,7 @@ function Dailymeal(props) {
   };
 
   useEffect(() => {
-    dispatch({ type: "Set_menuitem", data: "purchase" });
+    dispatch({ type: "Set_menuitem", data: "dailymeal" });
     settable_data({ type: "Set_product_history", data: null });
     const fetchProducts = async () => {
       var url = `${route}/api/pots/`;
@@ -198,20 +234,24 @@ function Dailymeal(props) {
     settable_data({ type: "Set_product_history", data: newdata });
   };
 
-  const handlegenerate = (e) => {
+  const inithandlegenerate = (e) => {
     e.preventDefault();
-    if (!type) {
+    handlegenerate(order.value, type.value);
+  };
+
+  const handlegenerate = (s_order, s_type) => {
+    if (!s_type) {
       Red_toast("Select Type First !");
       return;
     }
-    const optimize = order.value?.details?.map((item) => {
+    const optimize = s_order?.details?.map((item) => {
       return {
         ...item,
         pot_details: [],
       };
     });
     settable_data({ type: "Set_product_history", data: optimize });
-    fetchdish();
+    fetchdish(s_order, s_type);
   };
 
   const handlesubmit = async (e) => {
@@ -264,6 +304,7 @@ function Dailymeal(props) {
       setorder(null);
       setdishes(null);
       setcolumn([]);
+      navigate("/daily_meal/null/null");
     }
   };
 
@@ -318,6 +359,7 @@ function Dailymeal(props) {
       setcolumn([]);
       localStorage.setItem("data", JSON.stringify(json));
       window.open("/mealform", "_blank");
+      navigate("/daily_meal/null/null");
     }
   };
 
@@ -325,7 +367,10 @@ function Dailymeal(props) {
     settable_data({ type: "Set_product_history", data: null });
     setorder(null);
     setdishes(null);
+    setcustomer("");
+    settype("");
     setcolumn([]);
+    navigate("/daily_meal/null/null");
   };
   return (
     <div className="p-3">
@@ -368,7 +413,7 @@ function Dailymeal(props) {
 
         <div className="card-body">
           <form
-            onSubmit={handlegenerate}
+            onSubmit={inithandlegenerate}
             className="row  d-sm-flex align-items-start mt-1"
           >
             <div className="col-6 col-md-2 mb-2">

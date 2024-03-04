@@ -11,6 +11,7 @@ import ToolkitProvider, {
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import Button from "react-bootstrap/Button";
+import { useNavigate } from "react-router-dom";
 import Alert_before_delete from "../../Container/alertContainer";
 import custom_toast from "../alerts/custom_toast";
 import went_wrong_toast from "../alerts/went_wrong_toast";
@@ -38,7 +39,7 @@ import {
 import moment from "moment";
 function Assignorderhistory(props) {
   const { t } = useTranslation();
-
+  const navigate = useNavigate();
   const user = props.state.setuser.user;
   const route = props.state.setuser.route;
   const setActiveTab = props.setActiveTab;
@@ -180,6 +181,72 @@ function Assignorderhistory(props) {
     );
   };
 
+  const handlemakemeal = (type, id) => {
+    setActiveTab("dailymeal");
+    navigate(`/daily_meal/${id}/${type}`);
+  };
+
+  const statusformatter = (cell, row, rowIndex, formatExtraData) => {
+    return (
+      <span>
+        <Button
+          type="button"
+          className="p-1 ps-3 pe-3 me-2 "
+          variant={cell ? "success" : "danger"}
+          onClick={
+            cell
+              ? () => {
+                  custom_toast(
+                    "The Breakfast Daily Meal of Selected Order Has Been Made!"
+                  );
+                }
+              : () => {
+                  handlemakemeal("Breakfast", row.id);
+                }
+          }
+        >
+          Breakfast
+        </Button>
+        <Button
+          type="button"
+          className="p-1 ps-3 pe-3 me-2 "
+          variant={row.launch_daily_meal ? "success" : "danger"}
+          onClick={
+            cell
+              ? () => {
+                  custom_toast(
+                    "The Lunch Daily Meal of Selected Order Has Been Made!"
+                  );
+                }
+              : () => {
+                  handlemakemeal("Lunch", row.id);
+                }
+          }
+        >
+          Lunch
+        </Button>
+        <Button
+          type="button"
+          className="p-1 ps-3 pe-3 me-2 "
+          variant={row.dinner_daily_meal ? "success" : "danger"}
+          onClick={
+            cell
+              ? () => {
+                  custom_toast(
+                    "The Dinner Daily Meal of Selected Order Has Been Made!"
+                  );
+                }
+              : () => {
+                  handlemakemeal("Dinner", row.id);
+                }
+          }
+        >
+          Dinner
+        </Button>
+      </span>
+    );
+  };
+
   const columns = [
     {
       dataField: "id",
@@ -211,6 +278,13 @@ function Assignorderhistory(props) {
       text: "Time",
       sort: true,
       headerFormatter: headerstyle,
+    },
+
+    {
+      dataField: "breakfast_daily_meal",
+      text: "Daily Meal Status ",
+      headerFormatter: headerstyle,
+      formatter: statusformatter,
     },
 
     {
